@@ -1,0 +1,115 @@
+package IC.Parser;
+import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java_cup.runtime.Symbol;
+import IC.AST.*;
+import IC.*;
+
+parser code  {:
+	public void syntax_error(Symbol s)  {
+		Integer symbol_got;
+		List<Integer> lst;
+		List<String> expected_tokens = new ArrayList<String>();
+		for (int i = 0; i<4 ; i++)
+			expected_token_ids();
+		//sorting all expected tokens
+		lst = expected_token_ids();
+		for (Integer i: lst){
+			expected_tokens.add(symbl_name_from_id(i));
+		}
+		Collections.sort(expected_tokens);
+		
+		System.err.print(s.left + ":" + s.right+": syntax error; expected ");
+		for (String expected_token: expected_tokens)
+			System.err.print(" '"+ expected_token + "'");
+		System.err.print(" but found '"+ s.value + "'\n");
+	}
+:}
+
+////////////////////////////////////////////
+// Symbol list (terminals and non-terminals)
+
+/* Terminals (tokens returned by the scanner). */
+terminal STATIC, INT, BOOLEAN, STRING, VOID;
+terminal LP, RP, LB, RB, LSQUARE, RSQUARE, COMMA, SEMI_COL;
+
+
+/* Terminals with attached values*/
+terminal String CLASS, CLASSIDENT, LIBRARY;
+terminal String ID;
+terminal String STRING_LITERAL;
+
+
+
+/* Non terminals */
+non terminal ICClass libic;
+non terminal List<Method> libmethod; 
+non terminal List<Formal> formals;
+non terminal List<Formal> function_formal_list;
+non terminal Type type;
+non terminal Program program;
+non terminal Type returnType;
+
+start with program;
+
+program::= libic:i0 {: List<ICClass> prog_list = new ArrayList<ICClass>(); prog_list.add(i0);
+RESULT = new Program(prog_list); :};
+
+
+libic ::= CLASS:c LIBRARY:i0 LB libmethod:i3 RB {:
+				{RESULT = new ICClass(i0left,  i0.toString() , new LinkedList<Field>(), i3 );}:}
+		| CLASS:c LIBRARY:i0 LB RB
+				{: if(i0.compareTo("Library") == 0)
+				{RESULT = new ICClass(i0left,  i0.toString() , new LinkedList<Field>(), new LinkedList<Method>() );}else { RESULT=null;}:}
+;
+
+libmethod ::= STATIC returnType:i0 ID:i1 LP function_formal_list:i2 RP SEMI_COL
+				{: 	RESULT = new ArrayList<Method>();	/*the 1st func starts the array and has formals*/
+					RESULT.add(new LibraryMethod(i0 ,i1, i2)); :}
+			|	libmethod:i3 STATIC returnType:i0 ID:i1 LP function_formal_list:i2 RP 	SEMI_COL			/*add a func, has formals*/
+				{: i3.add(new LibraryMethod(i0,i1, i2)); 
+					RESULT = i3; :}
+					;
+
+function_formal_list ::= /* empty */
+                          {: RESULT = new LinkedList<Formal>(); :}
+                        | formals:f
+                          {: RESULT = f; :}
+                        ;
+
+formals ::= type:i0 ID:i1 
+				{: 	RESULT = new ArrayList<Formal>();
+					RESULT.add(new Formal(i0, i1)); :}
+			|	formals:i2 COMMA type:i0 ID:i1
+				{: i2.add(new Formal(i0, i1));
+					RESULT = i2; :};
+			
+type ::= INT:i
+         {: RESULT = new PrimitiveType(ileft, DataTypes.INT);
+         :}
+       
+       | STRING:s
+         {: RESULT = new PrimitiveType(sleft, DataTypes.STRING);
+         :}
+         
+       | BOOLEAN:b
+         {: RESULT = new PrimitiveType(bleft, DataTypes.BOOLEAN);
+         :}
+         
+       | CLASS:c
+         {: RESULT = new UserType(cleft, c.toString());
+         :}
+       | type:t LSQUARE RSQUARE
+         {: 
+         	t.incrementDimension();
+            RESULT = t;
+         :} ;
+		 
+returnType ::= type:t
+                {: RESULT = t; :}
+              
+              | VOID:v
+                {: RESULT = new PrimitiveType(vleft, DataTypes.VOID);
+                :}
+              ;

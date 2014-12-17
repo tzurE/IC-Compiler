@@ -1,0 +1,450 @@
+package IC.Parser;
+
+import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java_cup.runtime.Symbol;
+import IC.AST.*;
+import IC.*;
+
+parser code  {:
+	public void syntax_error(Symbol s)  {
+		Integer symbol_got;
+		List<Integer> lst;
+		List<String> expected_tokens = new ArrayList<String>();
+		for (int i = 0; i<4 ; i++)
+			expected_token_ids();
+		//sorting all expected tokens
+		lst = expected_token_ids();
+		for (Integer i: lst){
+			expected_tokens.add(symbl_name_from_id(i));
+		}
+		Collections.sort(expected_tokens);
+		
+		System.err.print(s.left + ":" + s.right+": syntax error; expected ");
+		for (String expected_token: expected_tokens)
+			System.err.print(" '"+ expected_token + "'");
+		System.err.print(" but found '"+ s.value + "'\n");
+	}
+:}
+
+
+
+////////////////////////////////////////////
+// Symbol list (terminals and non-terminals)
+
+// Terminals (tokens returned by the scanner). 
+terminal CLASS, EXTENDS, STATIC, VOID, INT, BOOLEAN, STRING, RETURN, IF, ELSE, WHILE, BREAK, CONTINUE, THIS, NEW, LENGTH, TRUE;
+terminal FALSE, NULL, MINUS, PLUS, TIMES, DIVIDE, MOD, NOTEQUAL, NOT, LESSEQUAL, LESS, GREATEREQUAL, GREATER, EQUAL, AND, OR, LP, RP, LB, RB;
+terminal LSQUARE, RSQUARE, DOT, COMMA, SEMI_COL, ASSIGN, UMINUS;
+
+// Terminals with attached values 
+terminal String NUMBER;
+terminal String CLASSIDENT;
+terminal String ID;
+terminal String STRING_LITERAL;
+
+// Non terminals
+//should declare method_or_field_list, method_or_field_list_or_epsilon;
+
+non terminal Type type, returnType;
+non terminal List<Formal> function_formal_list, formals;
+non terminal Literal literal;
+non terminal BinaryOp binaryOp;
+non terminal UnaryOp unaryOp;
+non terminal Location location;
+non terminal Call anyCall, staticCall, virtualCall;
+non terminal Expression expr, expr_or_epsilon, assign_exp_or_epsilon, eDot_epsilon;
+non terminal Statement stmt, else_stmt_or_epsilon;
+non terminal List<Statement> stmts_list, stmts_list_or_epsilon;
+non terminal Method method;
+non terminal ICClass icclass;
+non terminal List<ASTNode> methodfields, methodfields_or_epsilon;
+non terminal List<String> field_id_list; //check
+non terminal List<Field> field; 
+non terminal String extends_or_empty;
+non terminal List<ICClass> class_list_or_epsilon, class_list;
+non terminal Program program;
+non terminal List<Expression> call_exp_list;
+
+//////////////////////////
+// Precedence declarations
+precedence right ASSIGN;
+precedence left OR;
+precedence left AND;
+precedence left EQUAL, NOTEQUAL;
+precedence left LESS, LESSEQUAL, GREATER, GREATEREQUAL;
+precedence left PLUS, MINUS;
+precedence left DIVIDE, TIMES, MOD;
+precedence right UMINUS, NOT;
+precedence left RP, LP, RSQUARE, LSQUARE, DOT;
+precedence left IF,ELSE;
+
+
+//////////////
+// The grammar
+
+start with program;
+
+program ::= class_list_or_epsilon:cl
+            {: RESULT = new Program(cl); :};
+
+class_list_or_epsilon ::= class_list:cl
+                        {: RESULT = cl; :}      
+                      | // empty
+                        {: RESULT = new LinkedList<ICClass>(); :}
+                      ;
+
+class_list ::= icclass:c
+               {: RESULT = new LinkedList<ICClass>();
+                  RESULT.add(c);
+               :}
+             | class_list:cl icclass:c
+               {: 
+				cl.add(c);
+                RESULT = cl;
+               :}
+             ;
+             
+icclass ::= CLASS CLASSIDENT:cid extends_or_empty:ex LB methodfields_or_epsilon:mf RB
+          {: 
+			ArrayList<Field> fieldlist = new ArrayList<Field>();
+			ArrayList<Method> methodlist = new ArrayList<Method>();
+			for (ASTNode iterator : mf){
+				if(iterator instanceof Field)
+					fieldlist.add((Field) iterator);
+				else
+					methodlist.add((Method) iterator);
+			}
+			if(ex != ""){RESULT = new ICClass(cidleft, cid, ex, fieldlist,  methodlist);} else{RESULT = new ICClass(cidleft, cid, fieldlist,  methodlist);}
+		  :}; 
+		  
+extends_or_empty ::= EXTENDS CLASSIDENT:cid
+						{: RESULT = cid; :}
+                   | // empty 
+						{: RESULT = ""; :}
+                   ;
+                   
+// A list of methods or fields
+
+
+methodfields_or_epsilon ::= methodfields:m
+                        {: RESULT = m; :}  
+                      | // empty 
+                        {: RESULT = new ArrayList<ASTNode>(); :}
+                      ;
+
+                      
+methodfields ::=
+				method:m 
+               {: 
+					RESULT = new ArrayList<ASTNode>();
+					RESULT.add(m);
+               :}
+			| 	field:f
+               {: 
+					RESULT = new ArrayList<ASTNode>();
+					RESULT.addAll(f);
+               :}
+				
+			| methodfields: mf method:m
+               {: 
+					mf.add(m);
+					RESULT = mf; 
+               :} 
+				
+             | methodfields: mf field:f
+               {: 
+					mf.addAll(f);
+					RESULT = mf; 
+               :} 
+			   
+             ;
+					
+                    
+field ::= type:t field_id_list:fl SEMI_COL 
+          {: RESULT = new LinkedList<Field>();
+             for (String s : fl)
+                 RESULT.add(new Field(t, s));
+          :} 
+          ;
+          
+          
+field_id_list ::= ID:id
+              {: RESULT = new LinkedList<String>();
+                 RESULT.add(id);
+              :}
+            | field_id_list:l COMMA ID:id
+              {: l.add(id);
+                 RESULT = l;
+              :} 
+            ;
+            
+method ::= 
+			STATIC returnType:t ID:id LP function_formal_list:fl RP LB stmts_list_or_epsilon:sl RB
+           {: RESULT = new StaticMethod(t, id, fl, sl); :}
+         | type:t ID:id LP  function_formal_list:fl RP LB stmts_list_or_epsilon:sl RB
+           {: RESULT = new VirtualMethod(t, id, fl, sl); :} 
+		 | VOID ID:id LP  function_formal_list:fl RP LB stmts_list_or_epsilon:sl RB
+		   {: RESULT = new VirtualMethod(new PrimitiveType(idleft, DataTypes.VOID), id, fl, sl); :} 
+		   
+        ;
+		
+stmts_list_or_epsilon ::=  stmts_list:ls
+                        {: RESULT = ls; :}  
+						
+                      | // empty
+                        {: RESULT = new LinkedList<Statement>(); :}
+						
+                      ;
+
+                      
+stmts_list ::= stmt:s
+               {: 
+					RESULT = new LinkedList<Statement>();
+					RESULT.add(s);
+               :}
+			   
+             | stmts_list:sl stmt:s
+               {: 
+					sl.add(s);
+					RESULT = sl; 
+               :}			   
+             ;
+
+stmt ::= location:l ASSIGN expr:e SEMI_COL
+         {: RESULT = new Assignment(l, e); :}
+         
+       | anyCall:c SEMI_COL
+         {: RESULT = new CallStatement(c); :}
+         
+       | RETURN expr_or_epsilon:e SEMI_COL
+         {: RESULT = new Return(eleft, e); :}
+         
+       | IF LP expr:e RP stmt:s else_stmt_or_epsilon:el
+         {: RESULT = new If(e, s, el); :}
+         
+       | WHILE LP expr:e RP stmt:s
+         {: RESULT = new While(e, s); :}
+         
+       |  BREAK:b SEMI_COL
+         {: RESULT = new Break(bleft); :}
+         
+       | CONTINUE:c SEMI_COL
+         {: RESULT = new Continue(cleft); :}
+         
+       | LB:lb stmts_list:sl RB
+         {: RESULT = new StatementsBlock(lbleft, sl); :}
+         
+       | LB:l RB 
+         {: RESULT = new StatementsBlock(lleft, new LinkedList<Statement>()); :}
+         
+       | type:t ID:id assign_exp_or_epsilon:a SEMI_COL
+         {: RESULT = new LocalVariable(t, id, a); :}
+		 
+       ;
+       
+expr_or_epsilon ::= expr:e
+					{: RESULT = e; :}
+                | // empty
+					{: RESULT = null; :}
+                ;
+
+
+else_stmt_or_epsilon ::= ELSE stmt:s
+					{: RESULT = s; :}
+                
+                | // empty 
+					{: RESULT = null; :}
+                ;
+
+
+assign_exp_or_epsilon ::= ASSIGN expr:e
+						{: RESULT = e; :}
+                    | // empty 
+						{: RESULT = null; :}
+                    ;
+                    
+expr ::= location:l 
+         {: RESULT = l; :}
+       | anyCall:c
+         {: RESULT = c; :}
+       
+       | THIS:t
+         {: RESULT = new This(tleft); :}
+   
+       | NEW CLASSIDENT:cid LP RP
+         {: RESULT = new NewClass(cidleft, cid); :}
+		 
+       | NEW type:t LSQUARE expr:index RSQUARE
+         {: RESULT = new NewArray(t, index); :}
+       
+       | expr:e DOT LENGTH
+         {: RESULT = new Length(e); :}
+       
+       | binaryOp:op
+         {: RESULT = op; :}
+       
+       | unaryOp:op
+         {: RESULT = op; :}
+       
+       | literal:l
+         {: RESULT = l; :}
+       
+       | LP expr:e RP
+         {: RESULT = new ExpressionBlock(e); :}
+       ;
+      
+location ::= eDot_epsilon:e ID:id 
+             {: RESULT = new VariableLocation(idleft, e, id); :}
+           | expr:a LSQUARE expr:index RSQUARE
+             {: RESULT = new ArrayLocation(a, index); :}
+			 ;
+
+anyCall ::= staticCall:c
+         {: RESULT = c; :}
+       | virtualCall:c
+         {: RESULT = c; :}
+       ;
+       
+staticCall ::= CLASSIDENT:cid DOT ID:id LP call_exp_list:cel RP
+                {: RESULT = new StaticCall( cidleft, cid, id, cel); :} ;
+
+
+virtualCall	::= eDot_epsilon:eDot ID:id LP call_exp_list:cel RP 
+                 {: RESULT = new VirtualCall(idleft, eDot, id, cel); :} ;
+                 
+call_exp_list ::= /* empty */
+            {: RESULT = new LinkedList<Expression>(); :}
+          
+          | expr:e
+            {: List<Expression> le = new LinkedList<Expression>();
+               le.add(e);
+               RESULT = le; 
+            :}
+         
+          | call_exp_list:le COMMA expr:e
+             {: le.add(e);
+                RESULT = le; 
+             :}
+          ;
+               
+eDot_epsilon ::= expr:e DOT
+                      {: RESULT = e; :}
+                    | // empty 
+					{: RESULT = null; :}
+                    ;
+	
+binaryOp ::= expr:e1 PLUS expr:e2
+          {: RESULT = new MathBinaryOp(e1, BinaryOps.PLUS, e2); :}
+        
+        | expr:e1 MINUS expr:e2
+          {: RESULT = new MathBinaryOp(e1, BinaryOps.MINUS, e2); :}
+        
+        | expr:e1 TIMES expr:e2
+          {: RESULT = new MathBinaryOp(e1, BinaryOps.MULTIPLY, e2); :}
+        
+        | expr:e1 DIVIDE expr:e2
+          {: RESULT = new MathBinaryOp(e1, BinaryOps.DIVIDE, e2); :}
+		  
+        | expr:e1 MOD expr:e2
+          {: RESULT = new MathBinaryOp(e1, BinaryOps.MOD, e2); :}
+        
+        | expr:e1 AND expr:e2
+          {: RESULT = new LogicalBinaryOp(e1, BinaryOps.LAND, e2); :}
+        
+        | expr:e1 OR expr:e2
+          {: RESULT = new LogicalBinaryOp(e1, BinaryOps.LOR, e2); :}
+        
+        | expr:e1 LESS expr:e2
+          {: RESULT = new LogicalBinaryOp(e1, BinaryOps.LT, e2); :}
+        
+        | expr:e1 LESSEQUAL expr:e2
+          {: RESULT = new LogicalBinaryOp(e1, BinaryOps.LTE, e2); :}
+        
+        | expr:e1 GREATER expr:e2
+          {: RESULT = new LogicalBinaryOp(e1, BinaryOps.GT, e2); :}
+        
+        | expr:e1 GREATEREQUAL expr:e2
+          {: RESULT = new LogicalBinaryOp(e1, BinaryOps.GTE, e2); :}
+        
+        | expr:e1 EQUAL expr:e2
+          {: RESULT = new LogicalBinaryOp(e1, BinaryOps.EQUAL, e2); :}
+        
+        | expr:e1 NOTEQUAL expr:e2
+          {: RESULT = new LogicalBinaryOp(e1, BinaryOps.NEQUAL, e2); :}
+        ;
+	
+unaryOp ::= MINUS expr:e
+         {: RESULT = new MathUnaryOp(UnaryOps.UMINUS, e); :} %prec UMINUS
+       | NOT expr:e 
+         {: RESULT = new LogicalUnaryOp(UnaryOps.LNEG, e); :}
+       ;
+	   
+literal ::= NUMBER:i 
+            {: RESULT = new Literal(ileft, LiteralTypes.INTEGER, i); 
+            :}
+          
+          | STRING_LITERAL:s
+            {: RESULT = new Literal(sleft, LiteralTypes.STRING, s); 
+            :}
+          
+          | TRUE:t
+            {: RESULT = new Literal(tleft, LiteralTypes.TRUE); 
+            :}
+          
+          | FALSE:f
+            {: RESULT = new Literal(fleft, LiteralTypes.FALSE);
+            :}
+          
+          | NULL:n
+            {: RESULT = new Literal(nleft, LiteralTypes.NULL); 
+            :}
+          ;
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ added from library ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~```
+function_formal_list ::=  // empty 
+                          {: RESULT = new LinkedList<Formal>(); :}
+                        | formals:f
+                          {: RESULT = f; :}
+                        ;
+
+formals ::=  type:i0 ID:i1  
+				{: 	RESULT = new ArrayList<Formal>();
+					RESULT.add(new Formal(i0, i1)); :}
+					
+			|	formals:i2 COMMA type:i0 ID:i1
+				{: i2.add(new Formal(i0, i1));
+					RESULT = i2; :} 
+					;
+					
+type ::= INT:i 
+         {: RESULT = new PrimitiveType(ileft, DataTypes.INT);
+         :}
+       
+       | STRING:s
+         {: RESULT = new PrimitiveType(sleft, DataTypes.STRING);
+         :}
+         
+       | BOOLEAN:b
+         {: RESULT = new PrimitiveType(bleft, DataTypes.BOOLEAN);
+         :}
+         
+       | CLASSIDENT:c
+         {: RESULT = new UserType(cleft, c.toString());
+         :}
+       | type:t LSQUARE RSQUARE
+         {: 
+         	t.incrementDimension();
+            RESULT = t;
+         :} ;
+		 
+returnType ::= type:t 
+                {: RESULT = t; :}
+              
+              | VOID:v
+                {: RESULT = new PrimitiveType(vleft, DataTypes.VOID);
+                :}
+              ;
+			  
+			  

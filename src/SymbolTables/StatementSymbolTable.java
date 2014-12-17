@@ -10,8 +10,7 @@ public class StatementSymbolTable extends SymbolTable{
 	private HashMap<Integer, StatementSymbolTable> childTableList = new HashMap<Integer,StatementSymbolTable>();
 	
 	public StatementSymbolTable(SymbolTableType type, String id,
-			SymbolTable father_table, List<SymbolEntryType> entry_list,
-			List<SymbolTableType> children_table_List) {
+			SymbolTable father_table) {
 		super(SymbolTableType.STATEMENT, id, father_table);
 	}
 

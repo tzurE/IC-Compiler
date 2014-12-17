@@ -1,20 +1,22 @@
 package SymbolTables;
+import TypeTable.*;
 
 public abstract class SymbolEntry {
 	
 	private String id;
-	private SymbolEntryType type;
+	private SymbolEntryKind kind;
+	private TypeTableType type;
 	
-	public SymbolEntry(String id, SymbolEntryType type) {
+	public SymbolEntry(String id, SymbolEntryKind kind) {
 		this.id = id;
-		this.type = type;
+		this.kind = kind;
 	}
 
 	public String getId() {
 		return id;
 	}
 
-	public SymbolEntryType getType() {
-		return type;
+	public SymbolEntryKind getKind() {
+		return kind;
 	}
 }

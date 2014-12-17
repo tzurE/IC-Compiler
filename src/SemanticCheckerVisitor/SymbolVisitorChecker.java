@@ -18,6 +18,7 @@ import IC.AST.LogicalBinaryOp;
 import IC.AST.LogicalUnaryOp;
 import IC.AST.MathBinaryOp;
 import IC.AST.MathUnaryOp;
+import IC.AST.Method;
 import IC.AST.NewArray;
 import IC.AST.NewClass;
 import IC.AST.PrimitiveType;
@@ -233,6 +234,12 @@ public class SymbolVisitorChecker implements PropVisitor {
 
 	@Override
 	public Object visit(ExpressionBlock expressionBlock, SymbolTable table) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object visit(Method method, SymbolTable table) {
 		// TODO Auto-generated method stub
 		return null;
 	}

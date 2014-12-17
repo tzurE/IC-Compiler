@@ -1,6 +1,6 @@
 package SymbolTables;
 
-public enum SymbolEntryType {
+public enum SymbolEntryKind {
 	
 	CLASS("Class"),
 	VIRTUAL_METHOD("Virtual Method"), 
@@ -11,7 +11,7 @@ public enum SymbolEntryType {
 	
 	private String type;
 
-	private SymbolEntryType(String type) {
+	private SymbolEntryKind(String type) {
 		this.type = type;
 	}
 

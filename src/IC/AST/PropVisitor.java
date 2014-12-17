@@ -9,6 +9,8 @@ public interface PropVisitor {
 
 	public Object visit(Field field, SymbolTable table);
 
+	public Object visit(Method method, SymbolTable table);
+	
 	public Object visit(VirtualMethod method, SymbolTable table);
 
 	public Object visit(StaticMethod method, SymbolTable table);

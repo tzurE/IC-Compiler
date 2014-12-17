@@ -2,8 +2,8 @@ package SymbolTables;
 
 public class VirtualMethodEntry extends MethodEntry {
 
-	public VirtualMethodEntry(String id, SymbolEntryType type) {
-		super(id, SymbolEntryType.VIRTUAL_METHOD);
+	public VirtualMethodEntry(String id, SymbolEntryKind kind) {
+		super(id, SymbolEntryKind.VIRTUAL_METHOD);
 		// TODO Auto-generated constructor stub
 	}
 

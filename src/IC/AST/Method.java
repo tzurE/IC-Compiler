@@ -2,6 +2,8 @@ package IC.AST;
 
 import java.util.List;
 
+import SymbolTables.SymbolTable;
+
 /**
  * Abstract base class for method AST nodes.
  * 

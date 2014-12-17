@@ -93,7 +93,10 @@ public class Compiler {
 			// Prints Program Type Table something like this
 			//TypeTable.printTypeTable(args[0]);
 		}
-		} catch(Exception e){
+		}catch (SemanticError e1){
+			e1.getErrorMessage();
+		}
+		catch(Exception e){
 			System.out.println("damn");
 			e.printStackTrace();
 		}

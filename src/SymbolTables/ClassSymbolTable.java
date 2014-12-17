@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import SymbolTables.FieldEntry;
 import SymbolTables.StaticMethodEntry;
-import SymbolTables.SymbolEntryType;
+import SymbolTables.SymbolEntryKind;
 
 public class ClassSymbolTable extends SymbolTable {
 	
@@ -44,18 +44,18 @@ public class ClassSymbolTable extends SymbolTable {
 		
 		if(!isIdExist(entry)){
 		
-			String myType = entry.getType().toString();
-			if (myType.equals(SymbolEntryType.FIELD)){
+			String myType = entry.getKind().toString();
+			if (myType.equals(SymbolEntryKind.FIELD.toString())){
 				fieldEntries.put(id, (FieldEntry) entry);
 				fieldsByOrder.put(fieldCount, id);
 				fieldCount++;
 			}
-			else if (myType.equals(SymbolEntryType.STATIC_METHOD)){
+			else if (myType.equals(SymbolEntryKind.STATIC_METHOD.toString())){
 				staticMethodEntries.put(id, (StaticMethodEntry) entry);
 				staticMethodByOrder.put(staticMethodCount, id);
 				staticMethodCount++;
 			}
-			else if (myType.equals(SymbolEntryType.VIRTUAL_METHOD)){
+			else if (myType.equals(SymbolEntryKind.VIRTUAL_METHOD.toString())){
 				virtualMethodEntries.put(id, (VirtualMethodEntry) entry);
 				virtualMethodsByOrder.put(virtualMethodCount, id);
 				virtualMethodCount++;
@@ -89,14 +89,14 @@ public class ClassSymbolTable extends SymbolTable {
 	@Override
 	public boolean isIdExist(SymbolEntry entry) {
 		
-		String entryType = entry.getType().toString();
-		if (entryType.equals(SymbolEntryType.FIELD)){
+		String entryType = entry.getKind().toString();
+		if (entryType.equals(SymbolEntryKind.FIELD.toString())){
 			return fieldEntries.containsKey(entry.getId());
 		}
-		else if (entryType.equals(SymbolEntryType.STATIC_METHOD)){
+		else if (entryType.equals(SymbolEntryKind.STATIC_METHOD.toString())){
 			return staticMethodEntries.containsKey(entry.getId());
 		}
-		else if (entryType.equals(SymbolEntryType.VIRTUAL_METHOD)){
+		else if (entryType.equals(SymbolEntryKind.VIRTUAL_METHOD.toString())){
 			return virtualMethodEntries.containsKey(entry.getId());		
 		}
 		return false;
@@ -154,7 +154,7 @@ public class ClassSymbolTable extends SymbolTable {
 			
 			for (i = 0; i < classChildCount; i++){
 				String name = classChildByOrder.get(i);
-				if(methodChildCount == 0)
+				if(i == 0)
 					System.out.print(name);
 				else
 					System.out.print(", " + name);

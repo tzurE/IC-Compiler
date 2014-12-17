@@ -95,6 +95,7 @@ public class GlobalSymbolTable extends SymbolTable {
 				else
 					System.out.print(", " + name);
 			} 
+			System.out.println();
 		}
 
 		System.out.println();
@@ -104,8 +105,10 @@ public class GlobalSymbolTable extends SymbolTable {
 			for (i = 0; i < childCount; i++){
 				String name = childrenByOrder.get(i);
 				childTableList.get(name).print();
-			} 
+			}
+			
 		}
+		
 		return false;
 	}
 }

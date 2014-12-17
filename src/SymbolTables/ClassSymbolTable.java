@@ -159,7 +159,8 @@ public class ClassSymbolTable extends SymbolTable {
 				else
 					System.out.print(", " + name);
 			} 
-
+			//betweeen classes
+			System.out.println();
 		}
 
 		System.out.println();
@@ -177,7 +178,9 @@ public class ClassSymbolTable extends SymbolTable {
 			for (i = 0; i < classChildCount; i++){
 				String name = classChildByOrder.get(i);
 				classChildTableList.get(name).print();
-			} 
+				
+			}
+			
 		}
 		
 		return false;

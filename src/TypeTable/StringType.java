@@ -12,11 +12,7 @@ public class StringType extends TypeTableType {
 			return false;
 		}
 		else{
-<<<<<<< HEAD
 			return (type.getTypeId()==TypeIDs.STRING);
-=======
-			return (type.getTypeId()==TypeIDs.INT);
->>>>>>> ff9da297f048eb511d0d30a62e225c0eb5b50724
 		}
 	}
 

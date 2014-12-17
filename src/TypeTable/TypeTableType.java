@@ -26,10 +26,7 @@ public abstract class TypeTableType {
 	
 	
 	// check if type is a subtypeof of the current class
-<<<<<<< HEAD
 	// iff type extends current class \ null
-=======
->>>>>>> ff9da297f048eb511d0d30a62e225c0eb5b50724
 	public abstract boolean subType(TypeTableType type);
 	
 	// overwrite the toString method of object class

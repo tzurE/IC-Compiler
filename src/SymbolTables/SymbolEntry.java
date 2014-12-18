@@ -4,19 +4,20 @@ import TypeTable.*;
 public abstract class SymbolEntry {
 	
 	private String id;
-	private SymbolEntryKind kind;
+	private SymbolKinds kind;
 	private TypeTableType type;
 	
-	public SymbolEntry(String id, SymbolEntryKind kind) {
+	public SymbolEntry(String id, SymbolKinds kind, TypeTableType type) {
 		this.id = id;
 		this.kind = kind;
+		this.type = type;
 	}
 
 	public String getId() {
 		return id;
 	}
 
-	public SymbolEntryKind getKind() {
+	public SymbolKinds getKind() {
 		return kind;
 	}
 }

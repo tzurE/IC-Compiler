@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import SymbolTables.FieldEntry;
 import SymbolTables.StaticMethodEntry;
-import SymbolTables.SymbolEntryKind;
 
 public class ClassSymbolTable extends SymbolTable {
 	
@@ -45,17 +44,17 @@ public class ClassSymbolTable extends SymbolTable {
 		if(!isIdExist(entry)){
 		
 			String myType = entry.getKind().toString();
-			if (myType.equals(SymbolEntryKind.FIELD.toString())){
+			if (myType.equals(SymbolKinds.FIELD.toString())){
 				fieldEntries.put(id, (FieldEntry) entry);
 				fieldsByOrder.put(fieldCount, id);
 				fieldCount++;
 			}
-			else if (myType.equals(SymbolEntryKind.STATIC_METHOD.toString())){
+			else if (myType.equals(SymbolKinds.STATIC_METHOD.toString())){
 				staticMethodEntries.put(id, (StaticMethodEntry) entry);
 				staticMethodByOrder.put(staticMethodCount, id);
 				staticMethodCount++;
 			}
-			else if (myType.equals(SymbolEntryKind.VIRTUAL_METHOD.toString())){
+			else if (myType.equals(SymbolKinds.VIRTUAL_METHOD.toString())){
 				virtualMethodEntries.put(id, (VirtualMethodEntry) entry);
 				virtualMethodsByOrder.put(virtualMethodCount, id);
 				virtualMethodCount++;
@@ -90,13 +89,13 @@ public class ClassSymbolTable extends SymbolTable {
 	public boolean isIdExist(SymbolEntry entry) {
 		
 		String entryType = entry.getKind().toString();
-		if (entryType.equals(SymbolEntryKind.FIELD.toString())){
+		if (entryType.equals(SymbolKinds.FIELD.toString())){
 			return fieldEntries.containsKey(entry.getId());
 		}
-		else if (entryType.equals(SymbolEntryKind.STATIC_METHOD.toString())){
+		else if (entryType.equals(SymbolKinds.STATIC_METHOD.toString())){
 			return staticMethodEntries.containsKey(entry.getId());
 		}
-		else if (entryType.equals(SymbolEntryKind.VIRTUAL_METHOD.toString())){
+		else if (entryType.equals(SymbolKinds.VIRTUAL_METHOD.toString())){
 			return virtualMethodEntries.containsKey(entry.getId());		
 		}
 		return false;

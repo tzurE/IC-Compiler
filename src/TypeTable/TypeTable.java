@@ -136,4 +136,35 @@ public class TypeTable {
 		}
 	}
 	
+	//let's print the table!!!!!!!!!!!!!!!!1
+	public static void printTypeTable(String fileName){
+		  //as the example
+		  System.out.println("Type Table: " + fileName);
+		  System.out.println(integerType.toString());
+		  System.out.println(booleanType.toString());
+		  System.out.println(nullType.toString());
+		  System.out.println(stringType.toString());
+		  System.out.println(voidType.toString());
+		  
+		  
+		  for(int i = 0; i < classCount; i++ ){
+		   String classKey = classTypesByOrder.get(i);
+		   System.out.println();
+		   System.out.print(uniqueClassByTypes.get(classKey).toString());
+		  }
+		  
+		  for(int i = 0; i < arrayCount; i++ ){
+		   Type arrayKey = arrayTypesByOrder.get(i);
+		   System.out.println();
+		   System.out.print(uniqueArraByTypes.get(arrayKey).toString());
+		  }
+		  
+		  for(int i = 0; i < methodCount; i++ ){
+		   Method methodKey = methodTypesByOrder.get(i);
+		   System.out.println();
+		   System.out.print(uniqueMethodByTypes.get(methodKey).toString());
+		  }
+		 }
+	
+	
 }

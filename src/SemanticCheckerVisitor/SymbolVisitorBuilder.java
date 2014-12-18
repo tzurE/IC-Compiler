@@ -1,7 +1,10 @@
 package SemanticCheckerVisitor;
 
+import com.sun.xml.internal.ws.spi.db.MethodSetter;
+
 import IC.AST.*;
 import SymbolTables.*;
+import TypeTable.*;
 
 public class SymbolVisitorBuilder implements PropVisitor{
 
@@ -18,11 +21,13 @@ public class SymbolVisitorBuilder implements PropVisitor{
 		//no father - it is the main table!
 		SymbolTable symbol_table = new GlobalSymbolTable(prog_name, null);
 		for (ICClass icClass : program.getClasses()){
-			//something like this for the types? 
-			//Types classTypes = TypeTable.classType(icClass);
+			//we start thhe type table!
+			TypeTable.TypeTableInit();
+			//we create the class as a type in the type table
+			TypeTableType classt = TypeTable.classType(icClass);
 			
 			//for each class in the program, we add an entry in the global symbol table
-			symbol_table.addEntry(icClass.getName(), new ClassEntry(icClass.getName()), icClass.getLine());
+			symbol_table.addEntry(icClass.getName(), new ClassEntry(icClass.getName(), classt), icClass.getLine() );
 			if(!icClass.hasSuperClass()){
 				symbol_table.addChild(icClass.getName(), new ClassSymbolTable(icClass.getName(), symbol_table));
 				icClass.accept(this, symbol_table);
@@ -107,8 +112,20 @@ public class SymbolVisitorBuilder implements PropVisitor{
 	}
 
 	@Override
-	public Object visit(VirtualMethod method, SymbolTable table) {
-		// TODO Auto-generated method stub
+	public Object visit(VirtualMethod method, SymbolTable parent_table) {
+		if(method.getName().toLowerCase().equals("main")){
+			try {
+				throw new SemanticError(method.getLine(),
+						"the main class must be a static class, change it");
+			}
+			catch (SemanticError e) {
+				System.out.println(e.getErrorMessage());
+				System.exit(-1);
+			}
+		}
+		parent_table.addEntry(method.getName(), new MethodSymbole(method.getName(),SymbolKinds.VIRTUAL_METHOD,), line);
+		
+		
 		return null;
 	}
 

@@ -3,7 +3,7 @@ package TypeTable;
 public class BooleanType extends TypeTableType {
 
 	public BooleanType(int id) {
-		super("boolean", TypeIDs.BOOLEAN , id);
+		super("boolean", TypeIDs.BOOLEAN);
 	}
 
 	@Override
@@ -12,12 +12,18 @@ public class BooleanType extends TypeTableType {
 			return false;
 		}
 		else{
-			return (type.getTypeId()==TypeIDs.BOOLEAN);
+			return ((type.getId()==TypeIDs.BOOLEAN) || (type.getId()==TypeIDs.NULL));
 		}
 	}
 
 	@Override
 	public String toString() {
 		return (this.getId() + ": Primitive type: " + this.getName());
+	}
+
+	@Override
+	public String toStringForSymbolTable() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

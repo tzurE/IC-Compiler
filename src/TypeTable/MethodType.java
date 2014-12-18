@@ -1,28 +1,20 @@
 package TypeTable;
 
 import java.util.ArrayList;
-import IC.AST.Method;
+import IC.AST.*;
+import IC.*;
+
 
 public class MethodType extends TypeTableType {
-	private Method methodNode;
-	private TypeTableType returnType;
-	private ArrayList<TypeTableType> formalsList;
+	private Method method;
 
-	public MethodType(Method methodNode, int id, TypeTableType returnType, ArrayList<TypeTableType> formalsList) {
-		super(method.getName(), TypeIDs.METHOD, id);
-		this.methodNode = methodNode;
-		this.returnType = returnType;
-		this.formalsList = formalsList;
+	public MethodType(Method method, int id) {
+		super(method.getName(), id);
+		this.method = method;
 	}
 
-
-	public TypeTableType getReturnType(){
-		return returnType;
-	}
-
-
-	public Method getMethodNode() {
-		return this.methodNode;
+	public Method getmethod() {
+		return this.method;
 	}
 
 	@Override
@@ -31,13 +23,35 @@ public class MethodType extends TypeTableType {
 			return false;
 		}
 		//check if it's the same function
-		else if(this.getId() == type.getId()){
+		else if(this.getId() == type.getId() || (type.getId()==TypeIDs.NULL)){
 			return true;
 		}
 		else{
 			return false;
 		}
 	}
+	
+	public TypeTableType getReturnType(){
+		if(this.method.getType().getDimension() > 0){
+			return TypeTable.arrayType(this.method.getType());
+		}
+		else if(this.method.getType().getName().equals(DataTypes.BOOLEAN.getDescription())){
+			return TypeTable.boolType;
+		}
+		else if(this.method.getType().getName().equals(DataTypes.INT.getDescription())){
+			return TypeTable.intType;
+		}
+		else if(this.method.getType().getName().equals(DataTypes.STRING.getDescription())){
+			return TypeTable.stringType;
+		}
+		else if(this.method.getType().getName().equals(DataTypes.VOID.getDescription())){
+			return TypeTable.voidType;
+		}
+		else{
+			return TypeTable.classType(this.method.getType().getName());
+		}
+	}
+	
 
 
 	private String toStringHelper(){

@@ -3,7 +3,7 @@ package TypeTable;
 public class VoidType extends TypeTableType {
 
 	public VoidType(int id) {
-		super("void", TypeIDs.VOID, id);
+		super("void", TypeIDs.VOID);
 	}
 
 	@Override
@@ -11,7 +11,7 @@ public class VoidType extends TypeTableType {
 		if(type==null){
 			return false;
 		}
-		else if (type.getName().equals("void")){
+		else if ((type.getId() == TypeIDs.VOID)|| (type.getId() == TypeIDs.NULL)){
 			return true;
 		}
 		else{
@@ -22,5 +22,11 @@ public class VoidType extends TypeTableType {
 	@Override
 	public String toString() {
 		return (this.getId() + ": Primitive type: " + this.getName());
+	}
+
+	@Override
+	public String toStringForSymbolTable() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

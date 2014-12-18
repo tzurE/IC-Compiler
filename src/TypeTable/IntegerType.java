@@ -3,7 +3,7 @@ package TypeTable;
 public class IntegerType extends TypeTableType {
 
 	public IntegerType(int id) {
-		super("integer", TypeIDs.INT, id);
+		super("integer", TypeIDs.INT);
 	}
 
 	@Override
@@ -12,12 +12,18 @@ public class IntegerType extends TypeTableType {
 			return false;
 		}
 		else{
-			return (type.getTypeId()==TypeIDs.INT);
+			return ((type.getId()==TypeIDs.INT) || (type.getId()==TypeIDs.NULL));
 		}
 	}
 
 	@Override
 	public String toString() {
 		return (this.getId() + ": Primitive type: " + this.getName());
+	}
+
+	@Override
+	public String toStringForSymbolTable() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

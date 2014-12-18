@@ -1,28 +1,23 @@
 package TypeTable;
-import IC.AST.NewArray;
+import IC.AST.*;
+import IC.*;
 
 public class ArrayType extends TypeTableType {
-	private TypeTableType ElemType;
-	private int dimension;
-	private NewArray ASTnode;
+	private Type arrayType;
+	private Type ElemType;
 
-	public ArrayType (TypeTableType elemType, int typeId, int id, NewArray node, int dimension){
-		super(elemType.getName(), typeId , id);
-		this.ElemType = elemType;
-		this.ASTnode= node; 
-		this.dimension = dimension;
+	public ArrayType (Type elemType, int id){
+		super(elemType.getName(), id);
+		this.arrayType = elemType;
+		this.ElemType = getElementType(this.arrayType);
 	}
 
-	public TypeTableType getElemType() {
+	public Type getElemType() {
 		return this.ElemType;
 	}
 	
-	private TypeTableType getElementType(){
-		return this.ElemType;
-	}
-	
-	public int getDimension(){
-		return this.dimension;
+	public Type getArrayType() {
+		return arrayType;
 	}
 	
 	@Override
@@ -30,21 +25,57 @@ public class ArrayType extends TypeTableType {
 		if (type == null){
 			return false;
 		}
-		//an array is only a subtype of itself
-		else if( this.getId() == type.getId() ){ 
-			return true;
+		else if(type.getClass().equals(this.getClass())){
+			if((( this.getId() == type.getId() || (type.getId()==TypeIDs.NULL))&&(arrayType.getDimension()==((ArrayType) type).getArrayType().getDimension()))){
+				return true;
+			}
+			else{
+				return false;
+			}
 		}
 		else{
 			return false;
 		}
 	}
+	
+	
+	private Type getElementType(Type arrayType){
+		String typeName = arrayType.getName();
+		if(arrayType.getClass().equals(PrimitiveType.class)){
+			PrimitiveType elementType;
+			if(typeName.compareTo("int") == 0){
+				elementType = new PrimitiveType(-1, DataTypes.INT);
+			}
+			else if(typeName.compareTo("string") == 0){
+				elementType = new PrimitiveType(-1, DataTypes.STRING);
+			}
+			else{
+				elementType = new PrimitiveType(-1, DataTypes.BOOLEAN);
+			}
+			elementType.setDimention(arrayType.getDimension() - 1);
+			return elementType;
+			
+		}
+		else{
+			UserType elementType = new UserType(-1, typeName);
+			elementType.setDimention(arrayType.getDimension() - 1);
+			return elementType;
+		}
+	}
+	
 
 	@Override
 	public String toString() {
 		String par = "";
-		for(int i = 0; i < this.getDimension(); i++){
+		for(int i = 0; i < arrayType.getDimension(); i++){
 			par = par+"[]";
 		}
 		return "    " + this.getId() + ": Array type: " + this.getName() + par;
+	}
+
+	@Override
+	public String toStringForSymbolTable() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

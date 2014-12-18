@@ -94,14 +94,15 @@ public class TypeTable {
 			return mtdt;
 		}
 	}
-	
+	//this is used when the user wants to build a fresh new class that doesn't exists
+	//
 	public static ClassType classType(ICClass classAST) {
 		if (uniqueClassTypes.containsKey(classAST.getName())){
-			// class type object already created – return it
+			// class already exists! we return it
 			return uniqueClassTypes.get(classAST.getName());
 		}
 		else{
-			// object doesn’t exist – create and return it
+			// class doesn't exist! lets create it
 			id++;
 			ClassType newClass = new ClassType(classAST, id);
 			uniqueClassTypes.put(classAST.getName(),newClass);
@@ -113,6 +114,7 @@ public class TypeTable {
 		}
 	}
 	
+	//this is used to check if the current declared class exists!
 	public static ClassType classType (String className){
 		if (uniqueClassTypes.containsKey(className)){
 			// class type object exists – return it

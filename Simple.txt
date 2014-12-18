@@ -1,5 +1,8 @@
 class A {
 	int i;
+	static void main() {
+    	
+  	}
 }
 
 class B extends A{

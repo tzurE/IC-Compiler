@@ -138,12 +138,72 @@ public class SymbolVisitorBuilder implements PropVisitor{
 		}
 		
 		
-		return null;
+		return symbol_table;
 	}
 
 	@Override
-	public Object visit(StaticMethod method, SymbolTable table) {
-
+	public Object visit(StaticMethod method, SymbolTable parent_table) {
+		MethodType methodType;
+		
+		//first we check if it's the main function!
+		//if not, we insert here
+		if(!method.getName().toString().equals("main"))
+			methodType = TypeTable.methodType(method);
+		else{
+			if(mainExists){
+				try {
+					throw new SemanticError(method.getLine(),
+							"Only one main method is allowed!");
+				}
+				catch (SemanticError e) {
+					System.out.println(e.getErrorMessage());
+					System.exit(-1);
+				}
+			}
+			if(!method.getType().getName().equals("void")){
+				try {
+					throw new SemanticError(method.getLine(),
+							"Error: main function return type haas to be void");
+				}
+				catch (SemanticError e) {
+					System.out.println(e.getErrorMessage());
+					System.exit(-1);
+				}
+			}
+			if (method.getFormals().size() != 1){
+				try {
+					throw new SemanticError(method.getLine(),
+							"Main hold only 1 arguemnt, an array of strings");
+				}
+				catch (SemanticError e) {
+					System.out.println(e.getErrorMessage());
+					System.exit(-1);
+				}
+			}
+			Formal mainParameter = method.getFormals().get(0);
+			if(!mainParameter.getType().getName().equals("string") || mainParameter.getType().getDimension() != 1){
+				try {
+					throw new SemanticError(method.getLine(),
+							"the 'main' method's argument must bee an arrau of string('Strings[]')");
+				}
+				catch (SemanticError e) {
+					System.out.println(e.getErrorMessage());
+					System.exit(-1);
+				}
+			}
+			mainExists = true;
+			methodType = TypeTable.getMainMethodType();
+		}
+		parent_table.addEntry(method.getName(),new MethodEntry(method.getName(), SymbolKinds.STATIC_METHOD, methodType), method.getLine());
+		MethodSymbolTable symbol_table = new MethodSymbolTable(SymbolTableType.METHOD,method.getName(), parent_table);
+		parent_table.addChild(method.getName(), symbol_table);
+		method.getType().accept(this, symbol_table);
+		for (Formal formal : method.getFormals()){
+			formal.accept(this, symbol_table);
+		}
+		for (Statement statement : method.getStatements()){
+			statement.accept(this, symbol_table);
+		}
 		
 		
 		return null;

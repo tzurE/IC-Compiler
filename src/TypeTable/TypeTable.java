@@ -166,5 +166,29 @@ public class TypeTable {
 		  }
 		 }
 	
+	public static TypeTableType convertTypeToTypes(Type t){
+		if(t == null) { return null; }
+		else{
+			if (t.getDimension()>0){
+				return TypeTable.arrayType(t);
+			}
+			else if(t.getName().equals(DataTypes.INT.getDescription())){
+				return TypeTable.integerType;
+			}
+			else if(t.getName().equals(DataTypes.BOOLEAN.getDescription())){
+				return TypeTable.booleanType;
+			}
+			else if(t.getName().equals(DataTypes.STRING.getDescription())){
+				return TypeTable.stringType;
+			}
+			else if(t.getName().equals(DataTypes.VOID.getDescription())){
+				return TypeTable.voidType;
+			}
+			else{
+				return TypeTable.classType(t.getName());
+			}
+		}
+	}
+	
 	
 }

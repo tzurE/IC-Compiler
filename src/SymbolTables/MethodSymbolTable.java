@@ -40,7 +40,7 @@ public class MethodSymbolTable extends SymbolTable{
 
 	@Override
 	public boolean print() {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 

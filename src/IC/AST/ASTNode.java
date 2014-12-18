@@ -20,6 +20,7 @@ public abstract class ASTNode {
 	 * @return A value propagated by the visitor.
 	 */
 	public abstract Object accept(Visitor visitor);
+	public abstract Object accept(PropVisitor visitor,SymbolTable table);
 
 	/**
 	 * Constructs an AST node corresponding to a line number in the original

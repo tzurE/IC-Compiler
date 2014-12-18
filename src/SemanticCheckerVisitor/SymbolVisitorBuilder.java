@@ -133,6 +133,10 @@ public class SymbolVisitorBuilder implements PropVisitor{
 			formal.accept(this, symbol_table);
 		}
 		
+		for (Statement statement : method.getStatements()){
+			statement.accept(this, symbol_table);
+		}
+		
 		
 		return null;
 	}

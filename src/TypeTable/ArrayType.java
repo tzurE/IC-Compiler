@@ -25,42 +25,43 @@ public class ArrayType extends TypeTableType {
 		if (type == null){
 			return false;
 		}
-		else if(type.getClass().equals(this.getClass())){
-			if((( this.getId() == type.getId() || (type.getId()==TypeIDs.NULL))&&(arrayType.getDimension()==((ArrayType) type).getArrayType().getDimension()))){
+		else if (type.getId()==TypeIDs.NULL){
+			return true;
+		}
+		else{ 
+			if((type.getClass().equals(this.getClass())) &&
+				(this.getId() == type.getId()) &&
+				(arrayType.getDimension()==((ArrayType) type).getArrayType().getDimension()))
+			{
 				return true;
 			}
-			else{
-				return false;
-			}
-		}
-		else{
 			return false;
 		}
 	}
 	
-	
+	//return the sub elemnet for the array. for exampe sub of a[][] -> a[]
 	private Type getElementType(Type arrayType){
 		String typeName = arrayType.getName();
+		Type elementType;
 		if(arrayType.getClass().equals(PrimitiveType.class)){
-			PrimitiveType elementType;
+			DataTypes primitiveEnum;
 			if(typeName.compareTo("int") == 0){
-				elementType = new PrimitiveType(-1, DataTypes.INT);
+				primitiveEnum = DataTypes.INT;
 			}
 			else if(typeName.compareTo("string") == 0){
-				elementType = new PrimitiveType(-1, DataTypes.STRING);
+				primitiveEnum = DataTypes.STRING;
 			}
 			else{
-				elementType = new PrimitiveType(-1, DataTypes.BOOLEAN);
+				primitiveEnum = DataTypes.BOOLEAN;
 			}
-			elementType.setDimention(arrayType.getDimension() - 1);
-			return elementType;
+			elementType = new PrimitiveType(-1, primitiveEnum);
 			
 		}
 		else{
-			UserType elementType = new UserType(-1, typeName);
-			elementType.setDimention(arrayType.getDimension() - 1);
-			return elementType;
+			elementType = new UserType(-1, typeName);
 		}
+		elementType.setDimention(arrayType.getDimension() - 1);
+		return elementType;
 	}
 	
 

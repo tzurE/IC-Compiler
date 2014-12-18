@@ -1,5 +1,7 @@
 package IC.AST;
 
+import SymbolTables.SymbolTable;
+
 /**
  * Variable reference AST node.
  * 
@@ -13,6 +15,10 @@ public class VariableLocation extends Location {
 
 	public Object accept(Visitor visitor) {
 		return visitor.visit(this);
+	}
+	public Object accept(PropVisitor visitor,SymbolTable table) {
+		this.setScope(table);
+		return visitor.visit(this,table);
 	}
 
 	/**

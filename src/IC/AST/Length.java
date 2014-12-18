@@ -1,5 +1,7 @@
 package IC.AST;
 
+import SymbolTables.SymbolTable;
+
 /**
  * Array length expression AST node.
  * 
@@ -11,6 +13,10 @@ public class Length extends Expression {
 
 	public Object accept(Visitor visitor) {
 		return visitor.visit(this);
+	}
+	public Object accept(PropVisitor visitor,SymbolTable table) {
+		this.setScope(table);
+		return visitor.visit(this,table);
 	}
 
 	/**

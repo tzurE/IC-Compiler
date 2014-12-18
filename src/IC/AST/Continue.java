@@ -1,5 +1,7 @@
 package IC.AST;
 
+import SymbolTables.SymbolTable;
+
 /**
  * Continue statement AST node.
  * 
@@ -9,6 +11,10 @@ public class Continue extends Statement {
 
 	public Object accept(Visitor visitor) {
 		return visitor.visit(this);
+	}
+	public Object accept(PropVisitor visitor,SymbolTable table) {
+		this.setScope(table);
+		return visitor.visit(this,table);
 	}
 
 	/**

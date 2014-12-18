@@ -2,6 +2,8 @@ package IC.AST;
 
 import java.util.List;
 
+import SymbolTables.SymbolTable;
+
 /**
  * Static method call AST node.
  * 
@@ -13,6 +15,10 @@ public class StaticCall extends Call {
 
 	public Object accept(Visitor visitor) {
 		return visitor.visit(this);
+	}
+	public Object accept(PropVisitor visitor,SymbolTable table) {
+		this.setScope(table);
+		return visitor.visit(this,table);
 	}
 
 	/**

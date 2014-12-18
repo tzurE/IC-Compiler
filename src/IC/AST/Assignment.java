@@ -1,5 +1,7 @@
 package IC.AST;
 
+import SymbolTables.SymbolTable;
+
 /**
  * Assignment statement AST node.
  * 
@@ -13,6 +15,10 @@ public class Assignment extends Statement {
 
 	public Object accept(Visitor visitor) {
 		return visitor.visit(this);
+	}
+	public Object accept(PropVisitor visitor,SymbolTable table) {
+		this.setScope(table);
+		return visitor.visit(this,table);
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package IC.AST;
 
 import SemanticCheckerVisitor.SemanticError;
+import SymbolTables.MethodSymbolTable;
 
 /**
  * Abstract base class for data type AST nodes.

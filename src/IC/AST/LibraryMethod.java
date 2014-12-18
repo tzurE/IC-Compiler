@@ -3,6 +3,8 @@ package IC.AST;
 import java.util.ArrayList;
 import java.util.List;
 
+import SymbolTables.SymbolTable;
+
 /**
  * Library method declaration AST node.
  * 
@@ -12,6 +14,10 @@ public class LibraryMethod extends Method {
 
 	public Object accept(Visitor visitor) {
 		return visitor.visit(this);
+	}
+	public Object accept(PropVisitor visitor,SymbolTable table) {
+		this.setScope(table);
+		return visitor.visit(this,table);
 	}
 
 	/**

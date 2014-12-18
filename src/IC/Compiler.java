@@ -11,6 +11,7 @@ import IC.Parser.Parser;
 import IC.Parser.SyntaxError;
 import SemanticCheckerVisitor.*;
 import SymbolTables.*;
+import TypeTable.*;
 
 public class Compiler {
 	
@@ -85,14 +86,16 @@ public class Compiler {
 			}
 		}
 		
-		if(PrintSymTables){
+		else if(PrintSymTables){
 			
 			System.out.println();
 			glbTable.print();
 
 			// Prints Program Type Table something like this
-			//TypeTable.printTypeTable(args[0]);
+			TypeTable.printTypeTable(args[0]);
 		}
+		
+		
 		}catch (SemanticError e1){
 			e1.getErrorMessage();
 		}

@@ -36,10 +36,10 @@ public class MethodType extends TypeTableType {
 			return TypeTable.arrayType(this.method.getType());
 		}
 		else if(this.method.getType().getName().equals(DataTypes.BOOLEAN.getDescription())){
-			return TypeTable.boolType;
+			return TypeTable.booleanType;
 		}
 		else if(this.method.getType().getName().equals(DataTypes.INT.getDescription())){
-			return TypeTable.intType;
+			return TypeTable.integerType;
 		}
 		else if(this.method.getType().getName().equals(DataTypes.STRING.getDescription())){
 			return TypeTable.stringType;

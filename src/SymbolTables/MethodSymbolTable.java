@@ -129,4 +129,42 @@ public class MethodSymbolTable extends SymbolTable{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public Object getEntry(String name, SymbolKinds symbolKind) {
+		Object Entry = searchTable(name, symbolKind);
+		if (Entry!=null){
+			return Entry;
+		}
+		else{
+			return this.getFather_table().getEntry(name, symbolKind);
+		}
+	}
+
+	@Override
+	public SymbolEntry searchForVar(String id, int line) {
+		
+		if(LocalVariables.containsKey(id)){
+			if(LocalVariablesDeclerationLine.get(id) < line)
+				return LocalVariables.get(id);
+			}
+		else if(this.Parameters.containsKey(id))
+			return Parameters.get(id);
+		return this.getFather_table().searchForVar(id, line);
+	}
+
+	@Override
+	public Object searchTable(String name, SymbolKinds symbolKind) {
+		if(symbolKind.getKind().compareTo(SymbolKinds.LOCAL_VARIABLE.getKind())==0){
+			if(LocalVariables.containsKey(name)){
+				return LocalVariables.get(name);
+			}
+		}
+		else if(symbolKind.getKind().compareTo(SymbolKinds.PARAMETER.getKind())==0){
+			if(Parameters.containsKey(name)){
+				return Parameters.get(name);
+			}
+		}
+		return null;
+	}
 }

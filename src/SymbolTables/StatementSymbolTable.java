@@ -1,7 +1,6 @@
 package SymbolTables;
 
 import java.util.HashMap;
-import java.util.List;
 
 import SemanticCheckerVisitor.SemanticError;
 
@@ -104,6 +103,36 @@ public class StatementSymbolTable extends SymbolTable{
 	public SymbolEntry findTypeOfVariable(String entry_name,
 			SymbolTableType symbol_table) {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object getEntry(String name, SymbolKinds symbolKind) {
+		Object Entry = searchTable(name, symbolKind);
+		if (Entry!=null){
+			return Entry;
+		}
+		else{
+			return this.getFather_table().getEntry(name, symbolKind);
+		}
+	}
+
+	@Override
+	public SymbolEntry searchForVar(String id, int line) {
+		if(LocalVariables.containsKey(id)){
+			if(LocalVariableDeclerationLine.get(id) < line)
+				return LocalVariables.get(id);
+			}
+		return this.getFather_table().searchForVar(id,line);
+	}
+
+	@Override
+	public Object searchTable(String name, SymbolKinds symbolKind) {
+		if(symbolKind.getKind().compareTo(SymbolKinds.LOCAL_VARIABLE.getKind())==0){
+			if(LocalVariables.containsKey(name)){
+				return LocalVariables.get(name);
+			}
+		}
 		return null;
 	}
 }

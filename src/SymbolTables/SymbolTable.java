@@ -42,7 +42,9 @@ public abstract class SymbolTable {
 	public abstract void addChild(String child_name,SymbolTable child_table);
 	public abstract SymbolEntry findTypeOfVariable(String entry_name, SymbolTableType symbol_table);
 	public abstract boolean isIdExist(SymbolEntry entry);
-	
+	public abstract Object getEntry(String name, SymbolKinds symbolKind);
+	public abstract SymbolEntry searchForVar(String id,int line);
+	public abstract Object searchTable(String name, SymbolKinds symbolKind);
 	public abstract boolean print();
 	
 }

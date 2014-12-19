@@ -211,5 +211,46 @@ public class ClassSymbolTable extends SymbolTable {
 			SymbolTableType symbol_table) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Object getEntry(String name, SymbolKinds symbolKind) {
+		Object Entry = searchTable(name, symbolKind);
+		if (Entry!=null){
+			return Entry;
+		}
+		else{
+			return this.getFather_table().getEntry(name, symbolKind);
+		}
+	}
+
+	@Override
+	public SymbolEntry searchForVar(String id, int line) {
+		if(this.fieldEntries.containsKey(id))
+			return fieldEntries.get(id);
+		return this.getFather_table().searchForVar(id , line);
+	}
+
+	@Override
+	public Object searchTable(String name, SymbolKinds symbolKind) {
+		
+		if(symbolKind.getKind().equals(SymbolKinds.VIRTUAL_METHOD.getKind())){
+			if(virtualMethodEntries.containsKey(name)){
+				return virtualMethodEntries.get(name);
+			}
+		}
+		
+		else if(symbolKind.getKind().equals(SymbolKinds.STATIC_METHOD.getKind())){
+			if(staticMethodEntries.containsKey(name)){
+				return staticMethodEntries.get(name);
+			}
+		}
+		
+		else if(symbolKind.getKind().equals(SymbolKinds.FIELD.getKind())){
+			if(fieldEntries.containsKey(name)){
+				return fieldEntries.get(name);
+			}
+		}
+		return null;
 	}	
 }

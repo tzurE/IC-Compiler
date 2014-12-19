@@ -119,4 +119,25 @@ public class GlobalSymbolTable extends SymbolTable {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+
+	@Override
+	public Object getEntry(String name, SymbolKinds symbolKind) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public SymbolEntry searchForVar(String id, int line) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Object searchTable(String name, SymbolKinds symbolKind) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

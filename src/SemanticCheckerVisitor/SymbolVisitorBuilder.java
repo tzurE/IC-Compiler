@@ -348,7 +348,6 @@ public class SymbolVisitorBuilder implements PropVisitor{
 	public Object visit(VariableLocation location, SymbolTable table) {
 		if(location.isExternal())
 			location.getLocation().accept(this, table);
-		location.accept(this, table);
 		return null;
 	}
 

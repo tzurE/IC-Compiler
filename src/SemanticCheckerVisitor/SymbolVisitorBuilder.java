@@ -275,7 +275,6 @@ public class SymbolVisitorBuilder implements PropVisitor{
 
 	@Override
 	public Object visit(CallStatement callStatement, SymbolTable table) {
-		callStatement.accept(this,table);
 		callStatement.getCall().accept(this,table);
 		return null;
 	}

@@ -1,4 +1,21 @@
 class A {
+	int i;
+	string str;
+	
+  static int sfunc(boolean b) {
+    if (b) {
+      {
+        int k = 5;
+      }
+      return 1;
+    }
+    else {
+      A x = new A();
+      x.i = 9;
+      x.str = "hello";
+      return 0;
+    }
+  }
 
 	static void main (string[] args) {
     		int i;
@@ -9,7 +26,7 @@ class A {
 }
 
 class B extends A{
-	int i;
+	
 }
 
 class C extends A{

@@ -11,8 +11,6 @@ import SymbolTables.SymbolTable;
  */
 public abstract class Method extends ASTNode {
 
-	private int id = 1;
-	
 	protected Type type;
 
 	protected String name;
@@ -57,59 +55,4 @@ public abstract class Method extends ASTNode {
 	public List<Statement> getStatements() {
 		return statements;
 	}
-	
-	//we override the obj equals in order to compare between to methods, so we can add new typs
-
-	public boolean equals(Object obj) {
-		if (obj == null){
-			return false;	
-		}
-		
-		if (this == obj){
-			return true;	
-		}
-		
-		if (getClass() != obj.getClass()){
-			return false;	
-		}
-		
-		Method other = (Method) obj;
-		
-		if (formals == null) {
-			if (other.formals != null){
-				return false;	
-			}
-		} else{
-			if (formals.size() == other.getFormals().size()){
-				int k = 0;
-				for (Formal formal : formals) {
-					Formal otherFormal = other.getFormals().get(k);
-					if (!(formal.getType().equals(otherFormal.getType()))){
-						return false;
-					}
-					k++;
-				}
-			}
-			else{
-				return false;
-			}
-		}
-		
-		if (type == null) {
-			if (other.type != null){
-				return false;
-			}
-		} else if (!(type.toString().equals(other.type.toString()))){
-			return false;
-		}
-		return true;
-	}
-	
-	@Override
-	public int hashCode() {
-		// TODO Auto-generated method stub
-		return 2;
-	}
-	
-	
 }

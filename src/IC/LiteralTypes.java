@@ -76,5 +76,25 @@ public enum LiteralTypes {
 	 */
 	public String getDescription() {
 		return description;
-	}	
+	}
+	
+	public static String literalTypeByName(String name){
+	
+		if (INTEGER.description.equals(name)){
+			return DataTypes.INT.getDescription();
+		}
+		if (STRING.description.equals(name)){
+			return DataTypes.STRING.getDescription();
+		}
+		if (TRUE.description.equals(name)){
+			return DataTypes.BOOLEAN.getDescription();
+		}
+		if (FALSE.description.equals(name)){
+			return DataTypes.BOOLEAN.getDescription();
+		}
+		if (NULL.description.equals(name)){
+			return DataTypes.VOID.getDescription();
+		}
+		return null;
+	}
 }

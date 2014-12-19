@@ -20,7 +20,7 @@ public class GlobalSymbolTable extends SymbolTable {
 	
 	public GlobalSymbolTable(String id,
 			SymbolTable father_table) {
-		super(SymbolTableType.GLOBAL, id, father_table);
+		super(SymbolTableType.GLOBAL, "Global", father_table);
 	}
 	
 	
@@ -123,13 +123,8 @@ public class GlobalSymbolTable extends SymbolTable {
 
 	@Override
 	public Object getEntry(String name, SymbolKinds symbolKind) {
-		Object entry = searchTable(name, symbolKind);
-		if (entry!= null){
-			return entry;
-		}
-		else{
-			return this.getFather_table().getEntry(name, symbolKind);
-		}
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 
@@ -142,11 +137,7 @@ public class GlobalSymbolTable extends SymbolTable {
 
 	@Override
 	public Object searchTable(String name, SymbolKinds symbolKind) {
-		if(symbolKind.getKind().compareTo(SymbolKinds.CLASS.getKind())==0){
-			if(entries.containsKey(name)){
-				return entries.get(name);
-			}
-		}
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

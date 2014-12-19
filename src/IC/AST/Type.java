@@ -50,36 +50,4 @@ public abstract class Type extends ASTNode {
 	public void incrementDimension() {
 		++dimension;
 	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null){
-			return false;					
-		}
-		if (this == obj){
-			return true;
-		}
-		if (getClass() != obj.getClass()){
-			return false;
-		}
-		Type other = (Type) obj;
-		if (dimension != other.dimension){
-			return false;
-		}
-		if (getName() == null) {
-			if (other.getName() != null){
-				return false;
-			}
-		} else if (!(getName().equals(other.getName()))){
-			return false;
-		}
-		return true;
-	}
-	
-	@Override
-	public int hashCode() {
-		// TODO Auto-generated method stub
-		return 2;
-	}
-	
 }

@@ -18,55 +18,17 @@ public class SymbolVisitorBuilder implements PropVisitor{
 	@Override
 	public Object visit(Program program, SymbolTable table) {
 		
-		//no father - it is the main table!
+		TypeTable.TypeTableInit();
+		//no father - it is the main table! therefore we send "null"
 		SymbolTable symbol_table = new GlobalSymbolTable(prog_name, null);
 		for (ICClass icClass : program.getClasses()){
-			//we start thhe type table!
-			TypeTable.TypeTableInit();
+			
 			//we create the class as a type in the type table
 			TypeTableType classt = TypeTable.classType(icClass);
-			
 			//for each class in the program, we add an entry in the global symbol table
-			symbol_table.addEntry(icClass.getName(), new ClassEntry(icClass.getName(), classt), icClass.getLine() );
-			if(!icClass.hasSuperClass()){
-				symbol_table.addChild(icClass.getName(), new ClassSymbolTable(icClass.getName(), symbol_table));
-				icClass.accept(this, symbol_table);
-			}
-			else{
-				if(icClass.getName().equals(icClass.getSuperClassName())){
-					try {
-						throw new SemanticError(icClass.getLine(),"the class '" + icClass.getName() + "' extends itself!");
-					}
-					catch (SemanticError e) {
-						System.out.println(e.getErrorMessage());
-						System.exit(-1);
-					}
-
-				}
-				
-				GlobalSymbolTable symbol_table1 = (GlobalSymbolTable) symbol_table;		
-				ClassSymbolTable superClass = symbol_table1.findInnerChild(icClass.getSuperClassName());
-				//symbol_table1.getChildTableList().get(icClass.getSuperClassName()).addChild(icClass.getName(), new ClassSymbolTable(icClass.getName(), symbol_table1.getChildTableList().get(icClass.getSuperClassName())));
-				//System.out.println(superClass.getId());
-				if(superClass == null){
-					//if a class is being extended before being declared
-					try {
-						throw new SemanticError(icClass.getLine(),
-								"the class '"
-										+ icClass.getSuperClassName()
-										+ "' Is not declared yet! first declare, then extend it");
-					}
-					catch (SemanticError e) {
-						System.out.println(e.getErrorMessage());
-						System.exit(-1);
-					}
-					
-				}
-				superClass.addChild(icClass.getName(), new ClassSymbolTable(icClass.getName(), superClass));
-				icClass.accept(this, superClass);
-			}
+			symbol_table.addEntry(icClass.getName(), new ClassEntry(icClass.getName(), classt), icClass.getLine());
 			
-			
+			icClass.accept(this, symbol_table);
 		}
 		
 		return symbol_table;
@@ -74,23 +36,55 @@ public class SymbolVisitorBuilder implements PropVisitor{
 
 	@Override
 	public Object visit(ICClass icClass, SymbolTable parent_table) {
-		StaticMethod method1;
-		VirtualMethod method2;
-		
 		ClassSymbolTable symbol_table = new ClassSymbolTable(icClass.getName(), parent_table);
+		if(!icClass.hasSuperClass()){
+			symbol_table.setFather_table(parent_table);
+			symbol_table.getFather_table().addChild(icClass.getName(), symbol_table);
+			//symbol_table.addChild(icClass.getName(), new ClassSymbolTable(icClass.getName(), symbol_table));
+		}
+		else{
+			if(icClass.getName().equals(icClass.getSuperClassName())){
+				try {
+					throw new SemanticError(icClass.getLine(),"Error: the class '" + icClass.getName() + "' extends itself!");
+				}
+				catch (SemanticError e) {
+					System.out.println(e.getErrorMessage());
+					System.exit(-1);
+				}
+
+			}
+			//we search for the father
+			ClassSymbolTable superClass = ((GlobalSymbolTable)parent_table).findInnerChild(icClass.getSuperClassName());
+			
+			if(superClass == null){
+				//if a class is being extended before being declared
+				try {
+					throw new SemanticError(icClass.getLine(),
+							"the class '"
+									+ icClass.getSuperClassName()
+									+ "' Is not declared yet! first declare, then extend it");
+				}
+				catch (SemanticError e) {
+					System.out.println(e.getErrorMessage());
+					System.exit(-1);
+				}
+				
+			}
+			superClass.addChild(icClass.getName(), new ClassSymbolTable(icClass.getName(), superClass));
+			symbol_table.setFather_table(superClass);
+		}
+		
+		
+		//symbol_table.getFather_table().addChild(icClass.getName(), symbol_table);
+		
+		
 		
 		for (Field field : icClass.getFields()){
 			field.accept(this, symbol_table);
 		}
 		for (Method method : icClass.getMethods()){
-			if(method.getClass().toString().toLowerCase().equals("staticmethod") || method.getClass().toString().toLowerCase().equals("librarymethod")){
-				method1 = (StaticMethod)method;
-				method1.accept(this, symbol_table);
-			}
-			else if(method.getClass().toString().toLowerCase().equals("virtualmethod")){
-				method2 = (VirtualMethod)method;
-				method2.accept(this, symbol_table);
-			}
+			
+			method.accept(this, symbol_table);
 		}
 		
 		return null;
@@ -194,9 +188,11 @@ public class SymbolVisitorBuilder implements PropVisitor{
 			mainExists = true;
 			methodType = TypeTable.getMainMethodType();
 		}
+		
 		parent_table.addEntry(method.getName(),new MethodEntry(method.getName(), SymbolKinds.STATIC_METHOD, methodType), method.getLine());
 		MethodSymbolTable symbol_table = new MethodSymbolTable(SymbolTableType.METHOD,method.getName(), parent_table);
 		parent_table.addChild(method.getName(), symbol_table);
+		
 		method.getType().accept(this, symbol_table);
 		for (Formal formal : method.getFormals()){
 			formal.accept(this, symbol_table);
@@ -211,7 +207,8 @@ public class SymbolVisitorBuilder implements PropVisitor{
 
 	@Override
 	public Object visit(LibraryMethod method, SymbolTable table) {
-		// TODO Auto-generated method stub
+		StaticMethod method1 = new StaticMethod(method.getType(), method.getName(), method.getFormals(), method.getStatements());
+			this.visit(method1, table);
 		return null;
 	}
 

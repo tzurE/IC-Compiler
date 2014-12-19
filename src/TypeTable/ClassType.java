@@ -48,7 +48,19 @@ public class ClassType extends TypeTableType {
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return null;
+		//if the class inherits - we want to get the father id
+		if (classNode.getSuperClassName() != null){
+			ClassType father = TypeTable.classType(classNode.getSuperClassName());
+			if (father==null){
+
+				return "Error with type table generation, or with throwing error at extands in symbol table generation";
+			}
+			else{
+				return this.getId() + ": Class: " + this.getName() + ", Superclass ID: " + father.getId();
+			}
+		}
+		else{
+			return this.getId() + ": Class: " + this.getName();
+		}
 	}
 }

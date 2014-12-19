@@ -102,7 +102,7 @@ public class MethodType extends TypeTableType {
 
 	@Override
 	public String toString() {
-		return "    " + this.getId() + ": Method type: {" + this.toStringHelper() + " -> " + returnTypeToString() + "}";
+		return this.getId() + ": Method type: {" + this.toStringHelper() + " -> " + returnTypeToString() + "}";
 	}
 
 

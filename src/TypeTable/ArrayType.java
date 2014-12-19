@@ -71,7 +71,7 @@ public class ArrayType extends TypeTableType {
 		for(int i = 0; i < arrayType.getDimension(); i++){
 			par = par+"[]";
 		}
-		return "    " + this.getId() + ": Array type: " + this.getName() + par;
+		return this.getId() + ": Array type: " + this.getName() + par;
 	}
 
 	@Override

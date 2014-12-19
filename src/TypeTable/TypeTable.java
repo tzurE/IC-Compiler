@@ -112,12 +112,13 @@ public class TypeTable {
 			return uniqueClassByTypes.get(classAST.getName());
 		}
 		else{
+			
 			// class doesn't exist! lets create it
 			id++;
 			ClassType newClass = new ClassType(classAST, id);
 			uniqueClassByTypes.put(classAST.getName(),newClass);
 			
-			classTypesByOrder.put(classCount, classAST.getName());
+			classTypesByOrder.put(classCount, classAST.getName().toString());
 			classCount++;
 			
 			return newClass;
@@ -135,6 +136,23 @@ public class TypeTable {
 			return null;
 		}
 	}
+	public static String getTypeByName(String name){
+			
+		if (uniqueClassByTypes.containsKey(name)){
+			String str = uniqueClassByTypes.get(name).toString();
+			StringBuilder strb = new StringBuilder(); 
+			strb.append(str.substring(str.indexOf("s:") +2));
+			
+			return strb.toString();
+		}
+		else{
+			// class type object doesn't exist - return null
+			return null;
+		} 
+
+	}
+	
+	
 	
 	//let's print the table!!!!!!!!!!!!!!!!1
 	public static void printTypeTable(String fileName){
@@ -149,20 +167,17 @@ public class TypeTable {
 		  
 		  for(int i = 0; i < classCount; i++ ){
 		   String classKey = classTypesByOrder.get(i);
-		   System.out.println();
-		   System.out.print(uniqueClassByTypes.get(classKey).toString());
+		   System.out.println(uniqueClassByTypes.get(classKey).toString());
 		  }
 		  
 		  for(int i = 0; i < arrayCount; i++ ){
 		   Type arrayKey = arrayTypesByOrder.get(i);
-		   System.out.println();
-		   System.out.print(uniqueArraByTypes.get(arrayKey).toString());
+		   System.out.println(uniqueArraByTypes.get(arrayKey).toString());
 		  }
 		  
 		  for(int i = 0; i < methodCount; i++ ){
 		   Method methodKey = methodTypesByOrder.get(i);
-		   System.out.println();
-		   System.out.print(uniqueMethodByTypes.get(methodKey).toString());
+		   System.out.println(uniqueMethodByTypes.get(methodKey).toString());
 		  }
 		 }
 	

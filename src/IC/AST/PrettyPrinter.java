@@ -1,6 +1,7 @@
 package IC.AST;
 import SymbolTables.*;
-//*******8**8***/////////////////////edited!!!!!!!!!!!!!!!!!!!!/////////////////////////////////********************
+import TypeTable.*;
+//this is not the original pretty printer - it is an edited version for the sym tables//
 /**
  * Pretty printing visitor - travels along the AST and prints info about each
  * node, in an easy-to-comprehend format.
@@ -54,10 +55,11 @@ public class PrettyPrinter implements Visitor {
 		
 		output.append("Declaration of class: " + icClass.getName() );
 		if (icClass.hasSuperClass()){
-			output.append(", subclass of " + icClass.getSuperClassName() + "    Symbol table: "+ classScope.getId());
+			output.append(", subclass of " + icClass.getSuperClassName() + ", Type:" + TypeTable.getTypeByName(icClass.getName()) + 
+					", Symbol table: "+ classScope.getId());
 		}
 		else
-			output.append( "    Symbol table: "+ nameScope);
+			output.append(", Type:" + TypeTable.getTypeByName(icClass.getName()) +    ", Symbol table: "+ nameScope);
 		depth += 2;
 		for (Field field : icClass.getFields())
 			output.append(field.accept(this));

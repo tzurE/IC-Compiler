@@ -20,4 +20,12 @@ public abstract class SymbolEntry {
 	public SymbolKinds getKind() {
 		return kind;
 	}
+
+	public TypeTableType getType() {
+		return type;
+	}
+
+	public void setType(TypeTableType type) {
+		this.type = type;
+	}
 }

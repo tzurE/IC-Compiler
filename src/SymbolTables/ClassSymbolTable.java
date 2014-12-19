@@ -42,20 +42,21 @@ public class ClassSymbolTable extends SymbolTable {
 	public void addEntry(String id, SymbolEntry entry, int line) {
 		
 		if(!isIdExist(entry)){
-		
+			
 			String myType = entry.getKind().toString();
 			if (myType.equals(SymbolKinds.FIELD.toString())){
-				fieldEntries.put(id, (FieldEntry) entry);
+				fieldEntries.put(id, entry);
 				fieldsByOrder.put(fieldCount, id);
 				fieldCount++;
 			}
 			else if (myType.equals(SymbolKinds.STATIC_METHOD.toString())){
-				staticMethodEntries.put(id, (StaticMethodEntry) entry);
+				staticMethodEntries.put(id, entry);
 				staticMethodByOrder.put(staticMethodCount, id);
 				staticMethodCount++;
+				
 			}
 			else if (myType.equals(SymbolKinds.VIRTUAL_METHOD.toString())){
-				virtualMethodEntries.put(id, (VirtualMethodEntry) entry);
+				virtualMethodEntries.put(id, entry);
 				virtualMethodsByOrder.put(virtualMethodCount, id);
 				virtualMethodCount++;
 			}	
@@ -77,6 +78,7 @@ public class ClassSymbolTable extends SymbolTable {
 			methodChildTableList.put(child_name, (MethodSymbolTable) child_table);
 			methodChildByOrder.put(methodChildCount, child_name);
 			methodChildCount++;
+			
 		}
 		if (childType.equals(SymbolTableType.CLASS.toString())){
 			classChildTableList.put(child_name, (ClassSymbolTable) child_table);
@@ -129,15 +131,18 @@ public class ClassSymbolTable extends SymbolTable {
 			String name = fieldsByOrder.get(i);
 			System.out.println("\tField: " + name);  
 		}
-		
+
 		for (i = 0; i < staticMethodCount; i++){
 			String name = staticMethodByOrder.get(i);
-			System.out.println("\tStatic method: " + name);  
+			String methodType = staticMethodEntries.get(name).getType().toStringForSymbolTable();
+			System.out.println("\tStatic method: " + name+ " " + methodType);  
+			
 		}
 		
 		for (i = 0; i < virtualMethodCount; i++){
 			String name = virtualMethodsByOrder.get(i);
-			System.out.println("\tVirtual method: " + name);  
+			String methodType = virtualMethodEntries.get(name).getType().toStringForSymbolTable();
+			System.out.println("\tVirtual method: " + name + " " + methodType);  
 		}
 		
 		if((methodChildTableList.size() != 0) || (classChildTableList.size() != 0)){
@@ -150,6 +155,7 @@ public class ClassSymbolTable extends SymbolTable {
 				else
 					System.out.print(", " + name);
 			} 
+			System.out.print(", ");
 			
 			for (i = 0; i < classChildCount; i++){
 				String name = classChildByOrder.get(i);

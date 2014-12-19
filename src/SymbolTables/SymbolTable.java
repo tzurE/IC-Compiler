@@ -34,6 +34,10 @@ public abstract class SymbolTable {
 	
 	//all the method every offspring must implement
 	
+	public void setFather_table(SymbolTable father_table) {
+		this.father_table = father_table;
+	}
+
 	public abstract void addEntry(String id, SymbolEntry classSym, int line);
 	public abstract void addChild(String child_name,SymbolTable child_table);
 	public abstract boolean isIdExist(SymbolEntry entry);

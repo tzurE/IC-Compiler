@@ -40,10 +40,10 @@ public class ClassSymbolTable extends SymbolTable {
 
 	@Override
 	public void addEntry(String id, SymbolEntry entry, int line) {
-		
+		String myType = entry.getKind().toString();
 		if(!isIdExist(entry)){
 			
-			String myType = entry.getKind().toString();
+			
 			if (myType.equals(SymbolKinds.FIELD.toString())){
 				fieldEntries.put(id, entry);
 				fieldsByOrder.put(fieldCount, id);
@@ -63,9 +63,18 @@ public class ClassSymbolTable extends SymbolTable {
 		}
 		
 		else{
-			//add error!!
-			System.out.println("Error! duplicate Class Name!");
-			System.exit(1);
+			if (myType.equals(SymbolKinds.FIELD.toString())){
+				System.out.println("Error! duplicate Field Name: " + id);
+			}
+			else if (myType.equals(SymbolKinds.STATIC_METHOD.toString())){
+				System.out.println("Error! duplicate Static method Name: " + id );
+				
+			}
+			else if (myType.equals(SymbolKinds.VIRTUAL_METHOD.toString())){
+				System.out.println("Error! duplicate virtual method Name:" + id);
+			}
+			
+			System.exit(-1);
 			
 		}
 	}

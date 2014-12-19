@@ -1,10 +1,10 @@
 package SemanticCheckerVisitor;
 
-import com.sun.xml.internal.ws.spi.db.MethodSetter;
 
 import IC.AST.*;
 import SymbolTables.*;
 import TypeTable.*;
+import IC.*;
 
 public class SymbolVisitorBuilder implements PropVisitor{
 
@@ -30,6 +30,15 @@ public class SymbolVisitorBuilder implements PropVisitor{
 			
 			icClass.accept(this, symbol_table);
 		}
+		//if we went over all of the classes and we did not find any main class, we throw an exception
+		if(!mainExists){
+			try{
+				throw new SemanticError("Error: an IC program must have a main method");
+			}catch (SemanticError e){
+				System.out.println(e.getErrorMessage());
+				System.exit(-1);
+			}
+		}
 		
 		return symbol_table;
 	}
@@ -37,6 +46,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 	@Override
 	public Object visit(ICClass icClass, SymbolTable parent_table) {
 		ClassSymbolTable symbol_table = new ClassSymbolTable(icClass.getName(), parent_table);
+		//if our 
 		if(!icClass.hasSuperClass()){
 			symbol_table.setFather_table(parent_table);
 			symbol_table.getFather_table().addChild(icClass.getName(), symbol_table);
@@ -80,6 +90,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 		
 		
 		for (Field field : icClass.getFields()){
+			
 			field.accept(this, symbol_table);
 		}
 		for (Method method : icClass.getMethods()){
@@ -92,16 +103,18 @@ public class SymbolVisitorBuilder implements PropVisitor{
 
 	@Override
 	public Object visit(Field field, SymbolTable parent_table) {
-//		if(field.getType().getClass() == PrimitiveType.class){
-//			parent_table.addEntry(field.getName(), new FieldEntry(field.getName(),this.getTypesForPrimitiveType((PrimitiveType) field.getType())), field.getLine());
-//		}
-//		else{
-//			if(field.getType().getDimension()==0)
-//				parent_table.addEntry(field.getName(), new FieldEntry(field.getName(),new ClassType(field.getType().getName())), field.getLine());
-//			else
-//				parent_table.addEntry(field.getName(), new FieldEntry(field.getName(), arrayTypeHelper(field.getType())), field.getLine());
-//		}
-//		field.getType().accept(this, parent_table);
+		//is it a primitive type? if so, we send it to a function that returns the correct type for us
+		System.out.println(PrimitiveType.class.getClass() + "!!!!!!!!!");
+		if(field.getType().getClass() == PrimitiveType.class){
+			parent_table.addEntry(field.getName(), new FieldEntry(field.getName(),SymbolKinds.FIELD ,this.TypesForPrimitive((PrimitiveType) field.getType())), field.getLine());
+		}
+		else{
+			if(field.getType().getDimension()==0)
+				parent_table.addEntry(field.getName(), new FieldEntry(field.getName(), SymbolKinds.FIELD ,new ClassType(field.getType().getName())), field.getLine());
+			else
+				parent_table.addEntry(field.getName(), new FieldEntry(field.getName(), SymbolKinds.FIELD,getArrayType(field.getType())), field.getLine());
+		}
+		field.getType().accept(this, parent_table);
 		return null;
 	}
 
@@ -374,6 +387,76 @@ public class SymbolVisitorBuilder implements PropVisitor{
 		return null;
 	}
 
+	private TypeTableType TypesForPrimitive(PrimitiveType type){
+		if(type.getDimension()>0){
+			return getArrayType(type);
+		}
+		else{
+			if(type.getName()=="boolean")
+				return TypeTable.booleanType;
+			
+			else if(type.getName()=="int")
+				return TypeTable.integerType;
+			
+			else if(type.getName()=="string")
+				return TypeTable.stringType;
+			
+			else 
+				return TypeTable.voidType;
+		}
+	}
+	
+	
+	private TypeTableType getArrayType(Type array){
+		
+		//here we check what kind of array type are we dealing with
+		String type_name = array.getName();
+		if(array.getClass().equals(PrimitiveType.class)){
+			if(type_name == "int"){
+				for(int i = 1; i < array.getDimension() ; i++){
+					PrimitiveType type = new PrimitiveType(-1, DataTypes.INT);
+					type.setDimention(i);
+					TypeTable.arrayType(type);
+				}
+			}
+			
+			else if(type_name == "string"){
+				for(int i = 1 ; i < array.getDimension() ; i++){
+					PrimitiveType type = new PrimitiveType(-1, DataTypes.STRING);
+					type.setDimention(i);
+					TypeTable.arrayType(type);
+				}
+			}
+			
+			else if(type_name == "boolean"){
+				for(int i = 1 ; i < array.getDimension(); i++){
+					PrimitiveType type = new PrimitiveType(-1, DataTypes.BOOLEAN);
+					type.setDimention(i);
+					TypeTable.arrayType(type);
+				}
+			}
+			else{
+				try {
+					throw new SemanticError(array.getLine(),
+							"Error: array cant be of this type! - "+TypeTable.convertTypeToTypeTableType(array).toString()
+									);
+				}
+				catch (SemanticError e) {
+					System.out.println(e.getErrorMessage());
+					System.exit(-1);
+				}
+			}
+		}
+		else if(array.getClass().equals(UserType.class)){
+			for(int i=1;i<array.getDimension();i++){
+				UserType type = new UserType(-1, type_name);
+				type.setDimention(i);
+				TypeTable.arrayType(type);
+			}
+
+		}
+		return TypeTable.arrayType(array);
+	}
 	
 
 }

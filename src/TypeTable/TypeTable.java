@@ -181,7 +181,7 @@ public class TypeTable {
 		  }
 		 }
 	
-	public static TypeTableType convertTypeToTypes(Type type){
+	public static TypeTableType convertTypeToTypeTableType(Type type){
 		if(type == null) { return null; }
 		else{
 			if (type.getDimension()>0){

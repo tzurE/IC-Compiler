@@ -1,6 +1,5 @@
 class A {
 	int i;
-	int i;
 	static void main (string[] args) {
     		int i;
 		int i;

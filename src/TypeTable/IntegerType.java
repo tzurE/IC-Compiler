@@ -3,7 +3,7 @@ package TypeTable;
 public class IntegerType extends TypeTableType {
 
 	public IntegerType(int id) {
-		super("integer", TypeIDs.INT);
+		super("int", TypeIDs.INT);
 	}
 
 	@Override

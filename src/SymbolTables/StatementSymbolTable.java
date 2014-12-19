@@ -70,7 +70,7 @@ public class StatementSymbolTable extends SymbolTable{
 
 		for (int i = 0; i < localVarCount; i++){
 			String name = localVariablesByOrder.get(i);
-			String type = LocalVariables.get(name).getType().toStringForSymbolTable();
+			String type = LocalVariables.get(name).getType().toStringSymTable();
 			System.out.println();
 			System.out.print("\tLocal variable: " + type + " " + name);   
 		}

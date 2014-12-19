@@ -104,8 +104,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 	@Override
 	public Object visit(Field field, SymbolTable parent_table) {
 		//is it a primitive type? if so, we send it to a function that returns the correct type for us
-		System.out.println(PrimitiveType.class.getClass() + "!!!!!!!!!");
-		if(field.getType().getClass() == PrimitiveType.class){
+		if(field.getType().getClass().equals(PrimitiveType.class)){
 			parent_table.addEntry(field.getName(), new FieldEntry(field.getName(),SymbolKinds.FIELD ,this.TypesForPrimitive((PrimitiveType) field.getType())), field.getLine());
 		}
 		else{

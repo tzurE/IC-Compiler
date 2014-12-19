@@ -22,8 +22,7 @@ public class IntegerType extends TypeTableType {
 	}
 
 	@Override
-	public String toStringForSymbolTable() {
-		// TODO Auto-generated method stub
-		return null;
+	public String toStringSymTable() {
+		return this.getName();
 	}
 }

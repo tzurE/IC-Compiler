@@ -87,16 +87,16 @@ public class MethodSymbolTable extends SymbolTable{
 		
 		for (int i = 0; i < parameterCount; i++){
 			String name = parametersByOrder.get(i);
-			String type = Parameters.get(name).getType().toStringForSymbolTable();
+			String type = Parameters.get(name).getType().toStringSymTable();
 			System.out.println();
-			System.out.print("    Parameter: " + type +" " +name);  
+			System.out.print("    Parameter: " + type + " " +name);  
 		}
 
 		for (int i = 0; i < localVarCount; i++){
 			String name = localVariablesByOrder.get(i);
-			String type = LocalVariables.get(name).getType().toStringForSymbolTable();
+			String type = LocalVariables.get(name).getType().toStringSymTable();
 			System.out.println();
-			System.out.print("\tLocal variable: " + type +" " +name);   
+			System.out.print("\tLocal variable: " + type + " " + name);   
 		}
 
 		if(statementChildTableList.size()!=0){

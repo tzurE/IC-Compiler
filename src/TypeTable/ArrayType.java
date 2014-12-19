@@ -67,16 +67,21 @@ public class ArrayType extends TypeTableType {
 
 	@Override
 	public String toString() {
-		String par = "";
+		
+		String dim = "";
 		for(int i = 0; i < arrayType.getDimension(); i++){
-			par = par+"[]";
+			dim = dim + "[]";
 		}
-		return this.getId() + ": Array type: " + this.getName() + par;
+		return this.getId() + ": Array type: " + this.getName() + dim;
 	}
 
-	@Override
-	public String toStringForSymbolTable() {
-		// TODO Auto-generated method stub
-		return null;
+	public String toStringSymTable() {
+		
+		String dim = "";
+		for(int i = 0; i < arrayType.getDimension(); i++){
+			dim = dim + "[]";
+		}
+		
+		return this.getName() + dim;
 	}
 }

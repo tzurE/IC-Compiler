@@ -22,8 +22,10 @@ public abstract class TypeTableType {
 	// check if type is a subtypeof of the current class
 	// iff type extends current class \ null
 	public abstract boolean subType(TypeTableType type);
-	public abstract String toStringForSymbolTable();
 	
 	// overwrite the toString method of object class
 	public abstract String toString();
+	
+	// To string for symbol table print function
+	public abstract String toStringSymTable();
 }

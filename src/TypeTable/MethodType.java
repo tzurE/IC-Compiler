@@ -107,7 +107,7 @@ public class MethodType extends TypeTableType {
 
 
 	@Override
-	public String toStringForSymbolTable() {
+	public String toStringSymTable() {
 
 		return "{" + this.toStringHelper() + " -> " + returnTypeToString() + "}";
 	}

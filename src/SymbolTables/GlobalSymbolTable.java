@@ -20,7 +20,7 @@ public class GlobalSymbolTable extends SymbolTable {
 	
 	public GlobalSymbolTable(String id,
 			SymbolTable father_table) {
-		super(SymbolTableType.GLOBAL, "Global", father_table);
+		super(SymbolTableType.GLOBAL, id, father_table);
 	}
 	
 	

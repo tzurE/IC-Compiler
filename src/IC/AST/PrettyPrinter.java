@@ -52,7 +52,12 @@ public class PrettyPrinter implements Visitor {
 		SymbolTable classScope = icClass.getScope();
 		
 		indent(output, icClass);
-		String	nameScope = classScope.getId();
+		String	nameScope;
+		if(classScope.getClass().toString().equals(GlobalSymbolTable.class.toString()))
+			nameScope = "Global";
+		else{
+			nameScope = classScope.getId();
+		}
 		
 		output.append("Declaration of class: " + icClass.getName() );
 		if (icClass.hasSuperClass()){

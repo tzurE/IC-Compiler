@@ -13,26 +13,25 @@ public class ClassSymbolTable extends SymbolTable {
 	private HashMap<String, ClassSymbolTable> classChildTableList = new HashMap<String,ClassSymbolTable>();
 	private HashMap<String, MethodSymbolTable> methodChildTableList = new HashMap<String,MethodSymbolTable>();	
 	
-	// For Printing the Class Symbol Table (Fields)
-	private int fieldCount = 0;
+	// For Printing Fields
+	private int fieldCount = 0;  
 	private HashMap<Integer,String> fieldsByOrder = new HashMap<Integer,String>();
-
-	// For Printing the Class Symbol Table (Static Methods and Virtual Methods)
-	private int staticMethodCount = 0;
-	private HashMap<Integer,String> staticMethodByOrder = new HashMap<Integer,String>();
 	
-	// For Printing the Class Symbol Table (Static Methods and Virtual Methods)
+	// For Printing Static Methods and Virtual Methods
+	private int staticMethodCount = 0;  
+	private HashMap<Integer,String> staticMethodByOrder = new HashMap<Integer,String>();
 	private int virtualMethodCount = 0;
 	private HashMap<Integer,String> virtualMethodsByOrder = new HashMap<Integer,String>();
 
-	// For Printing the Class Symbol Table (Method Children)
-	private int methodChildCount = 0;
+	// For Printing Method Children
+	private int methodChildCount = 0; 
 	private HashMap<Integer,String> methodChildByOrder = new HashMap<Integer,String>();
 
-	// For Printing the Class Symbol Table (Class Children)
+	// For Printing Class Children
 	private int classChildCount = 0;
 	private HashMap<Integer,String> classChildByOrder = new HashMap<Integer,String>();
 
+	
 	public ClassSymbolTable(String id,
 			SymbolTable father_table) {
 		super(SymbolTableType.CLASS, id, father_table);
@@ -44,17 +43,23 @@ public class ClassSymbolTable extends SymbolTable {
 		if(!isIdExist(entry)){
 			
 			
+			
+			// Add field entry
 			if (myType.equals(SymbolKinds.FIELD.toString())){
 				fieldEntries.put(id, entry);
 				fieldsByOrder.put(fieldCount, id);
 				fieldCount++;
 			}
+			
+			// Add static method
 			else if (myType.equals(SymbolKinds.STATIC_METHOD.toString())){
 				staticMethodEntries.put(id, entry);
 				staticMethodByOrder.put(staticMethodCount, id);
 				staticMethodCount++;
 				
 			}
+			
+			// Add virtual method
 			else if (myType.equals(SymbolKinds.VIRTUAL_METHOD.toString())){
 				virtualMethodEntries.put(id, entry);
 				virtualMethodsByOrder.put(virtualMethodCount, id);
@@ -75,7 +80,6 @@ public class ClassSymbolTable extends SymbolTable {
 			}
 			
 			System.exit(-1);
-			
 		}
 	}
 
@@ -83,12 +87,16 @@ public class ClassSymbolTable extends SymbolTable {
 	public void addChild(String child_name, SymbolTable child_table) {
 		
 		String childType = child_table.getType().toString();
+		
+		// Add child method
 		if (childType.equals(SymbolTableType.METHOD.toString())){
 			methodChildTableList.put(child_name, (MethodSymbolTable) child_table);
 			methodChildByOrder.put(methodChildCount, child_name);
 			methodChildCount++;
 			
 		}
+		
+		// Add child class
 		if (childType.equals(SymbolTableType.CLASS.toString())){
 			classChildTableList.put(child_name, (ClassSymbolTable) child_table);
 			classChildByOrder.put(classChildCount, child_name);
@@ -173,13 +181,12 @@ public class ClassSymbolTable extends SymbolTable {
 				else
 					System.out.print(", " + name);
 			} 
-			//betweeen classes
+
 			System.out.println();
 		}
-
 		System.out.println();
 
-		// Print Method Symbol Tables
+		// Print child method Symbol Tables
 		if(methodChildCount != 0){
 			for (i = 0; i < methodChildCount; i++){
 				String name = methodChildByOrder.get(i);
@@ -187,17 +194,13 @@ public class ClassSymbolTable extends SymbolTable {
 			} 
 		}
 		
-		// Print Class Symbol Tables
+		// Print child class Symbol Tables
 		if(classChildCount != 0){
 			for (i = 0; i < classChildCount; i++){
 				String name = classChildByOrder.get(i);
-				classChildTableList.get(name).print();
-				
-			}
-			
+				classChildTableList.get(name).print();				
+			}			
 		}
-		
 		return false;
-	}
-	
+	}	
 }

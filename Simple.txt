@@ -1,15 +1,34 @@
 class A {
+	int i;
+	string str;
+	
+  static int sfunc(boolean b) {
+    if (b) {
+      {
+        int k = 5;
+      }
+      return 1;
+    }
+    else {
+      A xxxxxxxx = new A();
+      x.i = 9;
+      x.str = "hello";
+      return 0;
+    }
+  }
 
 	static void main (string[] args) {
     		int i;
 		string c = "tzur";
   	}
-	void st (string[] k, boolean l, A p, int[] poli){
+	void st (boolean l){
+	}
+	void st1 (boolean l){
 	}
 }
 
 class B extends A{
-	int i;
+	
 }
 
 class C extends A{

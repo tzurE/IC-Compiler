@@ -10,7 +10,7 @@ class A {
       return 1;
     }
     else {
-      A x = new A();
+      A xxxxxxxx = new A();
       x.i = 9;
       x.str = "hello";
       return 0;
@@ -21,7 +21,7 @@ class A {
     		int i;
 		string c = "tzur";
   	}
-	void st (string[] k, boolean l, A p, int[] poli){
+	void st (boolean l){
 	}
 }
 

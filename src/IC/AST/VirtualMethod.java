@@ -35,5 +35,50 @@ public class VirtualMethod extends Method {
 			List<Statement> statements) {
 		super(type, name, formals, statements);
 	}
+	
+	public boolean equals(Object obj) {
+		if (obj == null){
+			return false;	
+		}
+		
+		if (this == obj){
+			return true;	
+		}
+		
+		if (getClass() != obj.getClass()){
+			return false;	
+		}
+		
+		Method other = (Method) obj;
+		
+		if (formals == null) {
+			if (other.formals != null){
+				return false;	
+			}
+		} else{
+			if (formals.size() == other.getFormals().size()){
+				int k = 0;
+				for (Formal formal : formals) {
+					Formal otherFormal = other.getFormals().get(k);
+					if (!(formal.getType().equals(otherFormal.getType()))){
+						return false;
+					}
+					k++;
+				}
+			}
+			else{
+				return false;
+			}
+		}
+		
+		if (type == null) {
+			if (other.type != null){
+				return false;
+			}
+		} else if (!(type.toString().equals(other.type.toString()))){
+			return false;
+		}
+		return true;
+	}
 
 }

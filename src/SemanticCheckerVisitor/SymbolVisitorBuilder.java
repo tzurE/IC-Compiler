@@ -46,7 +46,6 @@ public class SymbolVisitorBuilder implements PropVisitor{
 	@Override
 	public Object visit(ICClass icClass, SymbolTable parent_table) {
 		ClassSymbolTable symbol_table = new ClassSymbolTable(icClass.getName(), parent_table);
-
 		//first we check inheritance! 
 		if(!icClass.hasSuperClass()){
 			symbol_table.setFather_table(parent_table);
@@ -269,12 +268,14 @@ public class SymbolVisitorBuilder implements PropVisitor{
 
 	@Override
 	public Object visit(Assignment assignment, SymbolTable table) {
-
+		assignment.getVariable().accept(this,table);
+		assignment.getAssignment().accept(this, table);
 		return null;
 	}
 
 	@Override
 	public Object visit(CallStatement callStatement, SymbolTable table) {
+		callStatement.accept(this,table);
 		callStatement.getCall().accept(this,table);
 		return null;
 	}
@@ -374,12 +375,12 @@ public class SymbolVisitorBuilder implements PropVisitor{
 		
 		for (Expression argument : call.getArguments())
 			argument.accept(this,table);
-		
 		return null;
 	}
 
 	@Override
 	public Object visit(This thisExpression, SymbolTable table) {
+		thisExpression.accept(this,table);
 		return null;
 	}
 
@@ -445,7 +446,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 
 	@Override
 	public Object visit(ExpressionBlock expressionBlock, SymbolTable table) {
-		
+		expressionBlock.accept(this,table);
 		expressionBlock.getExpression().accept(this,table);
 		
 		return null;
@@ -453,6 +454,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 
 	@Override
 	public Object visit(Method method, SymbolTable table) {
+		method.accept(this,table);
 		//do we need this? the dynamic type tells the method where to go.
 		//dont use it
 		return null;

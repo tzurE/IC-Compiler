@@ -123,8 +123,13 @@ public class GlobalSymbolTable extends SymbolTable {
 
 	@Override
 	public Object getEntry(String name, SymbolKinds symbolKind) {
-		// TODO Auto-generated method stub
-		return null;
+		Object entry = searchTable(name, symbolKind);
+		if (entry!= null){
+			return entry;
+		}
+		else{
+			return this.getFather_table().getEntry(name, symbolKind);
+		}
 	}
 
 
@@ -137,7 +142,11 @@ public class GlobalSymbolTable extends SymbolTable {
 
 	@Override
 	public Object searchTable(String name, SymbolKinds symbolKind) {
-		// TODO Auto-generated method stub
+		if(symbolKind.getKind().compareTo(SymbolKinds.CLASS.getKind())==0){
+			if(entries.containsKey(name)){
+				return entries.get(name);
+			}
+		}
 		return null;
 	}
 }

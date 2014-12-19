@@ -81,7 +81,7 @@ public class Formal extends ASTNode {
 	@Override
 	public int hashCode() {
 		// TODO Auto-generated method stub
-		return 2;
+		return 1;
 	}
 	
 

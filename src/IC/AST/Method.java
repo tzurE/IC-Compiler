@@ -97,7 +97,7 @@ public abstract class Method extends ASTNode {
 				if (other.type != null){
 					return false;
 				}
-			} else if (!(type.toString().equals(other.type.toString()))){
+			} else if (!(type.equals(other.type))){
 				return false;
 			}
 			return true;
@@ -106,6 +106,6 @@ public abstract class Method extends ASTNode {
 		@Override
 		public int hashCode() {
 			// TODO Auto-generated method stub
-			return 2;
+			return 1;
 		}
 }

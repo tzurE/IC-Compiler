@@ -1,7 +1,7 @@
 Parsed libic.sig successfully!
 Parsed example1.ic successfully!
 
-Global Symbol Table: Global
+Global Symbol Table: example1.ic
 	Class: Library
 	Class: A
 	Class: B
@@ -14,15 +14,15 @@ Class Symbol Table: Library
 	Static method: printi {int -> void}
 	Static method: printb {boolean -> void}
 	Static method: readi { -> int}
-	Static method: readln { -> string}
-	Static method: eof { -> boolean}
+	Static method: readln { -> int}
+	Static method: eof { -> int}
 	Static method: stoi {string, int -> int}
-	Static method: itos {int -> string}
-	Static method: stoa {string -> int[]}
+	Static method: itos {int -> void}
+	Static method: stoa {string -> void}
 	Static method: atos {int[] -> string}
-	Static method: random {int -> int}
+	Static method: random {int -> void}
 	Static method: time { -> int}
-	Static method: exit {int -> int}
+	Static method: exit {int -> void}
 Children tables: println, print, printi, printb, readi, readln, eof, stoi, itos, stoa, atos, random, time, exit
 
 Method Symbol Table: println
@@ -67,7 +67,7 @@ Method Symbol Table: exit
 Class Symbol Table: A
 	Field: string str
 	Field: int i
-	Static method: sfunc {boolean -> int}
+	Static method: sfunc {boolean -> void}
 	Virtual method: vfunc {A, int, int -> void}
 Children tables: sfunc, vfunc, B
 
@@ -119,30 +119,18 @@ Type Table: example1.ic
 	4: Primitive type: string
 	5: Primitive type: void
 	8: Class: Library
-	24: Class: A
-	28: Class: B, Superclass ID: 24
-	30: Class: C
+	16: Class: A
+	18: Class: B, Superclass ID: 16
+	19: Class: C
 	6: Array type: string[]
-	20: Array type: int[]
-	27: Array type: int[]
-	31: Array type: string[]
-	32: Array type: A[]
-	33: Array type: A[][]
+	15: Array type: int[]
+	20: Array type: A[]
+	21: Array type: A[][]
 	7: Method type: {string[] -> void}
 	9: Method type: {string -> void}
-	10: Method type: {string -> void}
-	11: Method type: {int -> void}
-	12: Method type: {boolean -> void}
-	13: Method type: { -> int}
-	14: Method type: { -> string}
-	15: Method type: { -> boolean}
-	16: Method type: {string, int -> int}
-	17: Method type: {int -> string}
-	18: Method type: {string -> int[]}
-	19: Method type: {int[] -> string}
-	21: Method type: {int -> int}
-	22: Method type: { -> int}
-	23: Method type: {int -> int}
-	25: Method type: {boolean -> int}
-	26: Method type: {A, int, int -> void}
-	29: Method type: {A, int, int -> void}
+	10: Method type: {int -> void}
+	11: Method type: {boolean -> void}
+	12: Method type: { -> int}
+	13: Method type: {string, int -> int}
+	14: Method type: {int[] -> string}
+	17: Method type: {A, int, int -> void}

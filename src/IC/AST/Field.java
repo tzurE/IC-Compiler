@@ -18,7 +18,7 @@ public class Field extends ASTNode {
 	}
 	public Object accept(PropVisitor visitor,SymbolTable table) {
 		this.setScope(table);
-		return visitor.visit(this,table);
+		return visitor.visit((Field)this,table);
 	}
 
 	/**

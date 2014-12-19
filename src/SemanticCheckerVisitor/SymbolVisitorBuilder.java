@@ -46,6 +46,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 	@Override
 	public Object visit(ICClass icClass, SymbolTable parent_table) {
 		ClassSymbolTable symbol_table = new ClassSymbolTable(icClass.getName(), parent_table);
+		System.out.println(parent_table.getClass().toString().equals(GlobalSymbolTable.class.toString()));
 		//first we check inheritance! 
 		if(!icClass.hasSuperClass()){
 			symbol_table.setFather_table(parent_table);

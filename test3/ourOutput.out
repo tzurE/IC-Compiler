@@ -14,15 +14,15 @@ Class Symbol Table: Library
 	Static method: printi {int -> void}
 	Static method: printb {boolean -> void}
 	Static method: readi { -> int}
-	Static method: readln { -> int}
-	Static method: eof { -> int}
+	Static method: readln { -> string}
+	Static method: eof { -> boolean}
 	Static method: stoi {string, int -> int}
-	Static method: itos {int -> void}
-	Static method: stoa {string -> void}
+	Static method: itos {int -> string}
+	Static method: stoa {string -> int[]}
 	Static method: atos {int[] -> string}
-	Static method: random {int -> void}
+	Static method: random {int -> int}
 	Static method: time { -> int}
-	Static method: exit {int -> void}
+	Static method: exit {int -> int}
 Children tables: println, print, printi, printb, readi, readln, eof, stoi, itos, stoa, atos, random, time, exit
 
 Method Symbol Table: println
@@ -67,7 +67,7 @@ Method Symbol Table: exit
 Class Symbol Table: A
 	Field: string str
 	Field: int i
-	Static method: sfunc {boolean -> void}
+	Static method: sfunc {boolean -> int}
 	Virtual method: vfunc {A, int, int -> void}
 Children tables: sfunc, vfunc, B
 
@@ -119,18 +119,24 @@ Type Table: example1.ic
 	4: Primitive type: string
 	5: Primitive type: void
 	8: Class: Library
-	16: Class: A
-	18: Class: B, Superclass ID: 16
-	19: Class: C
+	21: Class: A
+	24: Class: B, Superclass ID: 21
+	25: Class: C
 	6: Array type: string[]
-	15: Array type: int[]
-	20: Array type: A[]
-	21: Array type: A[][]
+	19: Array type: int[]
+	26: Array type: A[]
+	27: Array type: A[][]
 	7: Method type: {string[] -> void}
 	9: Method type: {string -> void}
 	10: Method type: {int -> void}
 	11: Method type: {boolean -> void}
 	12: Method type: { -> int}
-	13: Method type: {string, int -> int}
-	14: Method type: {int[] -> string}
-	17: Method type: {A, int, int -> void}
+	13: Method type: { -> string}
+	14: Method type: { -> boolean}
+	15: Method type: {string, int -> int}
+	16: Method type: {int -> string}
+	17: Method type: {string -> int[]}
+	18: Method type: {int[] -> string}
+	20: Method type: {int -> int}
+	22: Method type: {boolean -> int}
+	23: Method type: {A, int, int -> void}

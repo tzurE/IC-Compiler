@@ -84,7 +84,7 @@ public class GlobalSymbolTable extends SymbolTable {
 		System.out.println("Global Symbol Table: " + this.getId());
 		for (i = 0; i < entriesCount; i++){
 			String name = entriesByOrder.get(i);
-			System.out.println("\tClass: " + name);  
+			System.out.println("    Class: " + name);  
 		}
 		if(childTableList.size() != 0){
 			System.out.print("Children tables: ");

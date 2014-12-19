@@ -86,7 +86,6 @@ public class TypeTable {
 	//this creates a new kind of method. if it exists we return it, otherwise we create a unique one!
 	public static MethodType methodType(Method method) {
 		//first we check if there is a method like this
-		System.out.println(uniqueMethodByTypes.containsKey(method));
 		if (uniqueMethodByTypes.containsKey(method)){
 			
 			return uniqueMethodByTypes.get(method);

@@ -11,8 +11,8 @@ class A {
     }
     else {
       A x = new A();
-      x.i = 9;
-      x.str = "hello";
+      //x.i = 9;
+      //x.str = "hello";
       return 0;
     }
   }

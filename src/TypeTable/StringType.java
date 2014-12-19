@@ -18,7 +18,7 @@ public class StringType extends TypeTableType {
 
 	@Override
 	public String toString() {
-		return (this.getId() + ": Primitive type: " + this.getName());
+		return ("\t"+this.getId() + ": Primitive type: " + this.getName());
 	}
 
 	@Override

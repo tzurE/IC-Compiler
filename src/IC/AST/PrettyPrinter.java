@@ -28,7 +28,7 @@ public class PrettyPrinter implements Visitor {
 	private void indent(StringBuffer output, ASTNode node) {
 		output.append("\n");
 		for (int i = 0; i < depth; ++i)
-			output.append(" ");
+			output.append("\t");
 		if (node != null)
 			output.append(node.getLine() + ": ");
 	}

@@ -28,6 +28,12 @@ public class Compiler {
 		boolean LibPathGiven = false;
 		boolean printAST = false;
 		
+		if(args.length == 0){
+			System.out.println("can't get args < 0, give a path to a file!");
+			return;
+		}
+			
+		
 		for (int i = 0; i < args.length; i++){
 			String current = args[i];
 			
@@ -58,13 +64,16 @@ public class Compiler {
 		//run the library paser
 		Library_tree = library_parser.parse();
 		Program lib_root = (Program)Library_tree.value;
-		if(LibPathGiven)
+		if(LibPathGiven){
 			prog2_root.addLibraryClass(lib_root.getClasses().get(0));
+			System.out.println("Parsed " + library_location + " successfully!");
+		}
 		
 		SymbolVisitorBuilder symTableCreate = new SymbolVisitorBuilder(args[0]);
 		GlobalSymbolTable glbTable = (GlobalSymbolTable)prog2_root.accept(symTableCreate, null);
 		SymbolVisitorChecker semanticCheckV = new SymbolVisitorChecker(glbTable);
 		prog2_root.accept(semanticCheckV, null);
+		System.out.println("Parsed " + args[0] +" successfully!");
 		
 		if(printAST){
 			// Pretty-print the library to System.out

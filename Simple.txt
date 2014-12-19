@@ -9,6 +9,7 @@ class A {
 }
 
 class B extends A{
+	int i;
 }
 
 class C extends A{

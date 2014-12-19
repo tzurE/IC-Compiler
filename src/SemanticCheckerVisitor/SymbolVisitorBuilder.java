@@ -80,14 +80,9 @@ public class SymbolVisitorBuilder implements PropVisitor{
 				}
 				
 			}
-			superClass.addChild(icClass.getName(), new ClassSymbolTable(icClass.getName(), superClass));
+			superClass.addChild(icClass.getName(), symbol_table);
 			symbol_table.setFather_table(superClass);
 		}
-		
-		
-		//symbol_table.getFather_table().addChild(icClass.getName(), symbol_table);
-		
-		
 		
 		for (Field field : icClass.getFields()){
 			
@@ -98,7 +93,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 			method.accept(this, symbol_table);
 		}
 		
-		return null;
+		return symbol_table;
 	}
 
 	@Override
@@ -226,6 +221,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 			formal.accept(this, symbol_table);
 		}
 		for (Statement statement : method.getStatements()){
+			
 			statement.accept(this, symbol_table);
 		}
 		

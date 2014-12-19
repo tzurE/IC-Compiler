@@ -72,7 +72,7 @@ public class ArrayType extends TypeTableType {
 		for(int i = 0; i < arrayType.getDimension(); i++){
 			dim = dim + "[]";
 		}
-		return this.getId() + ": Array type: " + this.getName() + dim;
+		return "\t"+this.getId() + ": Array type: " + this.getName() + dim;
 	}
 
 	public String toStringSymTable() {

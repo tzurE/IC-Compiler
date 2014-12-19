@@ -61,10 +61,9 @@ public class MethodSymbolTable extends SymbolTable{
 
 	@Override
 	public void addChild(String child_name, SymbolTable child_table) {
-
+		
 		// Add child statement
-		if (child_table.getType().equals("STATEMENT".toString())){
-			
+		if (child_table.getType().toString().equals(SymbolTableType.STATEMENT.toString())){
 			statementChildTableList.put(statementCount, (StatementSymbolTable) child_table);
 			statementCount++;
 		}

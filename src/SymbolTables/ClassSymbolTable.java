@@ -173,7 +173,8 @@ public class ClassSymbolTable extends SymbolTable {
 				else
 					System.out.print(", " + name);
 			} 
-			System.out.print(", ");
+			if(classChildCount != 0)
+				System.out.print(", ");
 			
 			for (i = 0; i < classChildCount; i++){
 				String name = classChildByOrder.get(i);

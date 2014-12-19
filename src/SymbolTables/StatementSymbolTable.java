@@ -36,7 +36,7 @@ public class StatementSymbolTable extends SymbolTable{
 				System.exit(-1);
 			}
 		}
-		if(classSym.getKind().equals(SymbolKinds.LOCAL_VARIABLE.toString())){
+		if(classSym.getKind().toString().equals(SymbolKinds.LOCAL_VARIABLE.toString())){
 			LocalVariables.put(id, classSym);
 			LocalVariableDeclerationLine.put(id, line);
 			localVariablesByOrder.put(localVarCount, id);
@@ -46,9 +46,10 @@ public class StatementSymbolTable extends SymbolTable{
 
 	@Override
 	public void addChild(String child_name, SymbolTable child_table) {
-		System.out.println(child_table.getType() + "!!!!!");
+
 		// Add child statement
 		if (child_table.getType().toString().equals(SymbolTableType.STATEMENT.toString())){
+			
 			statementChildTableList.put(statementCount, (StatementSymbolTable) child_table);
 			statementCount++;
 		}		

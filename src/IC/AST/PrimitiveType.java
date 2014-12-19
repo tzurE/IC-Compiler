@@ -37,5 +37,9 @@ public class PrimitiveType extends Type {
 		return type.getDescription();
 	}
 	
+	public DataTypes getDataType() {
+		return type;
+	}
+	
 	
 }

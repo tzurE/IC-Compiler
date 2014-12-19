@@ -294,27 +294,30 @@ public class SymbolVisitorBuilder implements PropVisitor{
 		//we send the visitor onward
 		ifStatement.getCondition().accept(this,table);
 		ifStatement.getOperation().accept(this,table);
+		
 		if (ifStatement.hasElse()){
 			ifStatement.getElseOperation().accept(this, table);
 		}
+		
 		return null;
 	}
 
 	@Override
 	public Object visit(While whileStatement, SymbolTable table) {
-		// TODO Auto-generated method stub
+
+		whileStatement.getCondition().accept(this, table);
+		whileStatement.getOperation().accept(this,table);
+		
 		return null;
 	}
 
 	@Override
 	public Object visit(Break breakStatement, SymbolTable table) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Object visit(Continue continueStatement, SymbolTable table) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -360,79 +363,100 @@ public class SymbolVisitorBuilder implements PropVisitor{
 
 	@Override
 	public Object visit(StaticCall call, SymbolTable table) {
-		// TODO Auto-generated method stub
+		for (Expression argument : call.getArguments())
+			argument.accept(this,table);
 		return null;
 	}
 
 	@Override
 	public Object visit(VirtualCall call, SymbolTable table) {
-		// TODO Auto-generated method stub
+		
+		if (call.isExternal())
+			call.getLocation().accept(this,table);
+		
+		for (Expression argument : call.getArguments())
+			argument.accept(this,table);
+		
 		return null;
 	}
 
 	@Override
 	public Object visit(This thisExpression, SymbolTable table) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Object visit(NewClass newClass, SymbolTable table) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Object visit(NewArray newArray, SymbolTable table) {
-		// TODO Auto-generated method stub
+		
+		newArray.getType().accept(this,table);
+		newArray.getSize().accept(this,table);
+		
 		return null;
 	}
 
 	@Override
 	public Object visit(Length length, SymbolTable table) {
-		// TODO Auto-generated method stub
+		length.getArray().accept(this,table);
 		return null;
 	}
 
 	@Override
 	public Object visit(MathBinaryOp binaryOp, SymbolTable table) {
-		// TODO Auto-generated method stub
+		
+		binaryOp.getFirstOperand().accept(this,table);
+		binaryOp.getSecondOperand().accept(this,table);
+		
 		return null;
 	}
 
 	@Override
 	public Object visit(LogicalBinaryOp binaryOp, SymbolTable table) {
-		// TODO Auto-generated method stub
+
+		binaryOp.getFirstOperand().accept(this,table);
+		binaryOp.getSecondOperand().accept(this,table);
+		
 		return null;
 	}
 
 	@Override
 	public Object visit(MathUnaryOp unaryOp, SymbolTable table) {
-		// TODO Auto-generated method stub
+		
+		unaryOp.getOperand().accept(this, table);
+		
 		return null;
 	}
 
 	@Override
 	public Object visit(LogicalUnaryOp unaryOp, SymbolTable table) {
-		// TODO Auto-generated method stub
+
+		unaryOp.getOperand().accept(this, table);
+		
 		return null;
 	}
 
 	@Override
 	public Object visit(Literal literal, SymbolTable table) {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
 	@Override
 	public Object visit(ExpressionBlock expressionBlock, SymbolTable table) {
-		// TODO Auto-generated method stub
+		
+		expressionBlock.getExpression().accept(this,table);
+		
 		return null;
 	}
 
 	@Override
 	public Object visit(Method method, SymbolTable table) {
-		// TODO Auto-generated method stub
+		//do we need this? the dynamic type tells the method where to go.
+		//dont use it
 		return null;
 	}
 

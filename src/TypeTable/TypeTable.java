@@ -136,7 +136,7 @@ public class TypeTable {
 			return null;
 		}
 	}
-	public static String getTypeByName(String name){
+/*	public static String getClassTypeByName(String name){
 			
 		if (uniqueClassByTypes.containsKey(name)){
 			String str = uniqueClassByTypes.get(name).toString();
@@ -149,10 +149,35 @@ public class TypeTable {
 			// class type object doesn't exist - return null
 			return null;
 		} 
-
+	}*/
+	
+	public static String getTypeNameByString(String name){
+		
+		Method method;
+		int i;
+		
+		if (name.equals(DataTypes.BOOLEAN.getDescription()) || name.equals(DataTypes.INT.getDescription()) ||
+				name.equals(DataTypes.STRING.getDescription())|| name.equals(DataTypes.VOID.getDescription()))
+			return name;
+		
+		else if (uniqueClassByTypes.containsKey(name)){
+			String str = uniqueClassByTypes.get(name).toString();
+			StringBuilder strb = new StringBuilder(); 
+			strb.append(str.substring(str.indexOf("s:") +2));
+			
+			return strb.toString();
+		}
+		
+		for (i = 0; i < methodCount; i++){
+			
+			method = methodTypesByOrder.get(i);
+			if (method.getName().equals(name)){
+				return uniqueMethodByTypes.get(method).toStringSymTable();	
+			}	
+		}
+		
+		return "";
 	}
-	
-	
 	
 	//let's print the table!!!!!!!!!!!!!!!!1
 	public static void printTypeTable(String fileName){

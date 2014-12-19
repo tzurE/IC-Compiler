@@ -20,7 +20,7 @@ public class StatementSymbolTable extends SymbolTable{
 	private int statementCount = 0;
 	
 	
-	public StatementSymbolTable(SymbolTableType type, String id,
+	public StatementSymbolTable(String id,
 			SymbolTable father_table) {
 		super(SymbolTableType.STATEMENT, id, father_table);
 	}
@@ -46,9 +46,9 @@ public class StatementSymbolTable extends SymbolTable{
 
 	@Override
 	public void addChild(String child_name, SymbolTable child_table) {
-		
+		System.out.println(child_table.getType() + "!!!!!");
 		// Add child statement
-		if (child_table.getType().equals(SymbolTableType.STATEMENT.toString())){
+		if (child_table.getType().toString().equals(SymbolTableType.STATEMENT.toString())){
 			statementChildTableList.put(statementCount, (StatementSymbolTable) child_table);
 			statementCount++;
 		}		

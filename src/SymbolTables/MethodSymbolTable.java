@@ -33,7 +33,6 @@ public class MethodSymbolTable extends SymbolTable{
 
 	@Override
 	public void addEntry(String id, SymbolEntry entry, int line) {
-		
 		if(isIdExist(entry)){
 			try{
 				throw new SemanticError(line, "cant declare twice on" + id);
@@ -54,7 +53,7 @@ public class MethodSymbolTable extends SymbolTable{
 		// Add parameter
 		if(entry.getKind().equals(SymbolKinds.PARAMETER)){
 			Parameters.put(id, entry);
-			parametersByOrder.put(localVarCount, id);
+			parametersByOrder.put(parameterCount, id);
 			parameterCount++;
 		}	
 	}
@@ -96,7 +95,7 @@ public class MethodSymbolTable extends SymbolTable{
 			String name = localVariablesByOrder.get(i);
 			String type = LocalVariables.get(name).getType().toStringSymTable();
 			System.out.println();
-			System.out.print("\tLocal variable: " + type + " " + name);   
+			System.out.print("    Local variable: " + type + " " + name);   
 		}
 
 		if(statementChildTableList.size()!=0){

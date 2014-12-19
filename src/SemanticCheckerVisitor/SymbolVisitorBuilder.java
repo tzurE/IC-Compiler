@@ -129,12 +129,16 @@ public class SymbolVisitorBuilder implements PropVisitor{
 				System.exit(-1);
 			}
 		}
-		//we add the new method to the list of the class it belongs to
+		//we add the new method to the list of the class it belongs to, for easier printing
 		parent_table.addEntry(method.getName(), new MethodEntry(method.getName(),SymbolKinds.VIRTUAL_METHOD,TypeTable.methodType(method)), method.getLine());
 		MethodSymbolTable symbol_table = new MethodSymbolTable(SymbolTableType.METHOD,method.getName(),parent_table);
+		
+		
 		//we add the method as a child, in order to (pretty)print it. 
 		parent_table.addChild(method.getName(), symbol_table);
 		method.getType().accept(this, symbol_table);
+		
+		//go over everything in the method, formals and stmnt
 		for (Formal formal : method.getFormals()){
 			formal.accept(this, symbol_table);
 		}
@@ -152,10 +156,14 @@ public class SymbolVisitorBuilder implements PropVisitor{
 		MethodType methodType;
 		
 		//first we check if it's the main function!
-		//if not, we insert here
+		//we go over all the qualifications that belong to the main function, and check 
+		//Whether they all works
 		if(!method.getName().toString().equals("main"))
 			methodType = TypeTable.methodType(method);
-		else{
+		
+		else
+		{	
+			//if there is already a main function declared - we throw a semantic error
 			if(mainExists){
 				try {
 					throw new SemanticError(method.getLine(),
@@ -166,6 +174,8 @@ public class SymbolVisitorBuilder implements PropVisitor{
 					System.exit(-1);
 				}
 			}
+			
+			//check the main return type
 			if(!method.getType().getName().equals("void")){
 				try {
 					throw new SemanticError(method.getLine(),
@@ -176,6 +186,8 @@ public class SymbolVisitorBuilder implements PropVisitor{
 					System.exit(-1);
 				}
 			}
+			
+			//if there is more than one formal - throw
 			if (method.getFormals().size() != 1){
 				try {
 					throw new SemanticError(method.getLine(),
@@ -186,17 +198,21 @@ public class SymbolVisitorBuilder implements PropVisitor{
 					System.exit(-1);
 				}
 			}
+			
+			//is it a string[]?
 			Formal mainParameter = method.getFormals().get(0);
 			if(!mainParameter.getType().getName().equals("string") || mainParameter.getType().getDimension() != 1){
 				try {
 					throw new SemanticError(method.getLine(),
-							"the 'main' method's argument must bee an arrau of string('Strings[]')");
+							"the 'main' method's argument must bee an arrau of strings - ('string[]')");
 				}
 				catch (SemanticError e) {
 					System.out.println(e.getErrorMessage());
 					System.exit(-1);
 				}
 			}
+			
+			//if all checks out good - we inform the program
 			mainExists = true;
 			methodType = TypeTable.getMainMethodType();
 		}
@@ -214,55 +230,73 @@ public class SymbolVisitorBuilder implements PropVisitor{
 		}
 		
 		
-		return null;
+		return symbol_table;
 	}
 
 	@Override
 	public Object visit(LibraryMethod method, SymbolTable table) {
+		
+		//library = static. so we send it to the static method
 		StaticMethod method1 = new StaticMethod(method.getType(), method.getName(), method.getFormals(), method.getStatements());
 			this.visit(method1, table);
 		return null;
 	}
 
 	@Override
-	public Object visit(Formal formal, SymbolTable table) {
-		// TODO Auto-generated method stub
+	public Object visit(Formal formal, SymbolTable parent_table) {
+		//pretty much the same as the fields for the class, so we just copied it
+		if(formal.getType().getClass().equals(PrimitiveType.class)){
+			parent_table.addEntry(formal.getName(), new ParameterEntry(formal.getName(),SymbolKinds.PARAMETER ,this.TypesForPrimitive((PrimitiveType) formal.getType())), formal.getLine());
+		}
+		else{
+			if(formal.getType().getDimension()==0)
+				parent_table.addEntry(formal.getName(), new ParameterEntry(formal.getName(), SymbolKinds.PARAMETER ,new ClassType(formal.getType().getName())), formal.getLine());
+			else
+				parent_table.addEntry(formal.getName(), new ParameterEntry(formal.getName(), SymbolKinds.PARAMETER,getArrayType(formal.getType())), formal.getLine());
+		}
+		formal.getType().accept(this, parent_table);
 		return null;
 	}
 
 	@Override
 	public Object visit(PrimitiveType type, SymbolTable table) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public Object visit(UserType type, SymbolTable table) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public Object visit(Assignment assignment, SymbolTable table) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public Object visit(CallStatement callStatement, SymbolTable table) {
-		// TODO Auto-generated method stub
+		callStatement.getCall().accept(this,table);
 		return null;
 	}
 
 	@Override
 	public Object visit(Return returnStatement, SymbolTable table) {
-		// TODO Auto-generated method stub
+		if(returnStatement.hasValue()){
+			returnStatement.getValue().accept(this, table);}
 		return null;
 	}
 
 	@Override
 	public Object visit(If ifStatement, SymbolTable table) {
-		// TODO Auto-generated method stub
+		//we send the visitor onward
+		ifStatement.getCondition().accept(this,table);
+		ifStatement.getOperation().accept(this,table);
+		if (ifStatement.hasElse()){
+			ifStatement.getElseOperation().accept(this, table);
+		}
 		return null;
 	}
 
@@ -285,26 +319,42 @@ public class SymbolVisitorBuilder implements PropVisitor{
 	}
 
 	@Override
-	public Object visit(StatementsBlock statementsBlock, SymbolTable table) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object visit(StatementsBlock statementsBlock, SymbolTable parent_table) {
+		StatementSymbolTable symbol_table = new StatementSymbolTable("statement block in "+ parent_table.getId(), parent_table);
+		for(Statement statement : statementsBlock.getStatements()){
+			statement.accept(this, symbol_table);
+		}
+		parent_table.addChild(symbol_table.getId(), symbol_table);
+		return symbol_table;
 	}
 
 	@Override
-	public Object visit(LocalVariable localVariable, SymbolTable table) {
-		// TODO Auto-generated method stub
+	public Object visit(LocalVariable localVariable, SymbolTable parent_table) {
+		//pretty much the same as the fields for the class, so we just copied it
+				if(localVariable.getType().getClass().equals(PrimitiveType.class)){
+					parent_table.addEntry(localVariable.getName(), new LocalVariebleEntry(localVariable.getName(),SymbolKinds.LOCAL_VARIABLE ,this.TypesForPrimitive((PrimitiveType) localVariable.getType())), localVariable.getLine());
+				}
+				else{
+					if(localVariable.getType().getDimension()==0)
+						parent_table.addEntry(localVariable.getName(), new LocalVariebleEntry(localVariable.getName(), SymbolKinds.LOCAL_VARIABLE ,new ClassType(localVariable.getType().getName())), localVariable.getLine());
+					else
+						parent_table.addEntry(localVariable.getName(), new LocalVariebleEntry(localVariable.getName(), SymbolKinds.LOCAL_VARIABLE,getArrayType(localVariable.getType())), localVariable.getLine());
+				}
+				localVariable.getType().accept(this, parent_table);
 		return null;
 	}
 
 	@Override
 	public Object visit(VariableLocation location, SymbolTable table) {
-		// TODO Auto-generated method stub
+		if(location.isExternal())
+			location.getLocation().accept(this, table);
 		return null;
 	}
 
 	@Override
 	public Object visit(ArrayLocation location, SymbolTable table) {
-		// TODO Auto-generated method stub
+		location.getArray().accept(this, table);
+		location.getIndex().accept(this, table);
 		return null;
 	}
 

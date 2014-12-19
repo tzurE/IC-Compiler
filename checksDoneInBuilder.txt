@@ -1,0 +1,4 @@
+that's what the Builder checks(easier to implement during building rather than checking) 
+
+main function - checks if there is only one and all the arguments are correct
+fields/methods/classes - checks if duplicate name exists

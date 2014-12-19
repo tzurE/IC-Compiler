@@ -1,13 +1,10 @@
 class A {
-	int i;
-	int k;
-	string a;
-	boolean b;
+
 	static void main (string[] args) {
     		int i;
-		int i;
+		string c = "tzur";
   	}
-	void st(){
+	void st (string[] k, boolean l, A p, int[] poli){
 	}
 }
 

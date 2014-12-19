@@ -100,7 +100,6 @@ public class Compiler {
 			e1.getErrorMessage();
 		}
 		catch(Exception e){
-			System.out.println("damn");
 			e.printStackTrace();
 		}
 		/////////////////////////////////////////////////pretty printer visitor////////////////////////////////////////////

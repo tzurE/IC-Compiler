@@ -1,6 +1,5 @@
 package TypeTable;
 
-import java.util.ArrayList;
 import IC.AST.*;
 import IC.*;
 

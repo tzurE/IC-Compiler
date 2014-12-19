@@ -13,12 +13,14 @@ public class TypeTable {
 	public static VoidType voidType;
 	public static int id;
 	
-	// Maps element types to array types
+
 	private static Map<Type,ArrayType> uniqueArraByTypes;
-	// Maps element types to class types
+
 	private static Map<String,ClassType> uniqueClassByTypes;
-	// Maps element types to method types
+
 	private static Map<Method,MethodType> uniqueMethodByTypes;
+	//used to check if 2 methods has the same type of args
+	private static Map<MethodType,List<Formal>> uniqueMethodByArgs;
 
 	// For Printing the Class Types
 	private static int classCount = 0;
@@ -45,6 +47,7 @@ public class TypeTable {
 		uniqueArraByTypes = new HashMap<Type, ArrayType>();
 		uniqueClassByTypes = new HashMap<String, ClassType>();
 		uniqueMethodByTypes = new HashMap<Method, MethodType>();
+		uniqueMethodByArgs = new HashMap<MethodType, List<Formal>>();
 		
 		//Construct the Main method for the class
 		Type mainParamType = new PrimitiveType(-1, DataTypes.STRING);
@@ -83,20 +86,30 @@ public class TypeTable {
 	//this creates a new kind of method. if it exists we return it, otherwise we create a unique one!
 	public static MethodType methodType(Method method) {
 		//first we check if there is a method like this
+		
+		
 		if (uniqueMethodByTypes.containsKey(method)){
 			
 			return uniqueMethodByTypes.get(method);
 		}
+		if(uniqueMethodByTypes.containsValue(method.getType())){
+			if(uniqueMethodByArgs.containsKey(method.getType())){
+				return uniqueMethodByTypes.get(method);
+			}
+		}
+		
 		else{
 			// no method like this exists, so we create it
 			id++;
 			MethodType mtdt = new MethodType(method,id);
 			uniqueMethodByTypes.put(method, mtdt);
 			methodTypesByOrder.put(methodCount,method);
+			uniqueMethodByArgs.put(mtdt, method.getFormals());
 			methodCount++;
 			
 			return mtdt;
 		}
+		return null;
 	}
 	
 	public static MethodType getMainMethodType() {

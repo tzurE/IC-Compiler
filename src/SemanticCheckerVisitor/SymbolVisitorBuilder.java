@@ -46,7 +46,8 @@ public class SymbolVisitorBuilder implements PropVisitor{
 	@Override
 	public Object visit(ICClass icClass, SymbolTable parent_table) {
 		ClassSymbolTable symbol_table = new ClassSymbolTable(icClass.getName(), parent_table);
-		//if our 
+
+		//first we check inheritance! 
 		if(!icClass.hasSuperClass()){
 			symbol_table.setFather_table(parent_table);
 			symbol_table.getFather_table().addChild(icClass.getName(), symbol_table);
@@ -330,23 +331,24 @@ public class SymbolVisitorBuilder implements PropVisitor{
 	@Override
 	public Object visit(LocalVariable localVariable, SymbolTable parent_table) {
 		//pretty much the same as the fields for the class, so we just copied it
-				if(localVariable.getType().getClass().equals(PrimitiveType.class)){
-					parent_table.addEntry(localVariable.getName(), new LocalVariebleEntry(localVariable.getName(),SymbolKinds.LOCAL_VARIABLE ,this.TypesForPrimitive((PrimitiveType) localVariable.getType())), localVariable.getLine());
-				}
-				else{
-					if(localVariable.getType().getDimension()==0)
-						parent_table.addEntry(localVariable.getName(), new LocalVariebleEntry(localVariable.getName(), SymbolKinds.LOCAL_VARIABLE ,new ClassType(localVariable.getType().getName())), localVariable.getLine());
-					else
-						parent_table.addEntry(localVariable.getName(), new LocalVariebleEntry(localVariable.getName(), SymbolKinds.LOCAL_VARIABLE,getArrayType(localVariable.getType())), localVariable.getLine());
-				}
-				localVariable.getType().accept(this, parent_table);
-		return null;
+		if(localVariable.getType().getClass().equals(PrimitiveType.class)){
+			parent_table.addEntry(localVariable.getName(), new LocalVariebleEntry(localVariable.getName(),SymbolKinds.LOCAL_VARIABLE ,this.TypesForPrimitive((PrimitiveType) localVariable.getType())), localVariable.getLine());
+		}
+		else{
+			if(localVariable.getType().getDimension()==0)
+				parent_table.addEntry(localVariable.getName(), new LocalVariebleEntry(localVariable.getName(), SymbolKinds.LOCAL_VARIABLE ,new ClassType(localVariable.getType().getName())), localVariable.getLine());
+			else
+				parent_table.addEntry(localVariable.getName(), new LocalVariebleEntry(localVariable.getName(), SymbolKinds.LOCAL_VARIABLE,getArrayType(localVariable.getType())), localVariable.getLine());
+		}
+		localVariable.getType().accept(this, parent_table);
+	return null;
 	}
 
 	@Override
 	public Object visit(VariableLocation location, SymbolTable table) {
 		if(location.isExternal())
 			location.getLocation().accept(this, table);
+		location.accept(this, table);
 		return null;
 	}
 
@@ -359,8 +361,9 @@ public class SymbolVisitorBuilder implements PropVisitor{
 
 	@Override
 	public Object visit(StaticCall call, SymbolTable table) {
-		for (Expression argument : call.getArguments())
+		for (Expression argument : call.getArguments()){
 			argument.accept(this,table);
+		}
 		return null;
 	}
 

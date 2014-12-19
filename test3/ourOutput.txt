@@ -113,36 +113,36 @@ Method Symbol Table: main
     Local variable: A[][] a
 
 Type Table: example1.ic
-1: Primitive type: int
-2: Primitive type: boolean
-3: Primitive type: null
-4: Primitive type: string
-5: Primitive type: void
-8: Class: Library
-24: Class: A
-28: Class: B, Superclass ID: 24
-30: Class: C
-6: Array type: string[]
-20: Array type: int[]
-27: Array type: int[]
-31: Array type: string[]
-32: Array type: A[]
-33: Array type: A[][]
-7: Method type: {string[] -> void}
-9: Method type: {string -> void}
-10: Method type: {string -> void}
-11: Method type: {int -> void}
-12: Method type: {boolean -> void}
-13: Method type: { -> int}
-14: Method type: { -> string}
-15: Method type: { -> boolean}
-16: Method type: {string, int -> int}
-17: Method type: {int -> string}
-18: Method type: {string -> int[]}
-19: Method type: {int[] -> string}
-21: Method type: {int -> int}
-22: Method type: { -> int}
-23: Method type: {int -> int}
-25: Method type: {boolean -> int}
-26: Method type: {A, int, int -> void}
-29: Method type: {A, int, int -> void}
+	1: Primitive type: int
+	2: Primitive type: boolean
+	3: Primitive type: null
+	4: Primitive type: string
+	5: Primitive type: void
+	8: Class: Library
+	24: Class: A
+	28: Class: B, Superclass ID: 24
+	30: Class: C
+	6: Array type: string[]
+	20: Array type: int[]
+	27: Array type: int[]
+	31: Array type: string[]
+	32: Array type: A[]
+	33: Array type: A[][]
+	7: Method type: {string[] -> void}
+	9: Method type: {string -> void}
+	10: Method type: {string -> void}
+	11: Method type: {int -> void}
+	12: Method type: {boolean -> void}
+	13: Method type: { -> int}
+	14: Method type: { -> string}
+	15: Method type: { -> boolean}
+	16: Method type: {string, int -> int}
+	17: Method type: {int -> string}
+	18: Method type: {string -> int[]}
+	19: Method type: {int[] -> string}
+	21: Method type: {int -> int}
+	22: Method type: { -> int}
+	23: Method type: {int -> int}
+	25: Method type: {boolean -> int}
+	26: Method type: {A, int, int -> void}
+	29: Method type: {A, int, int -> void}

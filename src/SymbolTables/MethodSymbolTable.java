@@ -122,4 +122,11 @@ public class MethodSymbolTable extends SymbolTable{
 		}
 		return false;
 	}
+
+	@Override
+	public SymbolEntry findTypeOfVariable(String entry_name,
+			SymbolTableType symbol_table) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

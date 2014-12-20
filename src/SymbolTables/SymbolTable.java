@@ -45,6 +45,7 @@ public abstract class SymbolTable {
 	public abstract Object getEntry(String name, SymbolKinds symbolKind);
 	public abstract SymbolEntry searchForVar(String id,int line);
 	public abstract Object searchTable(String name, SymbolKinds symbolKind);
+	public abstract SymbolEntry searchForVarOuterClass(String id,int line);
 	public abstract boolean print();
 	
 }

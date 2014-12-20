@@ -167,4 +167,10 @@ public class MethodSymbolTable extends SymbolTable{
 		}
 		return null;
 	}
+
+	@Override
+	public SymbolEntry searchForVarOuterClass(String id, int line) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

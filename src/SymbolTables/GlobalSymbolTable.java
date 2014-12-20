@@ -2,6 +2,7 @@ package SymbolTables;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 public class GlobalSymbolTable extends SymbolTable {
 
@@ -130,13 +131,26 @@ public class GlobalSymbolTable extends SymbolTable {
 
 	@Override
 	public SymbolEntry searchForVar(String id, int line) {
-		// TODO Auto-generated method stub
+		SymbolEntry entry;
+		for(Entry<String, ClassSymbolTable> classi : this.childTableList.entrySet()){
+			entry = classi.getValue().searchForVarOuterClass(id, line);
+			if(entry != null){
+				return entry;
+			}
+		}
 		return null;
 	}
 
 
 	@Override
 	public Object searchTable(String name, SymbolKinds symbolKind) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public SymbolEntry searchForVarOuterClass(String id, int line) {
 		// TODO Auto-generated method stub
 		return null;
 	}

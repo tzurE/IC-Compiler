@@ -28,7 +28,7 @@ public class PrettyPrinter implements Visitor {
 	private void indent(StringBuffer output, ASTNode node) {
 		output.append("\n");
 		for (int i = 0; i < depth; ++i)
-			output.append("\t");
+			output.append("    ");
 		if (node != null)
 			output.append(node.getLine() + ": ");
 	}
@@ -92,8 +92,7 @@ public class PrettyPrinter implements Visitor {
 		for(int i = 0; i < type.getDimension(); i++){
 			dim = dim + "[]";
 		}
-		
-		output.append(TypeTable.getTypeNameByString(type.getName()) + dim);
+		output.append(type.getName() + dim);
 		return output.toString();
 	}
 
@@ -347,7 +346,9 @@ public class PrettyPrinter implements Visitor {
 		SymbolTable locationScope = location.getScope();
 		//((VariableLocation)location).
 		indent(output, location);
+		
 		output.append("Reference to array");
+		
 		output.append(", Type: " + locationScope.searchForVar(((VariableLocation)location.getArray()).getName(), location.getLine()).getType().toStringSymTable());
 		output.append(", Symbol table: " + locationScope.getId());
 		
@@ -378,6 +379,8 @@ public class PrettyPrinter implements Visitor {
 		output.append("Call to virtual method: " + call.getName());
 		if (call.isExternal())
 			output.append(", in external scope");
+		output.append(", Type: " + TypeTable.getTypeNameByString(call.getName()) +
+				", Symbol table: " + call.getScope().getId());
 		depth++;
 		if (call.isExternal())
 			output.append(call.getLocation().accept(this));

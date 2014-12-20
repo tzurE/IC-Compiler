@@ -252,5 +252,12 @@ public class ClassSymbolTable extends SymbolTable {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public SymbolEntry searchForVarOuterClass(String id, int line) {
+		if(this.fieldEntries.containsKey(id))
+			return fieldEntries.get(id);
+		return null;
 	}	
 }

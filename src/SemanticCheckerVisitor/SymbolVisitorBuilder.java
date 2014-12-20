@@ -109,7 +109,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 				parent_table.addEntry(field.getName(), new FieldEntry(field.getName(), SymbolKinds.FIELD,getArrayType(field.getType())), field.getLine());
 		}
 		field.getType().accept(this, parent_table);
-		return null;
+		return parent_table;
 	}
 
 	@Override
@@ -251,7 +251,8 @@ public class SymbolVisitorBuilder implements PropVisitor{
 				parent_table.addEntry(formal.getName(), new ParameterEntry(formal.getName(), SymbolKinds.PARAMETER,getArrayType(formal.getType())), formal.getLine());
 		}
 		formal.getType().accept(this, parent_table);
-		return null;
+		
+		return parent_table;
 	}
 
 	@Override
@@ -270,20 +271,20 @@ public class SymbolVisitorBuilder implements PropVisitor{
 	public Object visit(Assignment assignment, SymbolTable table) {
 		assignment.getVariable().accept(this,table);
 		assignment.getAssignment().accept(this, table);
-		return null;
+		return table;
 	}
 
 	@Override
 	public Object visit(CallStatement callStatement, SymbolTable table) {
 		callStatement.getCall().accept(this,table);
-		return null;
+		return table;
 	}
 
 	@Override
 	public Object visit(Return returnStatement, SymbolTable table) {
 		if(returnStatement.hasValue()){
 			returnStatement.getValue().accept(this, table);}
-		return null;
+		return table;
 	}
 
 	@Override
@@ -296,7 +297,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 			ifStatement.getElseOperation().accept(this, table);
 		}
 		
-		return null;
+		return table;
 	}
 
 	@Override
@@ -305,7 +306,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 		whileStatement.getCondition().accept(this, table);
 		whileStatement.getOperation().accept(this,table);
 		
-		return null;
+		return table;
 	}
 
 	@Override

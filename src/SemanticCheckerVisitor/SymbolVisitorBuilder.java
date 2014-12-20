@@ -350,14 +350,14 @@ public class SymbolVisitorBuilder implements PropVisitor{
 	public Object visit(VariableLocation location, SymbolTable table) {
 		if(location.isExternal())
 			location.getLocation().accept(this, table);
-		return null;
+		return table;
 	}
 
 	@Override
 	public Object visit(ArrayLocation location, SymbolTable table) {
 		location.getArray().accept(this, table);
 		location.getIndex().accept(this, table);
-		return null;
+		return table;
 	}
 
 	@Override
@@ -365,7 +365,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 		for (Expression argument : call.getArguments()){
 			argument.accept(this,table);
 		}
-		return null;
+		return table;
 	}
 
 	@Override
@@ -376,18 +376,18 @@ public class SymbolVisitorBuilder implements PropVisitor{
 		
 		for (Expression argument : call.getArguments())
 			argument.accept(this,table);
-		return null;
+		return table;
 	}
 
 	@Override
 	public Object visit(This thisExpression, SymbolTable table) {
 		thisExpression.accept(this,table);
-		return null;
+		return table;
 	}
 
 	@Override
 	public Object visit(NewClass newClass, SymbolTable table) {
-		return null;
+		return table;
 	}
 
 	@Override
@@ -396,13 +396,13 @@ public class SymbolVisitorBuilder implements PropVisitor{
 		newArray.getType().accept(this,table);
 		newArray.getSize().accept(this,table);
 		
-		return null;
+		return table;
 	}
 
 	@Override
 	public Object visit(Length length, SymbolTable table) {
 		length.getArray().accept(this,table);
-		return null;
+		return table;
 	}
 
 	@Override
@@ -411,7 +411,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 		binaryOp.getFirstOperand().accept(this,table);
 		binaryOp.getSecondOperand().accept(this,table);
 		
-		return null;
+		return table;
 	}
 
 	@Override
@@ -420,7 +420,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 		binaryOp.getFirstOperand().accept(this,table);
 		binaryOp.getSecondOperand().accept(this,table);
 		
-		return null;
+		return table;
 	}
 
 	@Override
@@ -428,7 +428,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 		
 		unaryOp.getOperand().accept(this, table);
 		
-		return null;
+		return table;
 	}
 
 	@Override
@@ -436,13 +436,13 @@ public class SymbolVisitorBuilder implements PropVisitor{
 
 		unaryOp.getOperand().accept(this, table);
 		
-		return null;
+		return table;
 	}
 
 	@Override
 	public Object visit(Literal literal, SymbolTable table) {
 		
-		return null;
+		return table;
 	}
 
 	@Override
@@ -450,7 +450,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 		expressionBlock.accept(this,table);
 		expressionBlock.getExpression().accept(this,table);
 		
-		return null;
+		return table;
 	}
 
 	@Override
@@ -458,7 +458,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 		method.accept(this,table);
 		//do we need this? the dynamic type tells the method where to go.
 		//dont use it
-		return null;
+		return table;
 	}
 
 	private TypeTableType TypesForPrimitive(PrimitiveType type){

@@ -305,6 +305,9 @@ public class PrettyPrinter implements Visitor {
 		++depth;
 		if (localVariable.hasInitValue()) {
 			localVariable.getInitValue().setScope(localVariableScope);
+			if (localVariable.getType().getDimension() != 0)
+				((NewArray)localVariable.getInitValue()).getType().setDimention(localVariable.getType().getDimension());
+			//localVariable.getInitValue()
 			output.append(localVariable.getInitValue().accept(this));
 		//	output.append(", Symbol table: " + localVariableScope.getId());
 		}

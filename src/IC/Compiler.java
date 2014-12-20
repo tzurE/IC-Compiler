@@ -100,7 +100,7 @@ public class Compiler {
 			System.out.println();
 			glbTable.print();
 
-			// Prints Program Type Table something like this
+			// Prints Program Type Table
 			TypeTable.printTypeTable(args[0]);
 		}
 		
@@ -109,58 +109,6 @@ public class Compiler {
 			e1.getErrorMessage();
 		}
 		catch(Exception e){
-			e.printStackTrace();
 		}
-		/////////////////////////////////////////////////pretty printer visitor////////////////////////////////////////////
-		
-		
-
-		
-		
-
-		
-		
-		
-		//////////////////////////////////////////////////parse library////////////////////////////////////////////////////////////
-		
-//		try {//if we got an alternative path to a library file, we take it
-//			if(args.length != 1 && args.length != 2){
-//				throw new IllegalArgumentException("Need 1 or 2 arguments. got: " + args.length);
-//			}
-//			if(args.length == 2 && args[1] != null){
-//				if( ! args[1].startsWith("-L"))
-//					throw new IllegalArgumentException("Library name provided: " +args[1]+ " doesn't start with -L");
-//				libFile = new FileReader(args[1].substring(2));
-//				Library_printer = new PrettyPrinter(args[1]);
-//				Liblexer Library_scanner = new Liblexer(libFile);
-//				library_parser = new LibParser(Library_scanner);
-//				//run the library paser
-//				Library_tree = library_parser.parse();
-//				
-//				/////////////////////////////////////////////////pretty printer visitor////////////////////////////////////////////
-//				//library ast root in prog1
-//				Program prog1 = (Program)Library_tree.value;
-//				//keeping all of this, if we want to print the library too.
-//				String str_prog1 = (String)prog1.accept(Library_printer);
-//				System.out.println("Parsed libic.sig successfully!");
-//			}
-			//////////////////////////////////////////////////parse the program////////////////////////////////////////////////////////
-
-				//String str_prog2 = (String)prog2_root.accept(Program_printer);
-				
-				//thats the ast from pa2
-				//	System.out.println("Parsed " +  args[0] + " successfully!");
-				//	System.out.println(str_prog2);
-			//}
-//		} catch (SyntaxError e){
-//			System.out.println(e.getErrorMessage());
-//			//TODO: COMMENTOUT BEFORE SENDINGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
-//			e.printStackTrace();
-//			}
-//		catch (Exception e1){
-//			//TODO: COMMENTOUT BEFORE SENDINGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
-//			e1.printStackTrace();
-//			return;
-//		}
 	}
 }

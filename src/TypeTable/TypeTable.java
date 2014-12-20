@@ -1,6 +1,8 @@
 package TypeTable;
 
 import java.util.*;
+import java.util.Map.Entry;
+
 import IC.AST.*;
 import IC.*;
 
@@ -58,6 +60,7 @@ public class TypeTable {
 		List<Formal> listMainFormals = new LinkedList<Formal>();
 		listMainFormals.add(formalMainMethod);
 		//main proper insertion into the unique methods list
+		
 		Method methodMain = new StaticMethod(mainReturnType,"main", listMainFormals, null);
 		methodType(methodMain);
 		
@@ -65,16 +68,17 @@ public class TypeTable {
 	
 	//this creates a new array type object. it incs the unique ID and inserts it to the map.
 	public static ArrayType arrayType(Type elemType) {
+		
 		if (uniqueArraByTypes.containsKey(elemType)) {
-			// array type object already created – return it
+		
 			return uniqueArraByTypes.get(elemType);
 		}
+		
 		else{
 			// object doesn’t exist – create and return it
 			id++;
 			ArrayType arrt = new ArrayType(elemType, id);
 			uniqueArraByTypes.put(elemType,arrt);
-			
 			arrayTypesByOrder.put(arrayCount, elemType);
 			arrayCount++;
 			
@@ -205,6 +209,11 @@ public class TypeTable {
 		   Method methodKey = methodTypesByOrder.get(i);
 		   System.out.println(uniqueMethodByTypes.get(methodKey).toString());
 		  }
+		  
+//		  System.out.println("printing array for test!!!!!!!!");
+//		  for(Entry<Integer, Type> arr : arrayTypesByOrder.entrySet()){
+//			  System.out.println(arr.getKey());
+//		  }
 		 }
 	
 	public static TypeTableType convertTypeToTypeTableType(Type type){

@@ -430,7 +430,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 		
 		return table;
 	}
-
+ 
 	@Override
 	public Object visit(LogicalUnaryOp unaryOp, SymbolTable table) {
 

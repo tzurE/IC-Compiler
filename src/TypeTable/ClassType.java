@@ -56,11 +56,11 @@ public class ClassType extends TypeTableType {
 				return "Error with type table generation, or with throwing error at extands in symbol table generation";
 			}
 			else{
-				return "\t"+this.getId() + ": Class: " + this.getName() + ", Superclass ID: " + father.getId();
+				return "    "+this.getId() + ": Class: " + this.getName() + ", Superclass ID: " + father.getId();
 			}
 		}
 		else{
-			return "\t"+this.getId() + ": Class: " + this.getName();
+			return "    "+this.getId() + ": Class: " + this.getName();
 		}
 	}
 }

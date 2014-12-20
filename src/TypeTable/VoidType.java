@@ -21,7 +21,7 @@ public class VoidType extends TypeTableType {
 
 	@Override
 	public String toString() {
-		return ("\t"+this.getId() + ": Primitive type: " + this.getName());
+		return ("    "+this.getId() + ": Primitive type: " + this.getName());
 	}
 
 	@Override

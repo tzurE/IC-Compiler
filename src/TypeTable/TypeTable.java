@@ -179,6 +179,14 @@ public class TypeTable {
 			}	
 		}
 		
+		//////////// Added for array reference
+		if (arrayTypesByOrder.containsKey(name)){
+			String str = arrayTypesByOrder.get(name).toString();
+
+			return str;
+		}
+		//////////// Added for array reference
+		
 		return "";
 	}
 	

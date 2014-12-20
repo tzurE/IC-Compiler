@@ -190,7 +190,7 @@ public class PrettyPrinter implements Visitor {
 		
 		depth++;
 		output.append(assignment.getVariable().accept(this));
-		output.append(assignment.getAssignment().accept(this));
+		output.append(assignment.getAssignment().accept(this) + ", Symbol table: " + assignmentScope.getId());
 		depth--;
 		return output.toString();
 	}
@@ -220,6 +220,7 @@ public class PrettyPrinter implements Visitor {
 		if (returnStatement.hasValue()) {
 			depth++;
 			output.append(returnStatement.getValue().accept(this));
+			output.append(", Symbol table: " + returnScope.getId());
 			depth--;
 		}
 		return output.toString();
@@ -289,7 +290,7 @@ public class PrettyPrinter implements Visitor {
 
 	public Object visit(LocalVariable localVariable) {
 		StringBuffer output = new StringBuffer();
-		SymbolTable classScope = localVariable.getScope();
+		SymbolTable localVariableScope = localVariable.getScope();
 
 		indent(output, localVariable);
 		output.append("Declaration of local variable: "
@@ -297,15 +298,15 @@ public class PrettyPrinter implements Visitor {
 		if (localVariable.hasInitValue()) {
 			output.append(", with initial value");
 		}
-
+		localVariable.getType().setScope(localVariableScope);
 		output.append(", " + localVariable.getType().accept(this));
-		output.append(", Symbol table: "+ classScope.getId());
+	//	output.append(", Symbol table: "+ localVariableScope.getId());
 		
 		++depth;
 		if (localVariable.hasInitValue()) {
+			localVariable.getInitValue().setScope(localVariableScope);
 			output.append(localVariable.getInitValue().accept(this));
-			//output.append(", " + localVariable.getType().accept(this));
-			output.append(", Symbol table: " + classScope.getId());
+			output.append(", Symbol table: " + localVariableScope.getId());
 		}
 		--depth;
 		
@@ -314,18 +315,23 @@ public class PrettyPrinter implements Visitor {
 
 	public Object visit(VariableLocation location) {
 		StringBuffer output = new StringBuffer();
-		SymbolTable classScope = location.getScope();
+		SymbolTable locationScope = location.getScope();
 		
 		indent(output, location);
 		output.append("Reference to variable: " + location.getName());
 		if (location.isExternal())
 			output.append(", in external scope");
+		
+		output.append(", Type: " + locationScope.searchForVar(location.getName(), location.getLine()).getType().toStringSymTable()); 
+		output.append(", Symbol table: " + locationScope.getId());
+		
 		if (location.isExternal()) {
+			depth++;
 			output.append(location.getLocation().accept(this));
+			depth--;
 		}
 		
-		output.append(", Type: " + classScope.searchForVar(location.getName(), location.getLine()).getType().toStringSymTable()); 
-		output.append(", Symbol table: " + classScope.getId());
+		
 		
 		return output.toString();
 	}
@@ -389,12 +395,16 @@ public class PrettyPrinter implements Visitor {
 
 	public Object visit(NewArray newArray) {
 		StringBuffer output = new StringBuffer();
-
+		SymbolTable newArrayScope = newArray.getScope();
+		
 		indent(output, newArray);
 		output.append("Array allocation");
 		depth++;
 		output.append(newArray.getType().accept(this));
+		newArray.getSize().setScope(newArrayScope);
 		output.append(newArray.getSize().accept(this));
+		output.append(", Type: " + newArray.getType()); 
+		output.append(", Symbol table: " + newArrayScope.getId());
 		depth--;
 		return output.toString();
 	}
@@ -462,7 +472,7 @@ public class PrettyPrinter implements Visitor {
 
 	public Object visit(Literal literal) {
 		StringBuffer output = new StringBuffer();
-		//SymbolTable literalScope = literal.getScope();
+		SymbolTable literalScope = literal.getScope();
 		
 		indent(output, literal);
 		output.append(literal.getType().getDescription() + ": "

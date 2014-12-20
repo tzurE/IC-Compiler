@@ -7,7 +7,7 @@ import TypeTable.*;
  * Pretty printing visitor - travels along the AST and prints info about each
  * node, in an easy-to-comprehend format.
  * 
- * @author Tovi Almozlino
+ * @author Tovi Almozlino 
  */
 public class PrettyPrinter implements Visitor {
 

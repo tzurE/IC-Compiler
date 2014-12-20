@@ -341,7 +341,9 @@ public class SymbolVisitorBuilder implements PropVisitor{
 				parent_table.addEntry(localVariable.getName(), new LocalVariebleEntry(localVariable.getName(), SymbolKinds.LOCAL_VARIABLE,getArrayType(localVariable.getType())), localVariable.getLine());
 		}
 		localVariable.getType().accept(this, parent_table);
-	return null;
+		if(localVariable.hasInitValue())
+			localVariable.getInitValue().accept(this, parent_table);
+	return parent_table;
 	}
 
 	@Override

@@ -387,9 +387,11 @@ public class PrettyPrinter implements Visitor {
 
 	public Object visit(NewClass newClass) {
 		StringBuffer output = new StringBuffer();
-
+		SymbolTable newClassScope = newClass.getScope();
+			
 		indent(output, newClass);
 		output.append("Instantiation of class: " + newClass.getName());
+		output.append(", Symbol table: " + newClassScope.getId());
 		return output.toString();
 	}
 

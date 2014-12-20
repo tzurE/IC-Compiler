@@ -155,12 +155,12 @@ public class MethodSymbolTable extends SymbolTable{
 
 	@Override
 	public Object searchTable(String name, SymbolKinds symbolKind) {
-		if(symbolKind.getKind().compareTo(SymbolKinds.LOCAL_VARIABLE.getKind())==0){
+		if(symbolKind.getKind().equals(SymbolKinds.LOCAL_VARIABLE.getKind())){
 			if(LocalVariables.containsKey(name)){
 				return LocalVariables.get(name);
 			}
 		}
-		else if(symbolKind.getKind().compareTo(SymbolKinds.PARAMETER.getKind())==0){
+		else if(symbolKind.getKind().equals(SymbolKinds.PARAMETER.getKind())){
 			if(Parameters.containsKey(name)){
 				return Parameters.get(name);
 			}

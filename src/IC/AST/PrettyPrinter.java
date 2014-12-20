@@ -340,7 +340,7 @@ public class PrettyPrinter implements Visitor {
 	public Object visit(ArrayLocation location) {
 		StringBuffer output = new StringBuffer();
 		SymbolTable locationScope = location.getScope();
-		((VariableLocation)location).getArrayType().getDimension();
+		//((VariableLocation)location).
 		indent(output, location);
 		output.append("Reference to array");
 		output.append(", Type: " + locationScope.searchForVar(((VariableLocation)location.getArray()).getName(), location.getLine()).getType().toStringSymTable());

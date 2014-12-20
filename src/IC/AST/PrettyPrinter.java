@@ -220,7 +220,7 @@ public class PrettyPrinter implements Visitor {
 		if (returnStatement.hasValue()) {
 			depth++;
 			output.append(returnStatement.getValue().accept(this));
-			output.append(", Symbol table: " + returnScope.getId());
+			//output.append(", Symbol table: " + returnScope.getId());
 			depth--;
 		}
 		return output.toString();
@@ -300,13 +300,13 @@ public class PrettyPrinter implements Visitor {
 		}
 		localVariable.getType().setScope(localVariableScope);
 		output.append(", " + localVariable.getType().accept(this));
-	//	output.append(", Symbol table: "+ localVariableScope.getId());
+		output.append(", Symbol table: "+ localVariableScope.getId());
 		
 		++depth;
 		if (localVariable.hasInitValue()) {
 			localVariable.getInitValue().setScope(localVariableScope);
 			output.append(localVariable.getInitValue().accept(this));
-			output.append(", Symbol table: " + localVariableScope.getId());
+		//	output.append(", Symbol table: " + localVariableScope.getId());
 		}
 		--depth;
 		
@@ -399,12 +399,12 @@ public class PrettyPrinter implements Visitor {
 		
 		indent(output, newArray);
 		output.append("Array allocation");
-		depth++;
 		output.append(" " + newArray.getType().accept(this));
+		output.append(", Symbol table: " + newArrayScope.getId());
+		
+		depth++;
 		newArray.getSize().setScope(newArrayScope);
 		output.append(newArray.getSize().accept(this));
-		output.append(", Type: " + newArray.getType()); 
-		output.append(", Symbol table: " + newArrayScope.getId());
 		depth--;
 		return output.toString();
 	}
@@ -478,7 +478,7 @@ public class PrettyPrinter implements Visitor {
 		output.append(literal.getType().getDescription() + ": "
 				+ literal.getType().toFormattedString(literal.getValue()));
 		output.append(", Type: " + LiteralTypes.literalTypeByName(literal.getType().getDescription()));
-		//output.append(", Symbol table: " + literalScope.getId());
+		output.append(", Symbol table: " + literalScope.getId());
 		
 		return output.toString();
 	}

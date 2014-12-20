@@ -190,7 +190,8 @@ public class PrettyPrinter implements Visitor {
 		
 		depth++;
 		output.append(assignment.getVariable().accept(this));
-		output.append(assignment.getAssignment().accept(this) + ", Symbol table: " + assignmentScope.getId());
+		output.append(assignment.getAssignment().accept(this));
+		//+ ", Symbol table: " + assignmentScope.getId());
 		depth--;
 		return output.toString();
 	}

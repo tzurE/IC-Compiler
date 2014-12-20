@@ -391,6 +391,7 @@ public class PrettyPrinter implements Visitor {
 			
 		indent(output, newClass);
 		output.append("Instantiation of class: " + newClass.getName());
+		output.append(", Type: " + newClass.getName());
 		output.append(", Symbol table: " + newClassScope.getId());
 		return output.toString();
 	}

@@ -15,6 +15,7 @@ class A {
       x.str = "hello";
       return 0;
     }
+	B a = new B();
   }
 
 	static void main (string[] args) {

@@ -89,7 +89,7 @@ public class ClassSymbolTable extends SymbolTable {
 		String childType = child_table.getType().toString();
 		
 		// Add child method
-		if (childType.equals(SymbolTableType.METHOD.toString())){
+		if (childType.equals(SymbolTableType.STATIC_METHOD.toString()) ||childType.equals(SymbolTableType.VIRTUAL_METHOD.toString()) ){
 			methodChildTableList.put(child_name, (MethodSymbolTable) child_table);
 			methodChildByOrder.put(methodChildCount, child_name);
 			methodChildCount++;

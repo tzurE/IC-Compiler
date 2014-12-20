@@ -3,7 +3,8 @@ package SymbolTables;
 public enum SymbolTableType {
 	GLOBAL("Global Symbol Table"),
 	CLASS("Class Symbol Table"),
-	METHOD("Method Symbol Table"),
+	VIRTUAL_METHOD("Virtual Method Symbol Table"), 
+	STATIC_METHOD("Static Method Symbol Table"), 
 	STATEMENT("Statement Block Symbol Table");
 	
 	private String type;

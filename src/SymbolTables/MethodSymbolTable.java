@@ -27,7 +27,7 @@ public class MethodSymbolTable extends SymbolTable{
 	
 	public MethodSymbolTable(SymbolTableType type, String id,
 			SymbolTable father_table) {
-		super(SymbolTableType.METHOD, id, father_table);
+		super(type, id, father_table);
 		
 	}
 

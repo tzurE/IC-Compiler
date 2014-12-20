@@ -126,7 +126,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 		}
 		//we add the new method to the list of the class it belongs to, for easier printing
 		parent_table.addEntry(method.getName(), new MethodEntry(method.getName(),SymbolKinds.VIRTUAL_METHOD,TypeTable.methodType(method)), method.getLine());
-		MethodSymbolTable symbol_table = new MethodSymbolTable(SymbolTableType.METHOD,method.getName(),parent_table);
+		MethodSymbolTable symbol_table = new MethodSymbolTable(SymbolTableType.VIRTUAL_METHOD,method.getName(),parent_table);
 		
 		
 		//we add the method as a child, in order to (pretty)print it. 
@@ -213,7 +213,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 		}
 		
 		parent_table.addEntry(method.getName(),new MethodEntry(method.getName(), SymbolKinds.STATIC_METHOD, methodType), method.getLine());
-		MethodSymbolTable symbol_table = new MethodSymbolTable(SymbolTableType.METHOD,method.getName(), parent_table);
+		MethodSymbolTable symbol_table = new MethodSymbolTable(SymbolTableType.STATIC_METHOD,method.getName(), parent_table);
 		parent_table.addChild(method.getName(), symbol_table);
 		
 		method.getType().accept(this, symbol_table);

@@ -220,7 +220,6 @@ public class PrettyPrinter implements Visitor {
 		if (returnStatement.hasValue()) {
 			depth++;
 			output.append(returnStatement.getValue().accept(this));
-			//output.append(", Symbol table: " + returnScope.getId());
 			depth--;
 		}
 		return output.toString();
@@ -260,17 +259,19 @@ public class PrettyPrinter implements Visitor {
 
 	public Object visit(Break breakStatement) {
 		StringBuffer output = new StringBuffer();
-
+		SymbolTable breakStatementScope = breakStatement.getScope();
+		
 		indent(output, breakStatement);
-		output.append("Break statement");
+		output.append("Break statement, Symbol table: " + breakStatementScope.getId());
 		return output.toString();
 	}
 
 	public Object visit(Continue continueStatement) {
 		StringBuffer output = new StringBuffer();
-
+		SymbolTable continueStatementScope = continueStatement.getScope();
+		
 		indent(output, continueStatement);
-		output.append("Continue statement");
+		output.append("Continue statement, Symbol table: " + continueStatementScope.getId());
 		return output.toString();
 	}
 
@@ -307,9 +308,8 @@ public class PrettyPrinter implements Visitor {
 			localVariable.getInitValue().setScope(localVariableScope);
 			if (localVariable.getType().getDimension() != 0)
 				((NewArray)localVariable.getInitValue()).getType().setDimention(localVariable.getType().getDimension());
-			//localVariable.getInitValue()
+			
 			output.append(localVariable.getInitValue().accept(this));
-		//	output.append(", Symbol table: " + localVariableScope.getId());
 		}
 		--depth;
 		
@@ -334,16 +334,18 @@ public class PrettyPrinter implements Visitor {
 			depth--;
 		}
 		
-		
-		
 		return output.toString();
 	}
 
 	public Object visit(ArrayLocation location) {
 		StringBuffer output = new StringBuffer();
-
+		SymbolTable locationScope = location.getScope();
+		((VariableLocation)location).getArrayType().getDimension();
 		indent(output, location);
 		output.append("Reference to array");
+		output.append(", Type: " + locationScope.searchForVar(((VariableLocation)location.getArray()).getName(), location.getLine()).getType().toStringSymTable());
+		output.append(", Symbol table: " + locationScope.getId());
+		
 		depth++;
 		output.append(location.getArray().accept(this));
 		output.append(location.getIndex().accept(this));

@@ -13,14 +13,13 @@ public class TypeTable {
 	public static VoidType voidType;
 	public static int id;
 	
-
+	//keeps all the types of the array known 
 	private static Map<Type,ArrayType> uniqueArraByTypes;
-
+	
+	//we keep all the types of the knows functions, so if a user creates a new method - first we check if there is already one of that type
 	private static Map<String,ClassType> uniqueClassByTypes;
 
 	private static Map<Method,MethodType> uniqueMethodByTypes;
-	//used to check if 2 methods has the same type of args
-	private static Map<MethodType,List<Formal>> uniqueMethodByArgs;
 
 	// For Printing the Class Types
 	private static int classCount = 0;
@@ -47,7 +46,6 @@ public class TypeTable {
 		uniqueArraByTypes = new HashMap<Type, ArrayType>();
 		uniqueClassByTypes = new HashMap<String, ClassType>();
 		uniqueMethodByTypes = new HashMap<Method, MethodType>();
-		uniqueMethodByArgs = new HashMap<MethodType, List<Formal>>();
 		
 		//Construct the Main method for the class
 		Type mainParamType = new PrimitiveType(-1, DataTypes.STRING);

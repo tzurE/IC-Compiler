@@ -66,7 +66,7 @@ public class StatementSymbolTable extends SymbolTable{
 	@Override
 	public boolean print() {
 
-		System.out.print("Statement Block Symbol Table ( located in " + this.getFather_table().getId() + ")");
+		System.out.print("Statement Block Symbol Table ( located in " + this.getFather_table().getId() + " )");
 
 		for (int i = 0; i < localVarCount; i++){
 			String name = localVariablesByOrder.get(i);

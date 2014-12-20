@@ -81,6 +81,7 @@ public class Compiler {
 				PrettyPrinter libPrinter;
 					libPrinter = new PrettyPrinter(library_location);
 				String libString = (String) lib_root.accept(libPrinter);
+				System.out.println("Parsed " + library_location + " successfully!");
 				System.out.println(libString);
 			}
 			

@@ -400,7 +400,7 @@ public class PrettyPrinter implements Visitor {
 		indent(output, newArray);
 		output.append("Array allocation");
 		depth++;
-		output.append(newArray.getType().accept(this));
+		output.append(" " + newArray.getType().accept(this));
 		newArray.getSize().setScope(newArrayScope);
 		output.append(newArray.getSize().accept(this));
 		output.append(", Type: " + newArray.getType()); 

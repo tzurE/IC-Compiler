@@ -351,7 +351,6 @@ public class PrettyPrinter implements Visitor {
 		
 		output.append(", Type: " + locationScope.searchForVar(((VariableLocation)location.getArray()).getName(), location.getLine()).getType().toStringSymTable());
 		output.append(", Symbol table: " + locationScope.getId());
-		
 		depth++;
 		output.append(location.getArray().accept(this));
 		output.append(location.getIndex().accept(this));
@@ -415,7 +414,7 @@ public class PrettyPrinter implements Visitor {
 		
 		indent(output, newArray);
 		output.append("Array allocation");
-		output.append(" " + newArray.getType().accept(this));
+		output.append(", " + newArray.getType().accept(this));
 		output.append(", Symbol table: " + newArrayScope.getId());
 		
 		depth++;

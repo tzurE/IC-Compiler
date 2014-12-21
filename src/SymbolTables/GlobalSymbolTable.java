@@ -137,7 +137,9 @@ public class GlobalSymbolTable extends SymbolTable {
 			if(entry != null){
 				return entry;
 			}
+			
 		}
+		
 		return null;
 	}
 

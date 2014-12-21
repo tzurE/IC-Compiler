@@ -445,11 +445,13 @@ public class PrettyPrinter implements Visitor {
 	public Object visit(MathBinaryOp binaryOp) {
 		StringBuffer output = new StringBuffer();
 		SymbolTable binaryOpScope = binaryOp.getScope();
-
+		SymbolEntry entry;
 		indent(output, binaryOp);
 		output.append("Mathematical binary operation: "
 				+ binaryOp.getOperator().getDescription());
-		output.append(", Type: int");
+		//entry = binaryOp.getFirstOperand().getScope().searchForVar(binaryOp.getFirstOperand().toString(), binaryOp.getLine());
+		
+		output.append(", Type: int" );
 		output.append(", Symbol table: " + binaryOpScope.getId());
 		depth++;
 		output.append(binaryOp.getFirstOperand().accept(this));

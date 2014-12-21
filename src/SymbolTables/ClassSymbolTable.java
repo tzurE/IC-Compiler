@@ -69,11 +69,11 @@ public class ClassSymbolTable extends SymbolTable {
 				System.out.println("Error! duplicate Field Name: " + id);
 			} else if (myType.equals(SymbolKinds.STATIC_METHOD.toString())) {
 				System.out
-						.println("Error! duplicate Static method Name: " + id);
+						.println("Error in Line: "+ line +"! duplicate method Name:" + id);
 
 			} else if (myType.equals(SymbolKinds.VIRTUAL_METHOD.toString())) {
 				System.out
-						.println("Error! duplicate virtual method Name:" + id);
+						.println("Error in Line: "+ line +"! duplicate method Name:" + id);
 			}
 
 			System.exit(-1);
@@ -106,15 +106,17 @@ public class ClassSymbolTable extends SymbolTable {
 	@Override
 	public boolean isIdExist(SymbolEntry entry) {
 
-		String entryType = entry.getKind().toString();
-		if (entryType.equals(SymbolKinds.FIELD.toString())) {
-			return fieldEntries.containsKey(entry.getId());
-		} else if (entryType.equals(SymbolKinds.STATIC_METHOD.toString())) {
-			return staticMethodEntries.containsKey(entry.getId());
-		} else if (entryType.equals(SymbolKinds.VIRTUAL_METHOD.toString())) {
-			return virtualMethodEntries.containsKey(entry.getId());
-		}
-		return false;
+//		String entryType = entry.getKind().toString();
+//		if (entryType.equals(SymbolKinds.FIELD.toString())) {
+//			return fieldEntries.containsKey(entry.getId());
+//		} else if (entryType.equals(SymbolKinds.STATIC_METHOD.toString())) {
+//			return staticMethodEntries.containsKey(entry.getId());
+//		} else if (entryType.equals(SymbolKinds.VIRTUAL_METHOD.toString())) {
+//			return virtualMethodEntries.containsKey(entry.getId());
+//		}
+		
+		//in the scope rules - Identifers, regardless of their kind, cannot be defined multiple times in the same scope. so..
+		return((fieldEntries.containsKey(entry.getId()) || staticMethodEntries.containsKey(entry.getId()) || virtualMethodEntries.containsKey(entry.getId())));
 	}
 
 	public ClassSymbolTable findChild(String className) {

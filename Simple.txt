@@ -4,10 +4,14 @@ class A {
 
   static int sfunc(boolean b) {
 	C c = new C();
-	c.a = new A[3][3];
-      return 0;
+	return 0;
+
     
   }
+
+	int sfunc(){
+
+}
 
   void vfunc(A a, int max, int val) {
     int[] arr = new int[1];

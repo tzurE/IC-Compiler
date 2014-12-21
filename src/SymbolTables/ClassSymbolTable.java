@@ -5,7 +5,12 @@ import java.util.Map.Entry;
 
 import SymbolTables.FieldEntry;
 import SymbolTables.StaticMethodEntry;
-
+/**
+ * 
+ * @author Tzur Eliyahu, Yael Kinor, Tuval Rotem
+ * main class table, holdes all the info of the various entities that live in each class.
+ * used to traverse the tree.
+ */
 public class ClassSymbolTable extends SymbolTable {
 
 	private HashMap<String, SymbolEntry> fieldEntries = new HashMap<String, SymbolEntry>();

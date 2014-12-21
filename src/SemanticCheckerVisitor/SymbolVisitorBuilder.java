@@ -5,7 +5,15 @@ import IC.AST.*;
 import SymbolTables.*;
 import TypeTable.*;
 import IC.*;
-
+/**
+ * 
+ * @author Tzur Eliyahu, Yael Kinor, Tuval Rotem
+ * 
+ * This is the main builder. in the pa3-doc.docx we referred it has the class that traverses 
+ * the tree and builds the sym tabs + Type tab, and assigns every ASTnode the scope(symtab) it belongs to.
+ * it required to build a new visitor in the name of propVisitor, which enables us to use both symtab and ASTnode 
+ *
+ */
 public class SymbolVisitorBuilder implements PropVisitor{
 
 	private String prog_name;
@@ -174,7 +182,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 			if(!method.getType().getName().equals("void")){
 				try {
 					throw new SemanticError(method.getLine(),
-							"Error: main function return type haas to be void");
+							"Error: main function return type has to be void");
 				}
 				catch (SemanticError e) {
 					System.out.println(e.getErrorMessage());
@@ -199,7 +207,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 			if(!mainParameter.getType().getName().equals("string") || mainParameter.getType().getDimension() != 1){
 				try {
 					throw new SemanticError(method.getLine(),
-							"the 'main' method's argument must bee an arrau of strings - ('string[]')");
+							"the 'main' method's argument must bee an array of strings - ('string[]')");
 				}
 				catch (SemanticError e) {
 					System.out.println(e.getErrorMessage());

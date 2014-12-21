@@ -539,9 +539,9 @@ public class PrettyPrinter implements Visitor {
 		else if(str.equals("Literal")){
 			str2 = ((Literal)(binaryOp.getSecondOperand())).getType().getDescription();
 			if (str2.substring(0, str2.indexOf(" ")).equalsIgnoreCase("Integer"))
-				output.append(" Type: int");
+				output.append(", Type: int");
 			if (str2.substring(0, str2.indexOf(" ")).equalsIgnoreCase("String"))
-				output.append(" Type: string");
+				output.append(", Type: string");
 		}
 			
 		output.append(", Symbol table: " + binaryOpScope.getId());

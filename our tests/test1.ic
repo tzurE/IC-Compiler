@@ -1,0 +1,29 @@
+/* No main function - Semantic check error */
+
+class A {
+  string str;
+  int i;
+
+  static int a1(boolean b) {
+    return 0;
+  }
+  
+  static int a2(int i){
+	B b = new B;
+	b.j = i;
+	return i;
+  }
+}
+
+class B extends A {
+    int j;
+}
+
+class C {
+  static void c1(string[] args) {
+    A[][] a;
+	int i;
+	A i = new A();
+	i.i = i;
+  }
+}

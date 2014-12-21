@@ -9,7 +9,7 @@ class A {
   }
 
   void vfunc(A a, int max, int val) {
-    int[][][][] arr = new int[1][1][1][1];
+    int[] arr = new int[1];
     int i = 0;
     while (i < max){
         arr[i] = val;

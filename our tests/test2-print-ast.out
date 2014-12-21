@@ -1,0 +1,38 @@
+Parsed our tests/test2.ic successfully!
+
+Abstract Syntax Tree: our tests/test2.ic
+
+3: Declaration of class: A, Type: A, Symbol table: Global
+    4: Declaration of field: str, Type: string, Symbol table: A
+    5: Declaration of field: i, Type: int, Symbol table: A
+    7: Declaration of static method: a1, Type: {boolean -> int}, Symbol table: A
+        7: Parameter: b, Type: boolean, Symbol table: a1
+        8: Return statement, with return value, Symbol table: a1
+            8: Integer literal: 0, Type: int, Symbol table: a1
+    11: Declaration of static method: a2, Type: {int -> int}, Symbol table: A
+        11: Parameter: i, Type: int, Symbol table: a2
+        12: Declaration of local variable: b, with initial value, Type: B, Symbol table: a2
+            12: Instantiation of class: B, Type: B, Symbol table: a2
+        13: Assignment statement, Symbol table: a2
+            13: Reference to variable: j, in external scope, Type: int, Symbol table: a2
+                13: Reference to variable: b, Type: B, Symbol table: a2
+            13: Reference to variable: i, Type: int, Symbol table: a2
+        14: Return statement, with return value, Symbol table: a2
+            14: Reference to variable: i, Type: int, Symbol table: a2
+18: Declaration of class: B, subclass of A, Type: B, Symbol table: A
+    19: Declaration of field: j, Type: int, Symbol table: B
+    20: Declaration of static method: main, Type: {string[] -> void}, Symbol table: B
+        20: Parameter: args, Type: string[], Symbol table: main
+        21: Return statement, with return value, Symbol table: main
+            21: Integer literal: 0, Type: int, Symbol table: main
+25: Declaration of class: C, Type: C, Symbol table: Global
+    26: Declaration of static method: c1, Type: , Symbol table: C
+        26: Parameter: args, Type: string[], Symbol table: c1
+        27: Declaration of local variable: a, Type: A[][], Symbol table: c1
+        28: Declaration of local variable: i, Type: int, Symbol table: c1
+        29: Declaration of local variable: b, with initial value, Type: A, Symbol table: c1
+            29: Instantiation of class: A, Type: A, Symbol table: c1
+        30: Assignment statement, Symbol table: c1
+            30: Reference to variable: i, in external scope, Type: int, Symbol table: c1
+                30: Reference to variable: b, Type: A, Symbol table: c1
+            30: Reference to variable: i, Type: int, Symbol table: c1

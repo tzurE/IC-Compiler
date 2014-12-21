@@ -1,22 +1,16 @@
-/* No main function - Semantic check error */
+/* Instantiate A in Class C, Instantiate B in class C,
+	assignment of local variable of type B to array of A
+	assignment of local 1-dim array of type A to 2-dim array or type A 
+	declaration and assignment of local variable i to a same name field in instance of A */
+	
 
 class A {
   string str;
   int i;
-
-  static int a1(boolean b) {
-    return 0;
-  }
-  
-  static int a2(int i){
-	B b = new B();
-	b.j = i;
-	return i;
-  }
 }
 
 class B extends A {
-    int j;
+    
 	static void main(string[] args){
 		return 0;
 	}
@@ -24,9 +18,13 @@ class B extends A {
 
 class C {
   static void c1(string[] args) {
-    A[][] a;
-	int i;
-	A b = new A();
+    A[][] a1 = new A[1][1];
+	A[] a2 = new A[1];
+	a1[0] = a2;
+	B b = new B();
+	a1[0][0] = b;
+	
+	int i = 5;
 	b.i = i;
   }
 }

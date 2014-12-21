@@ -1,4 +1,4 @@
-/* No main function - Semantic check error */
+/* Do binary operation, use A method in B main */
 
 class A {
   string str;

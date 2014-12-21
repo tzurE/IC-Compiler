@@ -1,4 +1,4 @@
-/* No main function - Semantic check error */
+/* Use 'this' reference, same type */
 
 class A {
   string str;
@@ -13,7 +13,7 @@ class A {
 	return 0;
   }
   
-  static void main(boolean b){
+  static void main(string[] argv){
 	return 0;
   }
 }

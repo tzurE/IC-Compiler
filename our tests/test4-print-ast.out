@@ -1,0 +1,26 @@
+Parsed our tests/test4.ic successfully!
+
+Abstract Syntax Tree: our tests/test4.ic
+
+3: Declaration of class: A, Type: A, Symbol table: Global
+    4: Declaration of field: str, Type: string, Symbol table: A
+    5: Declaration of field: i, Type: int, Symbol table: A
+    7: Declaration of virtual method: a, Type: {boolean -> int}, Symbol table: A
+        7: Parameter: b, Type: boolean, Symbol table: a
+        9: Declaration of local variable: i, with initial value, Type: int, Symbol table: a
+            9: Reference to variable: i, in external scope, Type: int, Symbol table: a
+                9: Reference to 'this' instance, Symbol table: a
+        10: If statement, Symbol table: a
+            10: Call to virtual method: equals, in external scope, Type: , Symbol table: a
+                10: Reference to variable: str, in external scope, Type: string, Symbol table: a
+                    10: Reference to 'this' instance, Symbol table: a
+                10: String literal: "", Type: string, Symbol table: a
+            10: Block of statements, Symbol table: a
+                11: Return statement, with return value, Symbol table: statement block in a
+                    11: Reference to variable: i, Type: int, Symbol table: statement block in a
+        13: Return statement, with return value, Symbol table: a
+            13: Integer literal: 0, Type: int, Symbol table: a
+    16: Declaration of static method: main, Type: {string[] -> void}, Symbol table: A
+        16: Parameter: argv, Type: string[], Symbol table: main
+        17: Return statement, with return value, Symbol table: main
+            17: Integer literal: 0, Type: int, Symbol table: main

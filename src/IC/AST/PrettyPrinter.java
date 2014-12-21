@@ -508,7 +508,7 @@ public class PrettyPrinter implements Visitor {
 	public Object visit(Length length) {
 		StringBuffer output = new StringBuffer();
 		SymbolTable lengthScope = length.getScope();		
-
+		
 		indent(output, length);
 		output.append("Reference to array length");
 		output.append(", Type: int");
@@ -524,12 +524,26 @@ public class PrettyPrinter implements Visitor {
 		StringBuffer output = new StringBuffer();
 		SymbolTable binaryOpScope = binaryOp.getScope();
 		SymbolEntry entry;
+		String str, str2;
+		
 		indent(output, binaryOp);
 		output.append("Mathematical binary operation: "
 				+ binaryOp.getOperator().getDescription());
 		//entry = binaryOp.getFirstOperand().getScope().searchForVar(binaryOp.getFirstOperand().toString(), binaryOp.getLine());
 		
-		output.append(", Type: int" );
+		str = binaryOp.getSecondOperand().getClass().toString();
+		str = str.substring(str.lastIndexOf(".")+1, str.length());
+		
+		if (str.equals("VariableLocation"))
+			output.append(", Type: " + binaryOpScope.searchForVar(((VariableLocation)binaryOp.getSecondOperand()).getName(), binaryOp.getLine()).getType().getName());
+		else if(str.equals("Literal")){
+			str2 = ((Literal)(binaryOp.getSecondOperand())).getType().getDescription();
+			if (str2.substring(0, str2.indexOf(" ")).equalsIgnoreCase("Integer"))
+				output.append(" Type: int");
+			if (str2.substring(0, str2.indexOf(" ")).equalsIgnoreCase("String"))
+				output.append(" Type: string");
+		}
+			
 		output.append(", Symbol table: " + binaryOpScope.getId());
 		depth++;
 		output.append(binaryOp.getFirstOperand().accept(this));

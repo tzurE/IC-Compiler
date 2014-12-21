@@ -65,6 +65,7 @@ public class Compiler {
 		Library_tree = library_parser.parse();
 		Program lib_root = (Program)Library_tree.value;
 		if(LibPathGiven){
+
 			prog2_root.addLibraryClass(lib_root.getClasses().get(0));
 			System.out.println("Parsed " + library_location + " successfully!");
 		}
@@ -76,16 +77,6 @@ public class Compiler {
 		System.out.println("Parsed " + args[0] +" successfully!");
 		
 		if(printAST){
-			// Pretty-print the library to System.out
-//			if(LibPathGiven){
-//				PrettyPrinter libPrinter;
-//					libPrinter = new PrettyPrinter(library_location);
-//				String libString = (String) lib_root.accept(libPrinter);
-//				System.out.println("Parsed " + library_location + " successfully!");
-//				System.out.println(libString);
-//			}
-			
-			// Pretty-print the program to System.out
 			PrettyPrinter printer = new PrettyPrinter(args[0]);
 			String myString = (String) prog2_root.accept(printer);
 			if(PrintSymTables){
@@ -110,7 +101,6 @@ public class Compiler {
 			e1.getErrorMessage();
 		}
 		catch(Exception e){
-			e.printStackTrace();
 		}
 		/////////////////////////////////////////////////pretty printer visitor////////////////////////////////////////////
 		

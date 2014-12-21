@@ -2,13 +2,24 @@ package SymbolTables;
 
 import java.util.List;
 
+/**
+ * 
+ * @author Tzur Eliyahu, Yael Kinor, Tuval Rotem
+ * The main abstract symbol Table. it contains all the information needed for a Scope. 
+ * Type - 5 different symbol table types. method, class, global, etc...
+ * 4 different kinds of search - bottom up(search for in an enclosing scope - SearchForVar), 
+ * top down(from the global to all it's children and so on - searchForVarOuterClass), local search(searchTable)
+ * and recursive local+global(GetEntry)
+ * 
+ *
+ */
+
 public abstract class SymbolTable {
 	
 	private SymbolTableType type;
 	private String id;
 	private SymbolTable father_table;
-	//private List<SymbolEntryType> entry_list;
-	//private List<SymbolTableType> children_table_List;
+
 	
 
 	public SymbolTable(SymbolTableType type, String id,
@@ -16,8 +27,6 @@ public abstract class SymbolTable {
 		this.type = type;
 		this.id = id;
 		this.father_table = father_table;
-		//this.entry_list = entry_list;
-		//this.children_table_List = children_table_List;
 	}
 
 	public SymbolTableType getType() {

@@ -3,7 +3,13 @@ package SymbolTables;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-
+/**
+ * 
+ * @author Tzur Eliyahu, Yael Kinor, Tuval Rotem
+ * Global symbol table, contains all the info of the classes on the program file.
+ * 
+ *
+ */
 public class GlobalSymbolTable extends SymbolTable {
 
 	

@@ -3,7 +3,15 @@ package SymbolTables;
 import java.util.HashMap;
 
 import SemanticCheckerVisitor.*;
-
+/**
+ * 
+ * @author Tzur Eliyahu, Yael Kinor, Tuval Rotem
+ * The method symbol table, contains important information on all the variabls, variabls declerations, 
+ * line declarations (to check that no var was called before init and such)
+ * 
+ * please notice that as the Specs requested (part 10, scope rules) - " Identifers, regardless of their kind, cannot be defined multiple times in the same scope.".
+ *
+ */
 public class MethodSymbolTable extends SymbolTable{
 	
 	//all the local variables
@@ -35,7 +43,7 @@ public class MethodSymbolTable extends SymbolTable{
 	public void addEntry(String id, SymbolEntry entry, int line) {
 		if(isIdExist(entry)){
 			try{
-				throw new SemanticError(line, "cant declare twice on" + id);
+				throw new SemanticError(line, "cant declare twice on '" + id + "'");
 			} catch(SemanticError e){
 				System.out.println(e.getErrorMessage());
 				System.exit(-1);

@@ -69,11 +69,11 @@ public class ClassSymbolTable extends SymbolTable {
 				System.out.println("Error! duplicate Field Name: " + id);
 			} else if (myType.equals(SymbolKinds.STATIC_METHOD.toString())) {
 				System.out
-						.println("Error in Line: "+ line +"! duplicate method Name:" + id);
+						.println("Error in Line: "+ line +"! duplicate method Name: " + id);
 
 			} else if (myType.equals(SymbolKinds.VIRTUAL_METHOD.toString())) {
 				System.out
-						.println("Error in Line: "+ line +"! duplicate method Name:" + id);
+						.println("Error in Line: "+ line +"! duplicate method Name: " + id);
 			}
 
 			System.exit(-1);

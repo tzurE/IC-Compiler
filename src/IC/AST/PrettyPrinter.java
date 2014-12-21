@@ -296,7 +296,10 @@ public class PrettyPrinter implements Visitor {
 	public Object visit(LocalVariable localVariable) {
 		StringBuffer output = new StringBuffer();
 		SymbolTable localVariableScope = localVariable.getScope();
-
+		ArrayLocation arr2;
+		String str;
+		int i;
+		
 		indent(output, localVariable);
 		output.append("Declaration of local variable: "
 				+ localVariable.getName());
@@ -310,8 +313,26 @@ public class PrettyPrinter implements Visitor {
 		++depth;
 		if (localVariable.hasInitValue()) {
 			localVariable.getInitValue().setScope(localVariableScope);
-			if (localVariable.getType().getDimension() != 0)
-				((NewArray)localVariable.getInitValue()).getType().setDimention(localVariable.getType().getDimension());
+			if (localVariable.getType().getDimension() == 1){
+				((NewArray)(localVariable.getInitValue())).getType().setDimention(localVariable.getType().getDimension());
+			}
+			else if(localVariable.getType().getDimension() > 1){
+				arr2 = ((ArrayLocation)(localVariable.getInitValue()));
+				
+				for (i = 0; i < 10; i++){
+					
+					str = arr2.getArray().getClass().toString();
+					str = str.substring(str.lastIndexOf(".")+1, str.length());
+					
+					if (!str.equals("ArrayLocation"))
+						break;
+					else
+						arr2 = ((ArrayLocation)(arr2.getArray()));
+				}
+				
+				((NewArray)(arr2.getArray())).getType().setDimention(localVariable.getType().getDimension());
+				
+			}
 			
 			output.append(localVariable.getInitValue().accept(this));
 		}
@@ -344,15 +365,70 @@ public class PrettyPrinter implements Visitor {
 	public Object visit(ArrayLocation location) {
 		StringBuffer output = new StringBuffer();
 		SymbolTable locationScope = location.getScope();
-		//((VariableLocation)location).
+		String str;
+		int i = 0, j = 0, k = 0;
+		ArrayLocation arr = null;
+		VariableLocation arr3 = null;
+		String arrType;
+		ArrayType arr2 = null;
+		
 		indent(output, location);
 		
 		output.append("Reference to array");
-		String arrType = locationScope.searchForVar(((VariableLocation)location.getArray()).getName(), location.getLine()).getType().toStringSymTable();
-		if(arrType.endsWith("[]"))
-			arrType = arrType.substring(0, arrType.length() -2);
-		output.append(", Type: " + arrType);
+		
+		str = location.getArray().getClass().toString();
+		str = str.substring(str.lastIndexOf(".") + 1, str.length());
+		//String arrType = locationScope.searchForVar(((NewArray)(location.getArray())).getType().getName();
+		//if(arrType.endsWith("[]"))
+			//arrType = arrType.substring(0, arrType.length() -2);
+		if (str.equals("ArrayLocation")){
+			arr  = (ArrayLocation)location.getArray();
+			j = 1;
+		
+			for (i = 0; i < 10; i++){
+	
+				str = arr.getArray().getClass().toString();
+				str = str.substring(str.lastIndexOf(".") + 1, str.length());	
+				
+				if (str.equals("ArrayLocation")){
+					arr  = (ArrayLocation)arr.getArray();
+				}
+				else{
+					break;
+				}
+			
+			}
+		}
+		if (str.equals("VariableLocation")){
+			if ((i > 0) || (j > 0)){
+				arr2 = ((ArrayType)(locationScope.searchForVar( ((VariableLocation)(arr.getArray())).getName(), arr.getLine()).getType()));
+				arrType = arr2.getArrayType().getName();
+				int dim = arr2.getArrayType().getDimension();
+				for (k = 0; k < dim-i-j-1; k++){
+					arrType += "[]";
+				}
+			}
+			else{
+				arr2 = ((ArrayType)(locationScope.searchForVar( ((VariableLocation)(location.getArray())).getName(), location.getLine()).getType()));
+				arrType = arr2.getArrayType().getName();
+				int dim = arr2.getArrayType().getDimension();
+				for (j = 0; j < dim-1; j++){
+					arrType += "[]";
+				}
+				
+			}
+		//	if(arrType.endsWith("[]"))  
+				//arrType = arrType.substring(0, arrType.length() -2);
+			output.append(", Type: " + arrType);
+		}	
+		else{
+			if ((i > 0) || (j > 0))
+				output.append(", Type: " + ((NewArray)(arr.getArray())).getType().getName());
+			else
+				output.append(", Type: " + ((NewArray)(location.getArray())).getType().getName());
+		}
 		output.append(", Symbol table: " + locationScope.getId());
+		
 
 		depth++;
 		output.append(location.getArray().accept(this));

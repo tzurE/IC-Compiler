@@ -348,9 +348,12 @@ public class PrettyPrinter implements Visitor {
 		indent(output, location);
 		
 		output.append("Reference to array");
-		
-		output.append(", Type: " + locationScope.searchForVar(((VariableLocation)location.getArray()).getName(), location.getLine()).getType().toStringSymTable());
+		String arrType = locationScope.searchForVar(((VariableLocation)location.getArray()).getName(), location.getLine()).getType().toStringSymTable();
+		if(arrType.endsWith("[]"))
+			arrType = arrType.substring(0, arrType.length() -2);
+		output.append(", Type: " + arrType);
 		output.append(", Symbol table: " + locationScope.getId());
+
 		depth++;
 		output.append(location.getArray().accept(this));
 		output.append(location.getIndex().accept(this));

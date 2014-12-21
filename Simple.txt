@@ -10,10 +10,10 @@ class A {
 }
 
   void vfunc(A a, int max, int val) {
-    int[] arr = new int[1];
+    int[][][] arr = new int[1][2][4];
     int i = 0;
     while (i < max){
-        arr[i] = val;
+        arr[i][i][i] = val;
         i = i + 1;
         if (a == null)
           break;

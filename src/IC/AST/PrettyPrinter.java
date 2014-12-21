@@ -529,7 +529,6 @@ public class PrettyPrinter implements Visitor {
 		indent(output, binaryOp);
 		output.append("Mathematical binary operation: "
 				+ binaryOp.getOperator().getDescription());
-		//entry = binaryOp.getFirstOperand().getScope().searchForVar(binaryOp.getFirstOperand().toString(), binaryOp.getLine());
 		
 		str = binaryOp.getSecondOperand().getClass().toString();
 		str = str.substring(str.lastIndexOf(".")+1, str.length());

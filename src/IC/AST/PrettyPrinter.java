@@ -472,9 +472,11 @@ public class PrettyPrinter implements Visitor {
 
 	public Object visit(This thisExpression) {
 		StringBuffer output = new StringBuffer();
-
+		SymbolTable thisExpScope = thisExpression.getScope();
+		
 		indent(output, thisExpression);
 		output.append("Reference to 'this' instance");
+		output.append(", Symbol table: " + thisExpScope.getId());
 		return output.toString();
 	}
 

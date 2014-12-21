@@ -1,0 +1,31 @@
+Parsed our tests/test3.ic successfully!
+
+Abstract Syntax Tree: our tests/test3.ic
+
+3: Declaration of class: A, Type: A, Symbol table: Global
+    4: Declaration of field: str, Type: string, Symbol table: A
+    5: Declaration of field: i, Type: int, Symbol table: A
+    7: Declaration of static method: a1, Type: {boolean -> int}, Symbol table: A
+        7: Parameter: b, Type: boolean, Symbol table: a1
+        8: If statement, Symbol table: a1
+            8: Logical binary operation: equality, Type: boolean, Symbol table: a1
+                8: Reference to variable: b, Type: boolean, Symbol table: a1
+                8: Boolean literal: true, Type: boolean, Symbol table: a1
+            8: Block of statements, Symbol table: a1
+                9: Return statement, with return value, Symbol table: statement block in a1
+                    9: Integer literal: 1, Type: int, Symbol table: statement block in a1
+        11: Return statement, with return value, Symbol table: a1
+            11: Integer literal: 0, Type: int, Symbol table: a1
+16: Declaration of class: C, Type: C, Symbol table: Global
+    17: Declaration of static method: main, Type: {string[] -> void}, Symbol table: C
+        17: Parameter: args, Type: string[], Symbol table: main
+        18: Declaration of local variable: a, Type: A[][], Symbol table: main
+        19: Declaration of local variable: i, Type: int, Symbol table: main
+        20: Declaration of local variable: b, Type: boolean, Symbol table: main
+        21: Declaration of local variable: c, with initial value, Type: A, Symbol table: main
+            21: Instantiation of class: A, Type: A, Symbol table: main
+        22: Assignment statement, Symbol table: main
+            22: Reference to variable: i, in external scope, Type: int, Symbol table: main
+                22: Reference to variable: c, Type: A, Symbol table: main
+            22: Call to static method: a1, in class A, Type: {boolean -> int}, Symbol Table: main
+                22: Reference to variable: b, Type: boolean, Symbol table: main

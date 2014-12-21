@@ -1,0 +1,23 @@
+/* No main function - Semantic check error */
+
+class A {
+  string str;
+  int i;
+
+  static int a1(boolean b) {
+	if (b == true){
+		return 1;
+	}
+	return 0;
+  }
+}
+
+class C {
+  static void main(string[] args) {
+    A[][] a;
+	int i;
+	boolean b;
+	A c = new A();
+	c.i = A.a1(b);
+  }
+}

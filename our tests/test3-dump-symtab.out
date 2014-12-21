@@ -1,0 +1,43 @@
+Parsed our tests/test3.ic successfully!
+
+Global Symbol Table: our tests/test3.ic
+    Class: A
+    Class: C
+Children tables: A, C
+
+Class Symbol Table: A
+    Field: string str
+    Field: int i
+    Static method: a1 {boolean -> int}
+Children tables: a1
+
+Method Symbol Table: a1
+    Parameter: boolean b
+Children tables: statement block in a1
+
+Statement Block Symbol Table ( located in a1 )
+
+Class Symbol Table: C
+    Static method: main {string[] -> void}
+Children tables: main
+
+Method Symbol Table: main
+    Parameter: string[] args
+    Local variable: A[][] a
+    Local variable: int i
+    Local variable: boolean b
+    Local variable: A c
+
+Type Table: our tests/test3.ic
+    1: Primitive type: int
+    2: Primitive type: boolean
+    3: Primitive type: null
+    4: Primitive type: string
+    5: Primitive type: void
+    8: Class: A
+    10: Class: C
+    6: Array type: string[]
+    11: Array type: A[]
+    12: Array type: A[][]
+    7: Method type: {string[] -> void}
+    9: Method type: {boolean -> int}

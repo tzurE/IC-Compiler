@@ -382,7 +382,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 
 	@Override
 	public Object visit(This thisExpression, SymbolTable table) {
-		thisExpression.accept(this,table);
+		
 		return table;
 	}
 

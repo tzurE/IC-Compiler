@@ -443,6 +443,8 @@ public class PrettyPrinter implements Visitor {
 		indent(output, call);
 		output.append("Call to static method: " + call.getName()
 				+ ", in class " + call.getClassName());
+		output.append(", Type: " + TypeTable.getTypeNameByString(call.getName())
+				+ ", Symbol Table: " + call.getScope().getId());
 		depth++;
 		for (Expression argument : call.getArguments())
 			output.append(argument.accept(this));

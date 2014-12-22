@@ -1,5 +1,6 @@
 package TypeTable;
 
+
 public class BooleanType extends TypeTableType {
 
 	public BooleanType(int id) {
@@ -7,7 +8,8 @@ public class BooleanType extends TypeTableType {
 	}
 
 	@Override
-	public boolean subType(TypeTableType type) {
+	//primitive type- only itself and null extends it
+	public boolean isTypeExtendsThis(TypeTableType type) {
 		if(type==null){
 			return false;
 		}

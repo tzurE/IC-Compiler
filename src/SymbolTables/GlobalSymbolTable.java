@@ -3,6 +3,8 @@ package SymbolTables;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+
+import TypeTable.TypeTableType;
 /**
  * 
  * @author Tzur Eliyahu, Yael Kinor, Tuval Rotem
@@ -161,5 +163,12 @@ public class GlobalSymbolTable extends SymbolTable {
 	public SymbolEntry searchForVarOuterClass(String id, int line) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+	//dummy function
+	@Override
+	public void setTableTypeForVariable(String fieldName, TypeTableType type) {
+		// no action needed;
 	}
 }

@@ -1,6 +1,7 @@
 package SymbolTables;
 
 import java.util.List;
+import TypeTable.*;
 
 /**
  * 
@@ -56,5 +57,6 @@ public abstract class SymbolTable {
 	public abstract Object searchTable(String name, SymbolKinds symbolKind);
 	public abstract SymbolEntry searchForVarOuterClass(String id,int line);
 	public abstract boolean print();
+	public abstract void setTableTypeForVariable(String fieldName, TypeTableType type);
 	
 }

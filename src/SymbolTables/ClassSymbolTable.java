@@ -2,9 +2,7 @@ package SymbolTables;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
-
-import SymbolTables.FieldEntry;
-import SymbolTables.StaticMethodEntry;
+import TypeTable.TypeTableType;
 /**
  * 
  * @author Tzur Eliyahu, Yael Kinor, Tuval Rotem
@@ -278,4 +276,14 @@ public class ClassSymbolTable extends SymbolTable {
 		}
 		return null;
 	}
+
+	@Override
+	public void setTableTypeForVariable(String fieldName, TypeTableType type) {
+		fieldEntries.get(fieldName).setType(type);	
+	}
+	
+	public ClassSymbolTable getChildClassTable(String className){
+		return classChildTableList.get(className);
+	}
 }
+

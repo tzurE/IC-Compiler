@@ -1,5 +1,6 @@
 package TypeTable;
 
+
 public class VoidType extends TypeTableType {
 
 	public VoidType(int id) {
@@ -7,7 +8,8 @@ public class VoidType extends TypeTableType {
 	}
 
 	@Override
-	public boolean subType(TypeTableType type) {
+	//primitive type- only itself and null extends it
+	public boolean isTypeExtendsThis(TypeTableType type) {
 		if(type==null){
 			return false;
 		}

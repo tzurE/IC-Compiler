@@ -1,5 +1,6 @@
 package TypeTable;
 
+
 public class NullType extends TypeTableType {
 
 	public NullType(int id) {
@@ -7,7 +8,8 @@ public class NullType extends TypeTableType {
 	}
 
 	@Override
-	public boolean subType(TypeTableType type) {
+	//primitive type- only subtype of itself
+	public boolean isTypeExtendsThis(TypeTableType type) {
 		return (type.getId() == TypeIDs.NULL);
 	}
 

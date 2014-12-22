@@ -17,7 +17,8 @@ public class MethodType extends TypeTableType {
 	}
 
 	@Override
-	public boolean subType(TypeTableType type) {
+	//only itself and null are subtype of it
+	public boolean isTypeExtendsThis(TypeTableType type) {
 		if (type==null){
 			return false;
 		}

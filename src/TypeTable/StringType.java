@@ -1,13 +1,15 @@
 package TypeTable;
 
+
 public class StringType extends TypeTableType {
 
 	public StringType(int id) {
 		super("string", TypeIDs.STRING);
 	}
 
+	//primitive type- only itself and null extends it
 	@Override
-	public boolean subType(TypeTableType type) {
+	public boolean isTypeExtendsThis(TypeTableType type) {
 		if(type==null){
 			return false;
 		}

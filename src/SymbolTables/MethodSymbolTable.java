@@ -2,7 +2,9 @@ package SymbolTables;
 
 import java.util.HashMap;
 
+import TypeTable.*;
 import SemanticCheckerVisitor.*;
+import TypeTable.TypeTableType;
 /**
  * 
  * @author Tzur Eliyahu, Yael Kinor, Tuval Rotem
@@ -180,5 +182,15 @@ public class MethodSymbolTable extends SymbolTable{
 	public SymbolEntry searchForVarOuterClass(String id, int line) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void setTableTypeForVariable(String fieldName, TypeTableType type) {
+		if(LocalVariables.containsKey(fieldName)){
+			LocalVariables.get(fieldName).setType(type);
+		}
+		else if(Parameters.containsKey(fieldName)){
+			Parameters.get(fieldName).setType(type);
+		}
 	}
 }

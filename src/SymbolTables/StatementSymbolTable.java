@@ -3,6 +3,7 @@ package SymbolTables;
 import java.util.HashMap;
 
 import SemanticCheckerVisitor.SemanticError;
+import TypeTable.TypeTableType;
 
 public class StatementSymbolTable extends SymbolTable{
 
@@ -141,4 +142,11 @@ public class StatementSymbolTable extends SymbolTable{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public void setTableTypeForVariable(String fieldName, TypeTableType type) {
+		LocalVariables.get(fieldName).setType(type);
+	}
+	
+	
 }

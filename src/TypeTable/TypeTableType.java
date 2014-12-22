@@ -1,5 +1,6 @@
 package TypeTable;
 
+
 public abstract class TypeTableType {
 	
 	private String name;
@@ -21,7 +22,7 @@ public abstract class TypeTableType {
 	
 	// check if type is a subtypeof of the current class
 	// iff type extends current class \ null
-	public abstract boolean subType(TypeTableType type);
+	public abstract boolean isTypeExtendsThis(TypeTableType type);
 	
 	// overwrite the toString method of object class
 	public abstract String toString();

@@ -1,13 +1,15 @@
 package TypeTable;
 
+
 public class IntegerType extends TypeTableType {
 
 	public IntegerType(int id) {
 		super("int", TypeIDs.INT);
 	}
 
+	//primitive type- only itself and null extends it
 	@Override
-	public boolean subType(TypeTableType type) {
+	public boolean isTypeExtendsThis(TypeTableType type) {
 		if(type==null){
 			return false;
 		}

@@ -22,7 +22,7 @@ public abstract class TypeTableType {
 	
 	// check if type is a subtypeof of the current class
 	// iff type extends current class \ null
-	public abstract boolean isTypeExtendsThis(TypeTableType type);
+	public abstract boolean isExtendedFrom(TypeTableType type);
 	
 	// overwrite the toString method of object class
 	public abstract String toString();

@@ -9,7 +9,7 @@ public class BooleanType extends TypeTableType {
 
 	@Override
 	//primitive type- only itself and null extends it
-	public boolean isTypeExtendsThis(TypeTableType type) {
+	public boolean isExtendedFrom(TypeTableType type) {
 		if(type==null){
 			return false;
 		}

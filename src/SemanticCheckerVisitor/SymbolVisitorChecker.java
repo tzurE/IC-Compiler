@@ -242,11 +242,12 @@ public class SymbolVisitorChecker implements PropVisitor {
 	public Object visit(Assignment assignment, SymbolTable parent_table) {
 		TypeTableType varType = (TypeTableType)assignment.getVariable().accept(this, parent_table);
 		TypeTableType valueType = (TypeTableType)assignment.getAssignment().accept(this, parent_table);
+		//TODO: delete
 		if(assignment.getVariable().getLine() == 42){
 			System.out.println("");
 		}
 		//checks if the assignment value's type is a sub type of the variable's type
-		if(valueType.isTypeExtendsThis(varType)){
+		if(valueType.isExtendedFrom(varType)){
 			return assignment;
 		}
 		else{
@@ -302,7 +303,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 		MethodType mType = (MethodType)mSymbol.getType();
 		methodReturnType = mType.getReturnType();
 		//checks if the expression in the return statement is from the return type of the method
-		if(!returnStmtType.isTypeExtendsThis(methodReturnType)){
+		if(!returnStmtType.isExtendedFrom(methodReturnType)){
 			try {
 				throw new SemanticError(returnStatement.getLine(),
 						"the type of the returned value in method '"
@@ -327,7 +328,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 			if(ifStatement.getElseOperation().accept(this, parent_table) == null){ return null; }
 		}
 		//checks if the If condition is from boolean type
-		if(condType.isTypeExtendsThis(TypeTable.booleanType)){
+		if(condType.isExtendedFrom(TypeTable.booleanType)){
 			return true;
 		}
 		else{
@@ -351,7 +352,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 		loopLevel++;
 		TypeTableType condExprType = (TypeTableType)whileStatement.getCondition().accept(this, parent_table);
 		//checks if the While condition is from boolean type
-		if(!condExprType.isTypeExtendsThis(TypeTable.booleanType)){
+		if(!condExprType.isExtendedFrom(TypeTable.booleanType)){
 			try {
 				throw new SemanticError(whileStatement.getLine(),
 				"While condition must be of boolean type");
@@ -422,7 +423,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 			TypeTableType initValueType = (TypeTableType)localVariable.getInitValue().accept(this, parent_table);
 			if(initValueType != null){
 				//checks if the initialization value's type is a sub type of the variable's type
-				if(! variableType.isTypeExtendsThis(initValueType)){
+				if(! variableType.isExtendedFrom(initValueType)){
 					try {
 						throw new SemanticError(localVariable.getLine(),
 								"Initialization of local variable '"
@@ -504,6 +505,9 @@ public class SymbolVisitorChecker implements PropVisitor {
 	}
 
 	public Object visit(ArrayLocation location, SymbolTable parent_table) {
+		System.out.println(location.toString());
+		PrettyPrinter p = new PrettyPrinter("");
+		System.out.println(p.visit(location));
 		TypeTableType indexType = (TypeTableType)location.getIndex().accept(this, parent_table);
 		TypeTableType arrGetType = (TypeTableType)location.getArray().accept(this, parent_table);
 		ArrayType arrayType = null;
@@ -521,7 +525,8 @@ public class SymbolVisitorChecker implements PropVisitor {
 			}
 		}
 
-		if(TypeTable.integerType.isTypeExtendsThis(indexType)){
+		if(TypeTable.integerType.isExtendedFrom(indexType)){
+			System.out.println();
 			return TypeTable.convertTypeToTypeTableType(arrayType.getElemType());
 		}
 		else{
@@ -595,7 +600,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 			TypeTableType formalType = formalEntry.getType();
 			formalCounter++;
 
-			if(argType.isTypeExtendsThis(formalType)){
+			if( argType.isExtendedFrom(formalType) ){
 				return mType.getReturnType();
 			}
 			else{
@@ -723,7 +728,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 			TypeTableType formalType = formalEntry.getType();
 			formalCounter++;
 
-			if(!argType.isTypeExtendsThis(formalType)){
+			if(!argType.isExtendedFrom(formalType)){
 				try {
 					throw new SemanticError(call.getLine(),
 							"In the call for the method '" 
@@ -795,16 +800,16 @@ public class SymbolVisitorChecker implements PropVisitor {
 		Type newType = null;
 		if(arrayElementType.getClass().equals(PrimitiveType.class)){
 			newType = new PrimitiveType(-1, ((PrimitiveType)arrayElementType).getType());
-			newType.setDimention(arrayElementType.getDimension() + 1);
 		}
 		if(arrayElementType.getClass().equals(UserType.class)){
 			newType = new UserType(-1, ((UserType)arrayElementType).getName());
-			newType.setDimention(arrayElementType.getDimension() + 1);
 		}
+		newType.setDimention(arrayElementType.getDimension() + 1);
+		//put in containing table
 		TypeTableType newArrayType = (TypeTableType)newType.accept(this, parent_table);
 		if(newArrayType == null){ return null; }
 
-		if(arraySizeType.isTypeExtendsThis(TypeTable.integerType)){
+		if(arraySizeType.isExtendedFrom(TypeTable.integerType)){
 			return newArrayType;
 		}
 		else{
@@ -853,10 +858,10 @@ public class SymbolVisitorChecker implements PropVisitor {
 
 		// If the operator is '+'
 		else if(operator.compareTo(BinaryOps.PLUS) == 0){
-			if(operandType1.isTypeExtendsThis(TypeTable.stringType) && operandType2.isTypeExtendsThis(TypeTable.stringType)){
+			if(operandType1.isExtendedFrom(TypeTable.stringType) && operandType2.isExtendedFrom(TypeTable.stringType)){
 				return TypeTable.stringType;
 			}
-			else if (operandType1.isTypeExtendsThis(TypeTable.integerType) && operandType2.isTypeExtendsThis(TypeTable.integerType)){
+			else if (operandType1.isExtendedFrom(TypeTable.integerType) && operandType2.isExtendedFrom(TypeTable.integerType)){
 				return TypeTable.integerType;
 			}
 			else{
@@ -875,7 +880,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 
 		// If the operator is one of {-,/,*,%}
 		else{
-			if(operandType1.isTypeExtendsThis(TypeTable.integerType) && operandType2.isTypeExtendsThis(TypeTable.integerType)){
+			if(operandType1.isExtendedFrom(TypeTable.integerType) && operandType2.isExtendedFrom(TypeTable.integerType)){
 				return TypeTable.integerType;
 			}
 			else{
@@ -909,7 +914,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 		}
 		else if(operator.compareTo(BinaryOps.EQUAL) == 0 || operator.compareTo(BinaryOps.NEQUAL) == 0){
 			//checks if == and !=  gets 2 operands with TypeTableType that are sub TypeTableType of each other
-			if(operandType1.isTypeExtendsThis(operandType2) || operandType2.isTypeExtendsThis(operandType1)){
+			if(operandType1.isExtendedFrom(operandType2) || operandType2.isExtendedFrom(operandType1)){
 				return TypeTable.booleanType;
 			}
 			else{
@@ -927,7 +932,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 		}
 		//checks if && and || gets 2 operands of a boolean type
 		else if(operator.compareTo(BinaryOps.LAND) == 0 || operator.compareTo(BinaryOps.LOR) == 0){
-			if(operandType1.isTypeExtendsThis(TypeTable.booleanType) && operandType2.isTypeExtendsThis(TypeTable.booleanType)){
+			if(operandType1.isExtendedFrom(TypeTable.booleanType) && operandType2.isExtendedFrom(TypeTable.booleanType)){
 				return TypeTable.booleanType;
 			}
 			else{
@@ -945,7 +950,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 		}
 		//checks if < , > , >= , <= gets 2 operands of an int type
 		else if(operator.compareTo(BinaryOps.LT) == 0 || operator.compareTo(BinaryOps.LTE) == 0 || operator.compareTo(BinaryOps.GT) == 0 || operator.compareTo(BinaryOps.GTE) == 0){
-			if(operandType1.isTypeExtendsThis(TypeTable.integerType) && operandType2.isTypeExtendsThis(TypeTable.integerType)){
+			if(operandType1.isExtendedFrom(TypeTable.integerType) && operandType2.isExtendedFrom(TypeTable.integerType)){
 				return TypeTable.booleanType;
 			}
 			else{
@@ -978,7 +983,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 		}
 		TypeTableType operandType = (TypeTableType)unaryOp.getOperand().accept(this, parent_table);
 		//checks if the Math unary operation gets 1 operand of an int type
-		if(operandType.isTypeExtendsThis(TypeTable.integerType)){
+		if(operandType.isExtendedFrom(TypeTable.integerType)){
 			return TypeTable.integerType;
 		}
 		else{
@@ -999,7 +1004,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 	public Object visit(LogicalUnaryOp unaryOp, SymbolTable parent_table) {
 		TypeTableType operandType = (TypeTableType)unaryOp.getOperand().accept(this, parent_table);
 		//checks if the Logical unary operation get 1 operand of a boolean type
-		if(operandType.isTypeExtendsThis(TypeTable.booleanType)){
+		if(operandType.isExtendedFrom(TypeTable.booleanType)){
 			return TypeTable.booleanType;
 		}
 		else{

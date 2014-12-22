@@ -9,7 +9,7 @@ public class IntegerType extends TypeTableType {
 
 	//primitive type- only itself and null extends it
 	@Override
-	public boolean isTypeExtendsThis(TypeTableType type) {
+	public boolean isExtendedFrom(TypeTableType type) {
 		if(type==null){
 			return false;
 		}

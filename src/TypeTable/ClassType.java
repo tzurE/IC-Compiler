@@ -50,7 +50,7 @@ public class ClassType extends TypeTableType {
 	}
 	
 	@Override
-	public boolean isTypeExtendsThis(TypeTableType type) {
+	public boolean isExtendedFrom(TypeTableType type) {
 		if(type == null)
 			return false;
 		//the same class
@@ -69,7 +69,7 @@ public class ClassType extends TypeTableType {
 				return false;
 			}
 			else{
-				return superClass.isTypeExtendsThis(type);	
+				return superClass.isExtendedFrom(type);	
 			}
 		}
 	}

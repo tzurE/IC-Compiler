@@ -9,7 +9,7 @@ public class NullType extends TypeTableType {
 
 	@Override
 	//primitive type- only subtype of itself
-	public boolean isTypeExtendsThis(TypeTableType type) {
+	public boolean isExtendedFrom(TypeTableType type) {
 		return (type.getId() == TypeIDs.NULL);
 	}
 

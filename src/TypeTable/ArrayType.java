@@ -22,7 +22,7 @@ public class ArrayType extends TypeTableType {
 	
 	@Override
 	//only itself and null are subtype of it.
-	public boolean isTypeExtendsThis(TypeTableType type) {
+	public boolean isExtendedFrom(TypeTableType type) {
 		if (type == null){
 			return false;
 		}

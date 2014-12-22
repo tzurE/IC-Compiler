@@ -423,7 +423,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 			TypeTableType initValueType = (TypeTableType)localVariable.getInitValue().accept(this, parent_table);
 			if(initValueType != null){
 				//checks if the initialization value's type is a sub type of the variable's type
-				if(! variableType.isExtendedFrom(initValueType)){
+				if(! initValueType.isExtendedFrom(variableType)){
 					try {
 						throw new SemanticError(localVariable.getLine(),
 								"Initialization of local variable '"

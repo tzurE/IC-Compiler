@@ -317,20 +317,28 @@ public class PrettyPrinter implements Visitor {
 				((NewArray)(localVariable.getInitValue())).getType().setDimention(localVariable.getType().getDimension());
 			}
 			else if(localVariable.getType().getDimension() > 1){
-				arr2 = ((ArrayLocation)(localVariable.getInitValue()));
-				
-				for (i = 0; i < 10; i++){
+				if(localVariable.getInitValue().getClass().equals(ArrayLocation.class)){
+					arr2 = ((ArrayLocation)(localVariable.getInitValue()));
 					
-					str = arr2.getArray().getClass().toString();
-					str = str.substring(str.lastIndexOf(".")+1, str.length());
+					for (i = 0; i < 10; i++){
+						
+						str = arr2.getArray().getClass().toString();
+						str = str.substring(str.lastIndexOf(".")+1, str.length());
+						
+						if (!str.equals("ArrayLocation"))
+							break;
+						else
+							arr2 = ((ArrayLocation)(arr2.getArray()));
+					}
 					
-					if (!str.equals("ArrayLocation"))
-						break;
-					else
-						arr2 = ((ArrayLocation)(arr2.getArray()));
+					((NewArray)(arr2.getArray())).getType().setDimention(localVariable.getType().getDimension());
 				}
-				
-				((NewArray)(arr2.getArray())).getType().setDimention(localVariable.getType().getDimension());
+				else{
+					//TODO : localVariable.getInitValue().getClass().equals( newArray.class )
+					//TODO : run on PrettyPrinterCheck.ic and put breakpoint here:
+					System.out.println("");
+					//it cannot be casted to ArrayLocation and therefore throws error
+				}
 				
 			}
 			

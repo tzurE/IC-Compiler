@@ -1,0 +1,5 @@
+class C {
+  static void main(string[] args) {
+    int[][] a = new int[][5];    
+  }
+}

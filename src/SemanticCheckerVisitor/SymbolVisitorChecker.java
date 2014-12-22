@@ -12,23 +12,58 @@ import SemanticCheckerVisitor.*;
 public class SymbolVisitorChecker implements PropVisitor {
 	
 	private GlobalSymbolTable globalTable;
-	private int loopLevel = 0;
+	private int loopLevel = 0; //how unclosed while have we encountered so far
 	private boolean inStaticMethod = false;
 
-	//get a global table to work on
+	//get the global table after the builder made it
 	public SymbolVisitorChecker(GlobalSymbolTable globalTable) {
 		this.globalTable = globalTable;
 	}
-
-	public Object visit(Program program, SymbolTable table) {
-		TypeTableType classType;
-		boolean isTypeCheckDone = true;
+	
+	public static ICClass findClass(Program program, String className){
 		for (ICClass icClass : program.getClasses()){
-			classType = (TypeTableType) icClass.accept(this, table);
-			if(classType == null){
-				isTypeCheckDone = false;
+			if(icClass.getName().equals(className))
+				return icClass;
+		}
+		return null;
+	}
+	
+	//TODO :debbug
+	//check if some class extends itself, if so return it, otherwise return null
+	public static ICClass CheckIfClassExtendItself(Program program){
+		ICClass temp;
+		for (ICClass ic : program.getClasses()){
+			if(!ic.hasSuperClass())
+				continue;
+			temp = findClass(program,ic.getSuperClassName());
+			for(; temp.hasSuperClass(); temp = findClass(program,ic.getSuperClassName())){
+				if(ic.getName().equals(temp.getName()))
+					return ic;
+			}
+		}
+		return null;
+	}
+
+	public Object visit(Program program, SymbolTable parent_table) {
+		TypeTableType classType;
+		ICClass ic = CheckIfClassExtendItself(program);
+		if(ic != null){
+			try {
+				throw new SemanticError("class "+ ic.getName() + " extends itself");
+			}
+			catch (SemanticError e) {
+				System.out.println(e.getErrorMessage());
+				System.exit(-1);
+			}
+		}
+			
+		boolean isTypeCheckCorrect = true;
+		for (ICClass icClass : program.getClasses()){
+			classType = (TypeTableType) icClass.accept(this, globalTable);
+			if(classType == null	){
+				isTypeCheckCorrect = false;
 				try {
-					throw new SemanticError("Something went wrong during semantic check");
+					throw new SemanticError("semantic check of class "+ icClass.getName() + " failed");
 				}
 				catch (SemanticError e) {
 					System.out.println(e.getErrorMessage());
@@ -36,58 +71,54 @@ public class SymbolVisitorChecker implements PropVisitor {
 				}
 			}
 		}
-		return isTypeCheckDone;
+		return isTypeCheckCorrect;
 	}
 
-	public Object visit(ICClass icClass, SymbolTable table) {
+	public Object visit(ICClass icClass, SymbolTable parent_table) {
+		ClassSymbolTable class_table = ((GlobalSymbolTable)parent_table).findInnerChild(icClass.getName());
 		for (Field field : icClass.getFields()){
-			if(field.accept(this, table) == null){
+			if(field.accept(this, class_table) == null){
 				return null;
 			}
 		}
 		for (Method method : icClass.getMethods()){
-			if(method.accept(this, table) == null){
+			if(method.accept(this, class_table) == null){
 				return null;
 			}
 		}
 		return TypeTable.classType(icClass.getName());
 	}
 	
-	public Object visit(Method method, SymbolTable table) {
+	//dummy func
+	public Object visit(Method method, SymbolTable parent_table) {
 		return null;
 	}
 
-	public Object visit(Field field, SymbolTable table) {
-		//semantic checks - if the type is not primitive, we change the TypeTableType value in the symbolTable to the appropriate TypeTableType
-		TypeTableType type= (TypeTableType) field.getType().accept(this, table);
-		//TODO : do we really need it
-		//if(type!=null){
-		//	field.getScope().setVeriableTypes(field.getName(), type);
-		//}
+	public Object visit(Field field, SymbolTable parent_table) {
 
-		SymbolEntry fieldSymbol = (SymbolEntry)field.getScope().getEntry(field.getName(), SymbolKinds.FIELD);
-		TypeTableType fieldType = (TypeTableType)fieldSymbol.getType();
+		Object fieldEntryCheck = parent_table.getEntry(field.getName(), SymbolKinds.FIELD);
 
-		if(fieldType == null){
+		if(fieldEntryCheck == null){
 			return null;
 		}
 		else{
-			return fieldType;
+			return fieldEntryCheck;
 		}
 	}
 
-	public Object visit(VirtualMethod method, SymbolTable table) {
-		//semantic checks - checks if the return type and parameters type are legal 
-		method.getType().accept(this, table);
+	public Object visit(VirtualMethod method, SymbolTable parent_table) {
+		//semantic checks - checks if the return type and parameters type are legal
+		Type methodType = method.getType();
+		methodType.accept(this, parent_table);
 
 		for (Formal formal : method.getFormals()){
-			formal.accept(this, table);
+			formal.accept(this, formal.getScope());
 		}
-		ClassSymbolTable enclosing = (ClassSymbolTable) method.getScope();
-		SymbolEntry methodEntry =  (SymbolEntry) enclosing.searchTable(method.getName(), SymbolKinds.VIRTUAL_METHOD);
+		ClassSymbolTable containingClassTable = (ClassSymbolTable) method.getScope();
+		SymbolEntry methodEntry =  (SymbolEntry) containingClassTable.searchTable(method.getName(), SymbolKinds.VIRTUAL_METHOD);
 		//checks if the method is legal - i.e or overriding a method in super class,
 		//or superclasses don't have an identifier with the same name as the method's name
-		if(!enclosing.isIdExist(methodEntry)){
+		if(!containingClassTable.isIdExist(methodEntry)){
 			try {
 				throw new SemanticError(method.getLine(),
 						"Overloading is not allowed. trying to overload the method '"
@@ -99,8 +130,10 @@ public class SymbolVisitorChecker implements PropVisitor {
 				System.exit(-1);
 			}
 		}
+		if( methodEntry.getId().equals("vfunc") )
+			System.out.println("check");
 		for(Statement stmt : method.getStatements()){
-			if(stmt.accept(this, table) == null){
+			if(stmt.accept(this, stmt.getScope()) == null){
 				return null;
 			}
 		}
@@ -108,12 +141,12 @@ public class SymbolVisitorChecker implements PropVisitor {
 		return true;
 	}
 
-	public Object visit(StaticMethod method, SymbolTable table) {
+	public Object visit(StaticMethod method, SymbolTable parent_table) {
 		inStaticMethod = true;
 		//semantic checks - checks if the return type and parameters type are legal 
-		method.getType().accept(this, table);
+		method.getType().accept(this, parent_table);
 		for (Formal formal : method.getFormals())
-			formal.accept(this, table);
+			formal.accept(this, formal.getScope());
 		ClassSymbolTable enclosing = (ClassSymbolTable) method.getScope();
 		SymbolEntry methodEntry =  (SymbolEntry) enclosing.searchTable(method.getName(), SymbolKinds.STATIC_METHOD);
 		//checks if the method is legal - i.e or overriding a method in super class,
@@ -121,9 +154,9 @@ public class SymbolVisitorChecker implements PropVisitor {
 		if(!enclosing.isIdExist(methodEntry)){
 			try {
 				throw new SemanticError(method.getLine(),
-						"Overloading is not allowed. trying to overload the method '"
+						"Overloading function '"
 						+ method.getName()
-						+ "'");
+						+ "' is not allowed in IC");
 			}
 			catch (SemanticError e) {
 				System.out.println(e.getErrorMessage());
@@ -131,7 +164,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 			}
 		}
 		for(Statement stmt : method.getStatements()){
-			if(stmt.accept(this, table) == null){
+			if(stmt.accept(this, stmt.getScope()	) == null){
 				inStaticMethod = false;
 				return null;
 			}
@@ -140,23 +173,23 @@ public class SymbolVisitorChecker implements PropVisitor {
 		return true;
 	}
 
-	public Object visit(LibraryMethod method, SymbolTable table) {
+	public Object visit(LibraryMethod method, SymbolTable parent_table) {
 		//semantic checks - checks if the return type and parameters type are legal 
-		method.getType().accept(this, table);
+		method.getType().accept(this, parent_table);
 		for (Formal formal : method.getFormals())
-			formal.accept(this, table);
+			formal.accept(this, formal.getScope());
 
 
 		for(Statement stmt : method.getStatements()){
-			if(stmt.accept(this, table) == null){
+			if(stmt.accept(this, stmt.getScope()) == null){
 				return null;
 			}
 		}
 		return true;
 	}
 
-	public Object visit(Formal formal, SymbolTable table) {
-		SymbolEntry formalSymbol = (SymbolEntry)formal.getScope().getEntry(formal.getName(), SymbolKinds.PARAMETER);
+	public Object visit(Formal formal, SymbolTable parent_table) {
+		SymbolEntry formalSymbol = (SymbolEntry) parent_table.searchForVar( formal.getName(), formal.getLine() );
 		TypeTableType formalType = (TypeTableType)formalSymbol.getType();
 		if(formalType == null){
 			return null;
@@ -166,14 +199,14 @@ public class SymbolVisitorChecker implements PropVisitor {
 		}
 	}
 
-	public Object visit(PrimitiveType type, SymbolTable table) {
+	public Object visit(PrimitiveType type, SymbolTable parent_table) {
 		return TypeTable.convertTypeToTypeTableType(type);
 	}
 
-	public Object visit(UserType type, SymbolTable table) {
+	public Object visit(UserType type, SymbolTable parent_table) {
 
 		//semantic checking - checks if the class we use is declared
-		if(((GlobalSymbolTable)table).findInnerChild(type.getName())==null){
+		if(globalTable.findInnerChild(type.getName())==null){
 			try {
 				throw new SemanticError(type.getLine(),
 						"Use of an undeclared class '"
@@ -191,9 +224,9 @@ public class SymbolVisitorChecker implements PropVisitor {
 		}
 	}
 
-	public Object visit(Assignment assignment, SymbolTable table) {
-		TypeTableType varType = (TypeTableType)assignment.getVariable().accept(this, table);
-		TypeTableType valueType = (TypeTableType)assignment.getAssignment().accept(this, table);
+	public Object visit(Assignment assignment, SymbolTable parent_table) {
+		TypeTableType varType = (TypeTableType)assignment.getVariable().accept(this, parent_table);
+		TypeTableType valueType = (TypeTableType)assignment.getAssignment().accept(this, parent_table);
 		//checks if the assignment value's type is a sub type of the variable's type
 		if(valueType.subType(varType)){
 			return assignment;
@@ -201,7 +234,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 		else{
 			try {
 				throw new SemanticError(assignment.getLine(),
-				"assignment value's type must be a sub type of the assignment location's type");
+				"assignment value type and assigment location in lvalue's type mismatch - must be a sub type of the lvalue type");
 			}
 			catch (SemanticError e) {
 				System.out.println(e.getErrorMessage());
@@ -211,18 +244,18 @@ public class SymbolVisitorChecker implements PropVisitor {
 		return null;
 	}
 
-	public Object visit(CallStatement callStatement, SymbolTable table) {
-		return callStatement.getCall().accept(this, table);
+	public Object visit(CallStatement callStatement, SymbolTable parent_table) {
+		return callStatement.getCall().accept(this, parent_table);
 	}
 
-	public Object visit(Return returnStatement, SymbolTable table) {
+	public Object visit(Return returnStatement, SymbolTable parent_table) {
 		TypeTableType returnStmtType;
 		TypeTableType methodReturnType;
 		if(!returnStatement.hasValue()){
 			returnStmtType = (TypeTableType)TypeTable.voidType;
 		}
 		else{
-			returnStmtType = (TypeTableType)returnStatement.getValue().accept(this, table);
+			returnStmtType = (TypeTableType)returnStatement.getValue().accept(this, parent_table);
 		}
 
 		// Gets the method symbol table which contains the return statement
@@ -268,12 +301,12 @@ public class SymbolVisitorChecker implements PropVisitor {
 		return null;
 	}
 
-	public Object visit(If ifStatement, SymbolTable table) {
-		TypeTableType condType = (TypeTableType)ifStatement.getCondition().accept(this, table);
+	public Object visit(If ifStatement, SymbolTable parent_table) {
+		TypeTableType condType = (TypeTableType)ifStatement.getCondition().accept(this, parent_table);
 		if(condType == null) { return null;}
-		if(ifStatement.getOperation().accept(this, table) == null){ return null; }
+		if(ifStatement.getOperation().accept(this, parent_table) == null){ return null; }
 		if(ifStatement.hasElse()){
-			if(ifStatement.getElseOperation().accept(this, table) == null){ return null; }
+			if(ifStatement.getElseOperation().accept(this, parent_table) == null){ return null; }
 		}
 		//checks if the If condition is from boolean type
 		if(condType.subType(TypeTable.booleanType)){
@@ -295,10 +328,10 @@ public class SymbolVisitorChecker implements PropVisitor {
 		return true;
 	}
 
-	public Object visit(While whileStatement, SymbolTable table) {
+	public Object visit(While whileStatement, SymbolTable parent_table) {
 		//we enter to while, so we increment the while counter
 		loopLevel++;
-		TypeTableType condExprType = (TypeTableType)whileStatement.getCondition().accept(this, table);
+		TypeTableType condExprType = (TypeTableType)whileStatement.getCondition().accept(this, parent_table);
 		//checks if the While condition is from boolean type
 		if(!condExprType.subType(TypeTable.booleanType)){
 			try {
@@ -311,17 +344,17 @@ public class SymbolVisitorChecker implements PropVisitor {
 			}
 		}
 
-		if(whileStatement.getOperation().accept(this, table) == null){
-			//we exit to while, so we decrement the while counter
+		if(whileStatement.getOperation().accept(this, parent_table) == null){
+			//error encountered - decrement loop level and return null
 			loopLevel--;
 			return null;
 		}
-		//we exit to while, so we decrement the while counter
+		//while operation closed successfully. 
 		loopLevel--;
 		return true;
 	}
 
-	public Object visit(Break breakStatement, SymbolTable table) {
+	public Object visit(Break breakStatement, SymbolTable parent_table) {
 		//checks if the break statement is inside a while. if not - we throw a semantic error
 		if(loopLevel==0){
 			try {
@@ -336,7 +369,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 		return true;
 	}
 
-	public Object visit(Continue continueStatement, SymbolTable table) {
+	public Object visit(Continue continueStatement, SymbolTable parent_table) {
 		//checks if the continue statement is inside a while. if not - we throw a semantic error
 		if(loopLevel==0){
 			try {
@@ -351,9 +384,9 @@ public class SymbolVisitorChecker implements PropVisitor {
 		return true;
 	}
 
-	public Object visit(StatementsBlock statementsBlock, SymbolTable table) {
+	public Object visit(StatementsBlock statementsBlock, SymbolTable parent_table) {
 		for(Statement stms: statementsBlock.getStatements()){
-			if(stms.accept(this, table) == null){
+			if(stms.accept(this, stms.getScope()) == null){
 				return null;
 			}
 		}
@@ -361,16 +394,16 @@ public class SymbolVisitorChecker implements PropVisitor {
 		return true;
 	}
 
-	public Object visit(LocalVariable localVariable, SymbolTable table) {
+	public Object visit(LocalVariable localVariable, SymbolTable parent_table) {
 		//semantic checks - if the type is not primitive, we change the TypeTableType value in the symbolTable to the appropriate TypeTableType
-		TypeTableType varType = (TypeTableType)localVariable.getType().accept(this, table);
+		TypeTableType varType = (TypeTableType)localVariable.getType().accept(this, parent_table);
 		//TODO :  check if needed
 		//if(varType!=null){
 		//	localVariable.getScope().setVeriableTypes(localVariable.getName(), varType);
 		//}
 
 		if(localVariable.hasInitValue()){
-			TypeTableType initValType = (TypeTableType)localVariable.getInitValue().accept(this, table);
+			TypeTableType initValType = (TypeTableType)localVariable.getInitValue().accept(this, parent_table);
 
 
 			if(initValType != null){
@@ -393,16 +426,16 @@ public class SymbolVisitorChecker implements PropVisitor {
 		return true;
 	}
 
-	public Object visit(VariableLocation location, SymbolTable table) {
+	public Object visit(VariableLocation location, SymbolTable parent_table) {
 		if(location.isExternal()){
 			//Gets class (User Type)
-			TypeTableType locationType = (TypeTableType)location.getLocation().accept(this, table);
+			TypeTableType locationType = (TypeTableType)location.getLocation().accept(this, parent_table);
 			if(locationType == null) { return null; }
 
 			//Gets class  by it's name from location
 			String locationTypeName = locationType.getName();
 			//get the class table, which the variable located in
-			ClassSymbolTable classTable = ((GlobalSymbolTable)table).findInnerChild(locationTypeName);
+			ClassSymbolTable classTable = globalTable.findInnerChild(locationTypeName);
 			if(classTable==null){
 				try {
 					throw new SemanticError(location.getLine(),
@@ -456,9 +489,9 @@ public class SymbolVisitorChecker implements PropVisitor {
 
 	}
 
-	public Object visit(ArrayLocation location, SymbolTable table) {
-		TypeTableType indexType = (TypeTableType)location.getIndex().accept(this, table);
-		TypeTableType arrGetType = (TypeTableType)location.getArray().accept(this, table);
+	public Object visit(ArrayLocation location, SymbolTable parent_table) {
+		TypeTableType indexType = (TypeTableType)location.getIndex().accept(this, parent_table);
+		TypeTableType arrGetType = (TypeTableType)location.getArray().accept(this, parent_table);
 		ArrayType arrayType = null;
 		if(arrGetType.getClass().equals(ArrayType.class)){
 			arrayType = (ArrayType)arrGetType;
@@ -489,10 +522,10 @@ public class SymbolVisitorChecker implements PropVisitor {
 		}
 		return null;
 	}
-
-	public Object visit(StaticCall call, SymbolTable table) {
+	
+	public Object visit(StaticCall call, SymbolTable parent_table) {
 		//get the class table, which the static method located in
-		ClassSymbolTable classScope = ((GlobalSymbolTable)table).findInnerChild(call.getClassName());
+		ClassSymbolTable classScope = globalTable.findInnerChild(call.getClassName());
 		if(classScope==null){
 			try {
 				throw new SemanticError(call.getLine(),
@@ -540,8 +573,8 @@ public class SymbolVisitorChecker implements PropVisitor {
 		}
 
 		for (Expression actualParam : call.getArguments()) {
-			TypeTableType argType = (TypeTableType)actualParam.accept(this, table);
-			TypeTableType formalType = (TypeTableType)formalList.get(formalCounter).accept(this, table);
+			TypeTableType argType = (TypeTableType)actualParam.accept(this, parent_table);
+			TypeTableType formalType = (TypeTableType)formalList.get(formalCounter).accept(this, parent_table);
 			formalCounter++;
 
 			if(argType.subType(formalType)){
@@ -563,18 +596,18 @@ public class SymbolVisitorChecker implements PropVisitor {
 		return mType.getReturnType();
 	}
 
-	public Object visit(VirtualCall call, SymbolTable table) {
+	public Object visit(VirtualCall call, SymbolTable parent_table) {
 		List<Formal> mFormals;
 		String methodName = call.getName(); 
 		MethodType mType;
 		if(call.isExternal()){
-			TypeTableType callLocationType = (TypeTableType)call.getLocation().accept(this, table);
+			TypeTableType callLocationType = (TypeTableType)call.getLocation().accept(this, parent_table);
 			if(callLocationType == null){ return null; }
 
 			//Gets class  by it's name from location
 			String callLocationTypeName = callLocationType.getName();
 			//get the class table, which the virtual method located in
-			ClassSymbolTable classTable = ((GlobalSymbolTable)table).findInnerChild(callLocationTypeName);
+			ClassSymbolTable classTable = globalTable.findInnerChild(callLocationTypeName);
 			if(classTable==null){
 				try {
 					throw new SemanticError(call.getLine(),
@@ -664,8 +697,8 @@ public class SymbolVisitorChecker implements PropVisitor {
 
 		int formalCounter = 0;
 		for (Expression actualParam : call.getArguments()) {
-			TypeTableType argType = (TypeTableType)actualParam.accept(this, table);
-			TypeTableType formalType = (TypeTableType)mFormals.get(formalCounter).accept(this, table);
+			TypeTableType argType = (TypeTableType)actualParam.accept(this, parent_table);
+			TypeTableType formalType = (TypeTableType)mFormals.get(formalCounter).accept(this, parent_table);
 			formalCounter++;
 
 			if(!argType.subType(formalType)){
@@ -686,7 +719,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 
 	}
 
-	public Object visit(This thisExpression, SymbolTable table) {
+	public Object visit(This thisExpression, SymbolTable parent_table) {
 		SymbolTable currScope = thisExpression.getScope();
 
 		while((!(currScope.getType().compareTo(SymbolTableType.STATIC_METHOD) == 0)) && (!(currScope.getType().compareTo(SymbolTableType.VIRTUAL_METHOD) == 0))){
@@ -715,9 +748,9 @@ public class SymbolVisitorChecker implements PropVisitor {
 
 	}
 
-	public Object visit(NewClass newClass, SymbolTable table) {
+	public Object visit(NewClass newClass, SymbolTable parent_table) {
 		//look for it's declaration in the global table
-		if(((GlobalSymbolTable)table).findInnerChild(newClass.getName())==null){
+		if(globalTable.findInnerChild(newClass.getName())==null){
 			try {
 				throw new SemanticError(newClass.getLine(),
 						"Use of an undeclared class '"
@@ -733,8 +766,8 @@ public class SymbolVisitorChecker implements PropVisitor {
 		return TypeTable.classType(newClass.getName());
 	}
 
-	public Object visit(NewArray newArray, SymbolTable table) {
-		TypeTableType arraySizeType = (TypeTableType)newArray.getSize().accept(this, table);
+	public Object visit(NewArray newArray, SymbolTable parent_table) {
+		TypeTableType arraySizeType = (TypeTableType)newArray.getSize().accept(this, parent_table);
 		if(arraySizeType == null){ return null; }
 		Type arrayElementType =  newArray.getType();
 		Type newType = null;
@@ -746,7 +779,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 			newType = new UserType(-1, ((UserType)arrayElementType).getName());
 			newType.setDimention(arrayElementType.getDimension() + 1);
 		}
-		TypeTableType newArrayType = (TypeTableType)newType.accept(this, table);
+		TypeTableType newArrayType = (TypeTableType)newType.accept(this, parent_table);
 		if(newArrayType == null){ return null; }
 
 		if(arraySizeType.subType(TypeTable.integerType)){
@@ -765,8 +798,8 @@ public class SymbolVisitorChecker implements PropVisitor {
 		return null;
 	}
 
-	public Object visit(Length length, SymbolTable table) {
-		TypeTableType exprType = (TypeTableType) length.getArray().accept(this, table);
+	public Object visit(Length length, SymbolTable parent_table) {
+		TypeTableType exprType = (TypeTableType) length.getArray().accept(this, parent_table);
 
 		if(exprType == null) { return null; }
 
@@ -787,9 +820,9 @@ public class SymbolVisitorChecker implements PropVisitor {
 		return null;
 	}
 
-	public Object visit(MathBinaryOp binaryOp, SymbolTable table) {
-		TypeTableType operandType1 = (TypeTableType)binaryOp.getFirstOperand().accept(this, table);
-		TypeTableType operandType2 = (TypeTableType)binaryOp.getSecondOperand().accept(this, table);
+	public Object visit(MathBinaryOp binaryOp, SymbolTable parent_table) {
+		TypeTableType operandType1 = (TypeTableType)binaryOp.getFirstOperand().accept(this, parent_table);
+		TypeTableType operandType2 = (TypeTableType)binaryOp.getSecondOperand().accept(this, parent_table);
 		BinaryOps operator = (BinaryOps)binaryOp.getOperator();
 
 		if(operandType1 == null || operandType2 == null){
@@ -839,11 +872,15 @@ public class SymbolVisitorChecker implements PropVisitor {
 
 		return null;
 	}
-
-	public Object visit(LogicalBinaryOp binaryOp, SymbolTable table) {
-		TypeTableType operandType1 = (TypeTableType)binaryOp.getFirstOperand().accept(this, table);
-		TypeTableType operandType2 = (TypeTableType)binaryOp.getSecondOperand().accept(this, table);
+	
+	public Object visit(LogicalBinaryOp binaryOp, SymbolTable parent_table) {
+		
+		TypeTableType operandType1 = (TypeTableType)binaryOp.getFirstOperand().accept(this, parent_table);
+		TypeTableType operandType2 = (TypeTableType)binaryOp.getSecondOperand().accept(this, parent_table);
+		//if(operandType1.getClass().equals(ClassType))
+		//	System.out.println();
 		BinaryOps operator = (BinaryOps)binaryOp.getOperator();
+		
 
 		if(operandType1 == null || operandType2 == null){
 			return null;
@@ -907,7 +944,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 		return null;
 	}
 
-	public Object visit(MathUnaryOp unaryOp, SymbolTable table) {
+	public Object visit(MathUnaryOp unaryOp, SymbolTable parent_table) {
 		//if the operand of the math unaryOp is a literal, change it's value to minus it's value.
 		if(unaryOp.getOperand().getClass().equals(Literal.class)){
 			Literal literal = (Literal) unaryOp.getOperand();
@@ -917,7 +954,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 				literal.setValue(value);
 			}
 		}
-		TypeTableType operandType = (TypeTableType)unaryOp.getOperand().accept(this, table);
+		TypeTableType operandType = (TypeTableType)unaryOp.getOperand().accept(this, parent_table);
 		//checks if the Math unary operation gets 1 operand of an int type
 		if(operandType.subType(TypeTable.integerType)){
 			return TypeTable.integerType;
@@ -937,8 +974,8 @@ public class SymbolVisitorChecker implements PropVisitor {
 		return null;
 	}
 
-	public Object visit(LogicalUnaryOp unaryOp, SymbolTable table) {
-		TypeTableType operandType = (TypeTableType)unaryOp.getOperand().accept(this, table);
+	public Object visit(LogicalUnaryOp unaryOp, SymbolTable parent_table) {
+		TypeTableType operandType = (TypeTableType)unaryOp.getOperand().accept(this, parent_table);
 		//checks if the Logical unary operation get 1 operand of a boolean type
 		if(operandType.subType(TypeTable.booleanType)){
 			return TypeTable.booleanType;
@@ -958,7 +995,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 		return null;
 	}
 
-	public Object visit(Literal literal, SymbolTable table) {
+	public Object visit(Literal literal, SymbolTable parent_table) {
 		String literalType = literal.getType().getDescription();
 		if(literalType.compareTo(LiteralTypes.INTEGER.getDescription()) == 0){
 			//we check that the integer value is in the integer range
@@ -1014,7 +1051,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 
 		return null;
 	}
-	public Object visit(ExpressionBlock expressionBlock, SymbolTable table) {
-		return expressionBlock.getExpression().accept(this, table);
+	public Object visit(ExpressionBlock expressionBlock, SymbolTable parent_table) {
+		return expressionBlock.getExpression().accept(this, parent_table);
 	}
 }

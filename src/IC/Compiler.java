@@ -72,8 +72,8 @@ public class Compiler {
 		
 		SymbolVisitorBuilder symTableCreate = new SymbolVisitorBuilder(args[0]);
 		GlobalSymbolTable glbTable = (GlobalSymbolTable)prog2_root.accept(symTableCreate, null);
-		// NOT WORKING YET, DONT UNCOMMENT! it will crash it    //SymbolVisitorChecker semanticCheckV = new SymbolVisitorChecker(glbTable);
-		//prog2_root.accept(semanticCheckV, null);
+		SymbolVisitorChecker semanticCheckV = new SymbolVisitorChecker(glbTable);
+		prog2_root.accept(semanticCheckV, null);
 		System.out.println("Parsed " + args[0] +" successfully!");
 		
 		if(printAST){

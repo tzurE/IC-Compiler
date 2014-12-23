@@ -12,13 +12,13 @@ class A {
 class B extends A {
     
 	static void main(string[] args){
-		return 0;
+		return ;
 	}
 }
 
 class C {
   static void c1(string[] args) {
-    A[][] a1 = new A[1][1];
+    A[][] a1 = new A[][1];
 	A[] a2 = new A[1];
 	a1[0] = a2;
 	B b = new B();

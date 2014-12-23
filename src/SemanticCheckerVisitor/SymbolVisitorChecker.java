@@ -19,43 +19,8 @@ public class SymbolVisitorChecker implements PropVisitor {
 		this.globalTable = globalTable;
 	}
 	
-	public static ICClass findClass(Program program, String className){
-		for (ICClass icClass : program.getClasses()){
-			if(icClass.getName().equals(className))
-				return icClass;
-		}
-		return null;
-	}
-	
-	//TODO :debbug
-	//check if some class extends itself, if so return it, otherwise return null
-	public static ICClass CheckIfClassExtendItself(Program program){
-		ICClass temp;
-		for (ICClass ic : program.getClasses()){
-			if(!ic.hasSuperClass())
-				continue;
-			temp = findClass(program,ic.getSuperClassName());
-			for(; temp.hasSuperClass(); temp = findClass(program,ic.getSuperClassName())){
-				if(ic.getName().equals(temp.getName()))
-					return ic;
-			}
-		}
-		return null;
-	}
-
 	public Object visit(Program program, SymbolTable parent_table) {
-		TypeTableType classType;
-		ICClass ic = CheckIfClassExtendItself(program);
-		if(ic != null){
-			try {
-				throw new SemanticError("class "+ ic.getName() + " extends itself");
-			}
-			catch (SemanticError e) {
-				System.out.println(e.getErrorMessage());
-				System.exit(-1);
-			}
-		}
-			
+		TypeTableType classType;	
 		boolean isTypeCheckCorrect = true;
 		for (ICClass icClass : program.getClasses()){
 			classType = (TypeTableType) icClass.accept(this, globalTable);
@@ -242,10 +207,6 @@ public class SymbolVisitorChecker implements PropVisitor {
 	public Object visit(Assignment assignment, SymbolTable parent_table) {
 		TypeTableType varType = (TypeTableType)assignment.getVariable().accept(this, parent_table);
 		TypeTableType valueType = (TypeTableType)assignment.getAssignment().accept(this, parent_table);
-		//TODO: delete
-		if(assignment.getVariable().getLine() == 42){
-			System.out.println("");
-		}
 		//checks if the assignment value's type is a sub type of the variable's type
 		if(valueType.isExtendedFrom(varType)){
 			return assignment;
@@ -505,9 +466,6 @@ public class SymbolVisitorChecker implements PropVisitor {
 	}
 
 	public Object visit(ArrayLocation location, SymbolTable parent_table) {
-		System.out.println(location.toString());
-		PrettyPrinter p = new PrettyPrinter("");
-		System.out.println(p.visit(location));
 		TypeTableType indexType = (TypeTableType)location.getIndex().accept(this, parent_table);
 		TypeTableType arrGetType = (TypeTableType)location.getArray().accept(this, parent_table);
 		ArrayType arrayType = null;
@@ -526,7 +484,6 @@ public class SymbolVisitorChecker implements PropVisitor {
 		}
 
 		if(TypeTable.integerType.isExtendedFrom(indexType)){
-			System.out.println();
 			return TypeTable.convertTypeToTypeTableType(arrayType.getElemType());
 		}
 		else{

@@ -4,17 +4,17 @@ class A {
   string str;
   int i;
 
-  int a(boolean b) {
+  string a(boolean b) {
   
 	int i = this.i;
-	if (this.str.equals("")){
-		return i;
+	if (this.i > 0){
+		return this.str;
 	}
-	return 0;
+	return "";
   }
   
   static void main(string[] argv){
-	return 0;
+	return ;
   }
 }
 

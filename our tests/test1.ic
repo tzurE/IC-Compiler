@@ -9,7 +9,7 @@ class A {
   }
   
   static int a2(int i){
-	B b = new B;
+	B b = new B();
 	b.j = i;
 	return i;
   }
@@ -22,8 +22,8 @@ class B extends A {
 class C {
   static void c1(string[] args) {
     A[][] a;
-	int i;
+	int index;
 	A i = new A();
-	i.i = i;
+	i.i = index;
   }
 }

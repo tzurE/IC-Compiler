@@ -297,7 +297,8 @@ public class PrettyPrinter implements Visitor {
 		StringBuffer output = new StringBuffer();
 		SymbolTable localVariableScope = localVariable.getScope();
 		ArrayLocation arr2;
-		String str;
+		NewArray arr3;
+		String str = null;
 		int i;
 		
 		indent(output, localVariable);
@@ -331,17 +332,9 @@ public class PrettyPrinter implements Visitor {
 							arr2 = ((ArrayLocation)(arr2.getArray()));
 					}
 					
-					((NewArray)(arr2.getArray())).getType().setDimention(localVariable.getType().getDimension());
+					//((NewArray)(arr2.getArray())).getType().setDimention(localVariable.getType().getDimension());
 				}
-				else{
-					//TODO : localVariable.getInitValue().getClass().equals( newArray.class )
-					//TODO : run on PrettyPrinterCheck.ic and put breakpoint here:
-					System.out.println("");
-					//it cannot be casted to ArrayLocation and therefore throws error
-				}
-				
 			}
-			
 			output.append(localVariable.getInitValue().accept(this));
 		}
 		--depth;
@@ -505,7 +498,7 @@ public class PrettyPrinter implements Visitor {
 		
 		indent(output, newArray);
 		output.append("Array allocation");
-		output.append(", " + newArray.getType().accept(this));
+		output.append(", " + newArray.getType().accept(this)+"[]");
 		output.append(", Symbol table: " + newArrayScope.getId());
 		
 		depth++;

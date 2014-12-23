@@ -101,7 +101,6 @@ public class Compiler {
 			e1.getErrorMessage();
 		}
 		catch(Exception e){
-			System.out.println(e.getMessage());
 		}
 		/////////////////////////////////////////////////pretty printer visitor////////////////////////////////////////////
 		

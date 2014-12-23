@@ -1094,28 +1094,6 @@ public class SymbolVisitorChecker implements PropVisitor {
 		return expressionBlock.getExpression().accept(this, parent_table);
 	}
 	
-	//this function search for a symbol table of a class with the given
-	//we save the "path" of Inheritance from the class symbol table, to  the global symbol table,
-	//and uses this path to get the symbol table
-	private ClassSymbolTable searchForClassTableByName(String name){
-		ClassEntry classEntry = (ClassEntry) globalTable.searchTable(name, SymbolKinds.CLASS);
-		if(classEntry==null)
-			return null;
-		String class_name = name;
-		LinkedList<String> hirrarcy_list = new LinkedList<String>();
-		hirrarcy_list.addFirst(name);
-		while(globalTable.findInnerChild(class_name)==null){
-			class_name = ((ClassType) classEntry.getType()).getClassNode().getSuperClassName();
-			hirrarcy_list.addFirst(class_name);
-			classEntry = (ClassEntry) globalTable.searchTable(class_name, SymbolKinds.CLASS);
-		}
-		ClassSymbolTable current_table = globalTable.findInnerChild(hirrarcy_list.getFirst());
-		for(int i=1;i<hirrarcy_list.size();i++){
-			current_table = current_table.getChildClassTable(hirrarcy_list.get(i));
-		}
-		return current_table;
-	}
-	
 }
 
 

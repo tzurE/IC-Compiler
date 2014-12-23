@@ -1,8 +1,22 @@
+// function foo is defined in A and overridden in it's subclass B, which is legal.
+// function foo is overloaded = both in A and B which extends A, but with different return types - therefore it will throw error
 class A {
-	int foo;
+	string foo(int x){
+		return "";
+	}
+	
+	string foo2(int x){
+		return "";
+	}
 }
 class B extends A {
-	void foo() {}
+	string foo(int x){
+		return "";
+	}
+	
+	int foo2(int x){
+		return 5;
+	}
 	static void main(string[] args){
 		return;
 	}

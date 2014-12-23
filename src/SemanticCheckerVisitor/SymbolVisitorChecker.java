@@ -37,22 +37,77 @@ public class SymbolVisitorChecker implements PropVisitor {
 		}
 		return isTypeCheckCorrect;
 	}
+	
+	public SymbolEntry getFromSuperClasses(ICClass icClass, String ident) {
+		SymbolEntry elem;
+		for( 	ClassSymbolTable class_table = globalTable.findInnerChild(icClass.getSuperClassName());
+				class_table != null;
+				class_table = globalTable.findInnerChild(icClass.getSuperClassName()) ){
+			
+			elem = class_table.getIdOfAnythingInsideClass(ident);
+			if( elem != null){
+				return elem;
+			}
+			
+		}
+		return null;
+	}
 
 	public Object visit(ICClass icClass, SymbolTable parent_table) {
 		ClassSymbolTable class_table = ((GlobalSymbolTable)parent_table).findInnerChild(icClass.getName());
+		SymbolEntry superClassReference;
 		for (Field field : icClass.getFields()){
 			if(field.accept(this, class_table) == null){
 				return null;
+			}
+			if( getFromSuperClasses(icClass, field.getName()) != null){
+				try {
+					throw new SemanticError(field.getLine(),
+					"field " +
+					field.getName() + 
+					" is already defined in superclass");
+				}
+				catch (SemanticError e) {
+					System.out.println(e.getErrorMessage());
+					System.exit(-1);
+				}	
 			}
 		}
 		for (Method method : icClass.getMethods()){
 			if(method.accept(this, class_table) == null){
 				return null;
 			}
+			superClassReference = getFromSuperClasses(icClass, method.getName()); 
+			if(superClassReference != null){
+				if(! sameMethodDefinition(method, superClassReference)){
+					try {
+						throw new SemanticError(method.getLine(),
+						"new decleration of method " +
+						method.getName() + 
+						" which is already defined in superclass");
+					}
+					catch (SemanticError e) {
+						System.out.println(e.getErrorMessage());
+						System.exit(-1);
+					}	
+				}
+			}
 		}
 		return TypeTable.classType(icClass.getName());
 	}
 	
+	private static boolean sameMethodDefinition(Method method, SymbolEntry superClassReference) {
+		ClassSymbolTable classScope = ((ClassSymbolTable) method.getScope());
+		SymbolEntry methodEntry = (SymbolEntry) classScope.getIdOfAnythingInsideClass( method.getName() ); 
+		TypeTableType type1, type2;
+		if(superClassReference == null)
+			return false;
+		
+		type1 = methodEntry.getType();
+		type2 = superClassReference.getType();
+		return (type1.getId() == type2.getId());
+	}
+
 	//dummy func
 	public Object visit(Method method, SymbolTable c) {
 		return null;

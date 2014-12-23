@@ -260,6 +260,19 @@ public class ClassSymbolTable extends SymbolTable {
 		}
 		return null;
 	}
+	
+	public SymbolEntry getIdOfAnythingInsideClass(String name) {
+		if (virtualMethodEntries.containsKey(name)) {
+			return virtualMethodEntries.get(name);
+		}
+		if (staticMethodEntries.containsKey(name)) {
+			return staticMethodEntries.get(name);
+		}
+		if (fieldEntries.containsKey(name)) {
+			return fieldEntries.get(name);
+		}
+		return null;
+	}
 
 	@Override
 	public SymbolEntry searchForVarOuterClass(String id, int line) {

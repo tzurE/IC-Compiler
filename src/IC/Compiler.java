@@ -57,15 +57,13 @@ public class Compiler {
 		Program_Parser = new Parser(Program_scanner);
 		Prog_tree = Program_Parser.parse();
 		Program prog2_root = (Program)Prog_tree.value;
-		
-		libFile = new FileReader(library_location);
-		Liblexer Library_scanner = new Liblexer(libFile);
-		library_parser = new LibParser(Library_scanner);
-		//run the library paser
-		Library_tree = library_parser.parse();
-		Program lib_root = (Program)Library_tree.value;
 		if(LibPathGiven){
-
+			libFile = new FileReader(library_location);
+			Liblexer Library_scanner = new Liblexer(libFile);
+			library_parser = new LibParser(Library_scanner);
+			//run the library paser
+			Library_tree = library_parser.parse();
+			Program lib_root = (Program)Library_tree.value;
 			prog2_root.addLibraryClass(lib_root.getClasses().get(0));
 			System.out.println("Parsed " + library_location + " successfully!");
 		}
@@ -101,6 +99,7 @@ public class Compiler {
 			e1.getErrorMessage();
 		}
 		catch(Exception e){
+			System.out.println(e.getMessage());
 		}
 		/////////////////////////////////////////////////pretty printer visitor////////////////////////////////////////////
 		

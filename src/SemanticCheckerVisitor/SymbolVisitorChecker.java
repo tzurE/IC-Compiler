@@ -40,16 +40,18 @@ public class SymbolVisitorChecker implements PropVisitor {
 	
 	public SymbolEntry getFromSuperClasses(ICClass icClass, String ident) {
 		SymbolEntry elem;
-		for( 	ClassSymbolTable class_table = globalTable.findInnerChild(icClass.getSuperClassName());
-				class_table != null;
-				class_table = globalTable.findInnerChild(icClass.getSuperClassName()) ){
-			
-			elem = class_table.getIdOfAnythingInsideClass(ident);
-			if( elem != null){
-				return elem;
-			}
-			
-		}
+		ClassSymbolTable class_table = globalTable.findInnerChild(icClass.getSuperClassName());
+		if(class_table == null)
+			return null;
+		elem = (SymbolEntry) class_table.getEntry(ident, SymbolKinds.FIELD);
+		if( elem!= null)
+			return elem;
+		elem = (SymbolEntry) class_table.getEntry(ident, SymbolKinds.STATIC_METHOD);
+		if( elem!= null)
+			return elem;
+		elem = (SymbolEntry) class_table.getEntry(ident, SymbolKinds.VIRTUAL_METHOD);
+		if( elem!= null)
+			return elem;
 		return null;
 	}
 

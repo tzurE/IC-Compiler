@@ -314,10 +314,11 @@ public class PrettyPrinter implements Visitor {
 		++depth;
 		if (localVariable.hasInitValue()) {
 			localVariable.getInitValue().setScope(localVariableScope);
-			if (localVariable.getType().getDimension() == 1){
-				((NewArray)(localVariable.getInitValue())).getType().setDimention(localVariable.getType().getDimension());
-			}
-			else if(localVariable.getType().getDimension() > 1){
+//			if (localVariable.getType().getDimension() == 1){
+//				((NewArray)(localVariable.getInitValue())).getType().setDimention(localVariable.getType().getDimension());
+//			}
+
+			if(localVariable.getType().getDimension() > 0){
 				if(localVariable.getInitValue().getClass().equals(ArrayLocation.class)){
 					arr2 = ((ArrayLocation)(localVariable.getInitValue()));
 					
@@ -372,7 +373,6 @@ public class PrettyPrinter implements Visitor {
 		VariableLocation arr3 = null;
 		String arrType;
 		ArrayType arr2 = null;
-		
 		indent(output, location);
 		
 		output.append("Reference to array");
@@ -495,10 +495,10 @@ public class PrettyPrinter implements Visitor {
 	public Object visit(NewArray newArray) {
 		StringBuffer output = new StringBuffer();
 		SymbolTable newArrayScope = newArray.getScope();
-		
 		indent(output, newArray);
 		output.append("Array allocation");
-		output.append(", " + newArray.getType().accept(this)+"[]");
+		output.append(", " + newArray.getType().accept(this));
+		output.append("[]");	
 		output.append(", Symbol table: " + newArrayScope.getId());
 		
 		depth++;

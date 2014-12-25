@@ -68,6 +68,10 @@ public class Compiler {
 			System.out.println("Parsed " + library_location + " successfully!");
 		}
 		
+		
+		
+		
+		
 		SymbolVisitorBuilder symTableCreate = new SymbolVisitorBuilder(args[0]);
 		GlobalSymbolTable glbTable = (GlobalSymbolTable)prog2_root.accept(symTableCreate, null);
 		SymbolVisitorChecker semanticCheckV = new SymbolVisitorChecker(glbTable);

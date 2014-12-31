@@ -1,5 +1,6 @@
 package IC.AST;
 
+import LIR.LirTranslatorVisitor;
 import SymbolTables.SymbolTable;
 
 /**
@@ -21,6 +22,9 @@ public class VariableLocation extends Location {
 		return visitor.visit(this,table);
 	}
 
+	public Object accept(LirTranslatorVisitor visitor, int regNum) {
+		return visitor.visit(this, regNum);
+	}
 	/**
 	 * Constructs a new variable reference node.
 	 * 

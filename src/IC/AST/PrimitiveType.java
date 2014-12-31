@@ -1,6 +1,7 @@
 package IC.AST;
 
 import IC.DataTypes;
+import LIR.LirTranslatorVisitor;
 import SymbolTables.SymbolTable;
 
 /**
@@ -20,6 +21,9 @@ public class PrimitiveType extends Type {
 		return visitor.visit(this,table);
 	}
 
+	public Object accept(LirTranslatorVisitor visitor, int regNum) {
+		return visitor.visit(this, regNum);
+	}
 	/**
 	 * Constructs a new primitive data type node.
 	 * 

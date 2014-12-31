@@ -1,40 +1,10 @@
 package LIR;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import IC.AST.ArrayLocation;
-import IC.AST.Assignment;
-import IC.AST.Break;
-import IC.AST.CallStatement;
-import IC.AST.Continue;
-import IC.AST.ExpressionBlock;
-import IC.AST.Field;
-import IC.AST.Formal;
-import IC.AST.ICClass;
-import IC.AST.If;
-import IC.AST.Length;
-import IC.AST.LibraryMethod;
-import IC.AST.Literal;
-import IC.AST.LocalVariable;
-import IC.AST.LogicalBinaryOp;
-import IC.AST.LogicalUnaryOp;
-import IC.AST.MathBinaryOp;
-import IC.AST.MathUnaryOp;
-import IC.AST.NewArray;
-import IC.AST.NewClass;
-import IC.AST.PrimitiveType;
-import IC.AST.Program;
-import IC.AST.Return;
-import IC.AST.StatementsBlock;
-import IC.AST.StaticCall;
-import IC.AST.StaticMethod;
-import IC.AST.This;
-import IC.AST.UserType;
-import IC.AST.VariableLocation;
-import IC.AST.VirtualCall;
-import IC.AST.VirtualMethod;
-import IC.AST.While;
+import IC.AST.*;
 
 public class LirTranslatorVisitor implements LirVisitor{
 
@@ -43,9 +13,11 @@ public class LirTranslatorVisitor implements LirVisitor{
 	private Map<String, ClassLayout> classLayouts;
 	//private LinkedList<E>
 	
+	
 	@Override
 	public Object visit(Program program, int regNum) {
 		ClassLayout icClassLayout;
+		classLayouts = new HashMap<String, ClassLayout>();
 		
 		for (ICClass icClass : program.getClasses()){
 			if (!icClass.getName().equals("Library")){
@@ -62,7 +34,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 				dispatch_table.append(icClassLayout.printDispatchTable() + NEW_LINE);
 			}
 		}
-		return null;
+		return dispatch_table;
 	}
 
 	public StringBuilder getDispatch_table() {

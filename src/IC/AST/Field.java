@@ -1,5 +1,6 @@
 package IC.AST;
 
+import LIR.LirTranslatorVisitor;
 import SymbolTables.SymbolTable;
 
 /**
@@ -21,6 +22,10 @@ public class Field extends ASTNode {
 		return visitor.visit((Field)this,table);
 	}
 
+	public Object accept(LirTranslatorVisitor visitor, int regNum) {
+		return visitor.visit(this, regNum);
+	}
+	
 	/**
 	 * Constructs a new field node.
 	 * 

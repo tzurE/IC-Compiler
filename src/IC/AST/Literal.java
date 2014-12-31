@@ -1,6 +1,7 @@
 package IC.AST;
 
 import IC.LiteralTypes;
+import LIR.LirTranslatorVisitor;
 import SymbolTables.SymbolTable;
 
 /**
@@ -22,6 +23,9 @@ public class Literal extends Expression {
 		return visitor.visit(this,table);
 	}
 
+	public Object accept(LirTranslatorVisitor visitor, int regNum) {
+		return visitor.visit(this, regNum);
+	}
 	/**
 	 * Constructs a new literal node.
 	 * 

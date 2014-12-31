@@ -1,5 +1,6 @@
 package IC.AST;
 
+import LIR.LirTranslatorVisitor;
 import SymbolTables.SymbolTable;
 
 /**
@@ -23,6 +24,9 @@ public class If extends Statement {
 		return visitor.visit(this,table);
 	}
 
+	public Object accept(LirTranslatorVisitor visitor, int regNum) {
+		return visitor.visit(this, regNum);
+	}
 	/**
 	 * Constructs an If statement node.
 	 * 

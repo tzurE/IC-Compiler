@@ -2,7 +2,7 @@ class A {
   string str;
   int i;
 
-  static int sfunc(boolean b) {
+  int sfunc(boolean b) {
     if (b) {
       {
         int k = 5;

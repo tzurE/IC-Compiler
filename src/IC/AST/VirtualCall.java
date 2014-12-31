@@ -2,6 +2,7 @@ package IC.AST;
 
 import java.util.List;
 
+import LIR.LirTranslatorVisitor;
 import SymbolTables.SymbolTable;
 
 /**
@@ -21,6 +22,9 @@ public class VirtualCall extends Call {
 		return visitor.visit(this,table);
 	}
 
+	public Object accept(LirTranslatorVisitor visitor, int regNum) {
+		return visitor.visit(this, regNum);
+	}
 	/**
 	 * Constructs a new virtual method call node.
 	 * 

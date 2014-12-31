@@ -1,5 +1,6 @@
 package IC.AST;
 
+import LIR.LirTranslatorVisitor;
 import SymbolTables.MethodSymbolTable;
 import SymbolTables.SymbolTable;
 
@@ -20,6 +21,9 @@ public class Formal extends ASTNode {
 	public Object accept(PropVisitor visitor,SymbolTable table) {
 		this.setScope(table);
 		return visitor.visit(this,table);
+	}
+	public Object accept(LirTranslatorVisitor visitor, int regNum) {
+		return visitor.visit(this, regNum);
 	}
 
 	/**

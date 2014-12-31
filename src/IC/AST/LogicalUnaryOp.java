@@ -1,6 +1,7 @@
 package IC.AST;
 
 import IC.UnaryOps;
+import LIR.LirTranslatorVisitor;
 import SymbolTables.SymbolTable;
 
 /**
@@ -18,6 +19,9 @@ public class LogicalUnaryOp extends UnaryOp {
 		return visitor.visit(this,table);
 	}
 
+	public Object accept(LirTranslatorVisitor visitor, int regNum) {
+		return visitor.visit(this, regNum);
+	}
 	/**
 	 * Constructs a new logical unary operation node.
 	 * 

@@ -9,6 +9,7 @@ import IC.Parser.LibParser;
 import IC.Parser.Liblexer;
 import IC.Parser.Parser;
 import IC.Parser.SyntaxError;
+import LIR.LirTranslatorVisitor;
 import SemanticCheckerVisitor.*;
 import SymbolTables.*;
 import TypeTable.*;
@@ -27,6 +28,7 @@ public class Compiler {
 		boolean PrintSymTables = false;
 		boolean LibPathGiven = false;
 		boolean printAST = false;
+		boolean printLIR = false;
 		
 		if(args.length == 0){
 			System.out.println("can't get args < 0, give a path to a file!");
@@ -49,6 +51,10 @@ public class Compiler {
 			else if(current.equals("-print-ast")){
 				printAST = true;
 			}
+			else if (current.equals("-print-lir")){
+				printLIR = true;
+			}
+					
 		}
 		try{
 		programFile = new FileReader(args[0]);
@@ -67,10 +73,6 @@ public class Compiler {
 			prog2_root.addLibraryClass(lib_root.getClasses().get(0));
 			System.out.println("Parsed " + library_location + " successfully!");
 		}
-		
-		
-		
-		
 		
 		SymbolVisitorBuilder symTableCreate = new SymbolVisitorBuilder(args[0]);
 		GlobalSymbolTable glbTable = (GlobalSymbolTable)prog2_root.accept(symTableCreate, null);
@@ -98,12 +100,20 @@ public class Compiler {
 			TypeTable.printTypeTable(args[0]);
 		}
 		
+		LirTranslatorVisitor lirTrans = new LirTranslatorVisitor();
+		int regNum = 0;
+		String str = prog2_root.accept(lirTrans, regNum).toString();
+		
+		if (printLIR){
+			System.out.println(str);
+		}
+		
 		
 		}catch (SemanticError e1){
 			e1.getErrorMessage();
 		}
 		catch(Exception e){
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 		/////////////////////////////////////////////////pretty printer visitor////////////////////////////////////////////
 		

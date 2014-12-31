@@ -13,10 +13,10 @@ import SymbolTables.SymbolKinds;
  */
 public class ClassLayout {
 
-	private Map<String,Method> methodByName;
-	private Map<String,Integer> methodOffsets;
-	private Map<String,Field> fieldByName;
-	private Map<Field,Integer> fieldOffsets;
+	private Map<Method, String> methodByName;
+	private Map<String, Integer> methodOffsets;
+	private Map<String, Field> fieldByName;
+	private Map<Integer, Field> fieldOffsets;
 	private int fieldCount;
 	private int methodCount;
 	
@@ -26,19 +26,19 @@ public class ClassLayout {
 		return classIdent;
 	}
 
-	public Map<String, Method> getMethodByName() {
+	public Map<Method, String> getMethodByName() {
 		return methodByName;
 	}
-
+	
 	public Map<String, Integer> getMethodOffsets() {
 		return methodOffsets;
 	}
-
+	
 	public Map<String, Field> getFieldByName() {
 		return fieldByName;
 	}
 
-	public Map<Field, Integer> getFieldOffsets() {
+	public Map<Integer, Field> getFieldOffsets() {
 		return fieldOffsets;
 	}
 
@@ -54,10 +54,10 @@ public class ClassLayout {
 	public ClassLayout(ICClass icclass){
 		this.classIdent = icclass.getName();
 
-		methodByName = new HashMap<String, Method>();
+		methodByName = new HashMap<Method, String>();
 		methodOffsets = new HashMap<String, Integer>();
 		fieldByName = new HashMap<String, Field>();
-		fieldOffsets = new HashMap<Field, Integer>();
+		fieldOffsets = new HashMap<Integer, Field>();
 		
 		fieldCount = 0;
 		methodCount = 0;
@@ -66,7 +66,7 @@ public class ClassLayout {
 		// Create HashMap of all fields
 		for(Field field : icclass.getFields()){
 			fieldByName.put(field.getName(), field);
-			fieldOffsets.put(field, fieldCount);
+			fieldOffsets.put(fieldCount, field);
 			fieldCount++;
 		}
 		
@@ -77,8 +77,8 @@ public class ClassLayout {
 			String method_str = "_" + icclass.getName() + "_" + method.getName();
 			
 			if (!isMethodStatic(method)){
-				methodByName.put(method_str, method);
-				methodOffsets.put(method.getName(), methodCount);
+				methodByName.put(method, method_str);
+				methodOffsets.put(method_str, methodCount);
 				methodCount++;
 			}
 		}
@@ -90,26 +90,26 @@ public class ClassLayout {
 		
 		this.classIdent = icclass.getName();
 
-		methodByName = new HashMap<String, Method>();
+		methodByName = new HashMap<Method, String>();
 		methodOffsets = new HashMap<String, Integer>();
 		fieldByName = new HashMap<String, Field>();
-		fieldOffsets = new HashMap<Field, Integer>();
+		fieldOffsets = new HashMap<Integer, Field>();
 		
 		fieldCount = 0;
 		methodCount = 0;
 		
 		fieldByName = (HashMap<String, Field>)((HashMap<String, Field>)clSuperClass.getFieldByName()).clone();
-		fieldOffsets = (HashMap<Field, Integer>)((HashMap<Field, Integer>)clSuperClass.getFieldOffsets()).clone();
+		fieldOffsets = (HashMap<Integer, Field>)((HashMap<Integer, Field>)clSuperClass.getFieldOffsets()).clone();
 		fieldCount = clSuperClass.getFieldCount();
 		
-		methodByName = (HashMap<String, Method>)((HashMap<String, Method>)clSuperClass.getMethodByName()).clone();
+		methodByName = (HashMap<Method, String>)((HashMap<Method, String>)clSuperClass.getMethodByName()).clone();
 		methodOffsets = (HashMap<String, Integer>)((HashMap<String, Integer>)clSuperClass.getMethodOffsets()).clone();
 		methodCount = clSuperClass.getMethodCount();
 		
 		// Create HashMap of all fields
 		for(Field field : icclass.getFields()){
 			fieldByName.put(field.getName(), field);
-			fieldOffsets.put(field, fieldCount);
+			fieldOffsets.put(fieldCount, field);
 			fieldCount++;
 		}
 		
@@ -124,17 +124,17 @@ public class ClassLayout {
 				
 				// Method overrides superclass -> override it in the table 
 				if (isMethodOverride(method_superclass, clSuperClass)){
-					int methodLoc = this.methodOffsets.get(method.getName());
+					int methodLoc = this.methodOffsets.get(method_superclass);
 					methodByName.remove(method_superclass);
 					methodOffsets.remove(method_superclass);
-					methodByName.put(method_str, method);
+					methodByName.put(method, method_str);
 					methodOffsets.put(method_str, methodLoc);
 				}
 				
 				// Method is unique
 				else{
-					this.methodByName.put(method.getName(), method);
-					this.methodOffsets.put(method.getName(), methodCount);
+					this.methodByName.put(method, method_str);
+					this.methodOffsets.put(method_str, methodCount);
 					this.methodCount++;
 				}
 			}
@@ -156,8 +156,9 @@ public class ClassLayout {
 
 
 	public boolean isMethodOverride(String method_superclass, ClassLayout clSuperClass){
-	
-		if (clSuperClass.getMethodByName().get(method_superclass) != null){
+		
+		int num = clSuperClass.getMethodOffsets().get(method_superclass); 
+		if (num >= 0){
 			return true;
 		}
 		
@@ -166,15 +167,21 @@ public class ClassLayout {
 
 	public StringBuilder printDispatchTable(){
 		
+		String[] dv_funcs = new String[getMethodCount()];
 		StringBuilder string = new StringBuilder();
 		string.append("_DV_" + this.getClassIdent() + ": [");
 		
-		if (this.getMethodCount() > 0){
-			string.append(this.getMethodOffsets().get(0));
-		}
-		for (int i = 1; i < this.getMethodCount()-1; i++){
+		for (String method_name : getMethodOffsets().keySet()){
 			
-			string.append("," + this.getMethodOffsets().get(i));
+			dv_funcs[getMethodOffsets().get(method_name)] = method_name; 
+		}
+		
+		for (int i = 0; i < this.getMethodCount(); i++){
+			
+			if (i == 0)
+				string.append(dv_funcs[i]);
+			else
+				string.append("," + dv_funcs[i]);
 		}
 		
 		string.append("]\n");

@@ -1,5 +1,6 @@
 package IC.AST;
 
+import LIR.LirTranslatorVisitor;
 import SymbolTables.SymbolTable;
 
 /**
@@ -25,6 +26,11 @@ public class Break extends Statement {
 	 */
 	public Break(int line) {
 		super(line);
+	}
+	
+	@Override
+	public Object accept(LirTranslatorVisitor visitor, int regNum) {
+		return visitor.visit(this, regNum);
 	}
 
 }

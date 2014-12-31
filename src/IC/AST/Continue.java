@@ -1,5 +1,6 @@
 package IC.AST;
 
+import LIR.LirTranslatorVisitor;
 import SymbolTables.SymbolTable;
 
 /**
@@ -15,6 +16,10 @@ public class Continue extends Statement {
 	public Object accept(PropVisitor visitor,SymbolTable table) {
 		this.setScope(table);
 		return visitor.visit(this,table);
+	}
+	
+	public Object accept(LirTranslatorVisitor visitor, int regNum) {
+		return visitor.visit(this, regNum);
 	}
 
 	/**

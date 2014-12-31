@@ -1,6 +1,8 @@
 package IC.AST;
 
 import java.util.List;
+
+import LIR.LirTranslatorVisitor;
 import SymbolTables.*;
 
 /**
@@ -21,6 +23,10 @@ public class Program extends ASTNode {
 		return visitor.visit(this,table);
 	} 
 
+	public Object accept(LirTranslatorVisitor visitor, int regNum) {
+		return visitor.visit(this, regNum);
+	}
+	
 	/**
 	 * Constructs a new program node.
 	 * 

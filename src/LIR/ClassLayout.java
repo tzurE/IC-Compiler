@@ -8,7 +8,7 @@ import SymbolTables.SymbolEntry;
 import SymbolTables.SymbolKinds;
 /**
  * 
- * @author Tzur hagever + Yael hashava!
+ * @author Tzur E, Yael K, Tuval R
  *
  */
 public class ClassLayout {

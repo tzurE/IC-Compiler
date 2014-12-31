@@ -8,7 +8,7 @@ import SymbolTables.SymbolEntry;
 import SymbolTables.SymbolKinds;
 /**
  * 
- * @author Tzur E, Yael K, Tuval R
+ * @author
  *
  */
 public class ClassLayout {
@@ -164,20 +164,21 @@ public class ClassLayout {
 		return false;
 	}
 
-	public void printDispatchTable(){
+	public StringBuilder printDispatchTable(){
 		
-		System.out.print("_DV_" + this.getClassIdent() + ": [");
+		StringBuilder string = new StringBuilder();
+		string.append("_DV_" + this.getClassIdent() + ": [");
 		
 		if (this.getMethodCount() > 0){
-			System.out.print(this.getMethodOffsets().get(0));
+			string.append(this.getMethodOffsets().get(0));
 		}
-		
 		for (int i = 1; i < this.getMethodCount()-1; i++){
 			
-			System.out.print("," + this.getMethodOffsets().get(i));
+			string.append("," + this.getMethodOffsets().get(i));
 		}
 		
-		System.out.print("]\n");
+		string.append("]\n");
+		return string;
 	}
 	
 }

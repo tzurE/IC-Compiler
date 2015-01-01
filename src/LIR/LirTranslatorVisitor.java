@@ -17,12 +17,9 @@ public class LirTranslatorVisitor implements LirVisitor{
 	private List<LIRNode> LIRProgram;
 	private List<LIRNode> temp_Program;
 	private List<LIRNode> StringLiterals;
-	private List<LIRNode> main_ic;
-	private int regCount1;
 
 	public LirTranslatorVisitor() {
 		this.StringLiterals = new LinkedList<LIRNode>();
-		this.main_ic = new LinkedList<LIRNode>();
 	}
 	
 	
@@ -63,7 +60,6 @@ public class LirTranslatorVisitor implements LirVisitor{
 		//here we need to concatenate the 3 lists - literals, program, main. main has to be last!
 		//we maybe wont add the main list!!!!!!!!!!!!!!! we found a solution!!!!!!
 		StringLiterals.addAll(temp_Program);
-		StringLiterals.addAll(main_ic);
 		LIRProgram = StringLiterals;
 		return LIRProgram;
 	}
@@ -91,7 +87,6 @@ public class LirTranslatorVisitor implements LirVisitor{
 
 	@Override
 	public Object visit(StaticMethod method, int regCount) {
-		StringBuilder str = new StringBuilder();
 		if(!method.getName().equals("main")){
 			methodToLir(method, regCount);
 		}
@@ -132,13 +127,20 @@ public class LirTranslatorVisitor implements LirVisitor{
 
 	@Override
 	public Object visit(Assignment assignment, int regCount) {
-		// TODO Auto-generated method stub
+		
+		if(assignment.getVariable() instanceof ArrayLocation){
+			ArrayLocation arrayLocation = (ArrayLocation) assignment.getVariable();
+		}
+		else if(assignment.getVariable() instanceof VariableLocation){
+			
+		}
+		
 		return null;
 	}
 
 	@Override
 	public Object visit(CallStatement callStatement, int regCount) {
-		// TODO Auto-generated method stub
+		callStatement.getCall().accept(this, regCount);
 		return null;
 	}
 
@@ -283,5 +285,12 @@ public class LirTranslatorVisitor implements LirVisitor{
 			stmnt.accept(this, regCount);
 		}
 		
+	}
+	
+	private boolean isRegister(String str){
+		if(str.startsWith("R")){
+			return true;
+		}
+		return false;
 	}
 }

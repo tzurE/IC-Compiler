@@ -43,4 +43,10 @@ public class Immediate extends Operand {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String print() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

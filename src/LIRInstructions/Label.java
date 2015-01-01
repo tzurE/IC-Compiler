@@ -3,8 +3,12 @@ package LIRInstructions;
 /** A label (not a label instruction).
  */
 public class Label extends Operand {
-	public final String name;
+	public String name;
 	
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	protected static int numberOfLabels = 0;
 	
 	public Label(String name) {
@@ -45,5 +49,11 @@ public class Label extends Operand {
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String print() {
+		System.out.println(name);
+		return null;
 	}	
 }

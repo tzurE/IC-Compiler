@@ -22,8 +22,8 @@ public class While extends Statement {
 		return visitor.visit(this,table);
 	}
 
-	public Object accept(LirTranslatorVisitor visitor, int regNum) {
-		return visitor.visit(this, regNum);
+	public Object accept(LirTranslatorVisitor visitor, int regCount) {
+		return visitor.visit(this, regCount);
 	}
 	/**
 	 * Constructs a While statement node.

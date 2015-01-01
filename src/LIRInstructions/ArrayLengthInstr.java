@@ -20,4 +20,10 @@ public class ArrayLengthInstr extends Instruction {
 	public String toString() {
 		return "ArrayLength " + arr + "," + dst;
 	}
+
+	@Override
+	public String print() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

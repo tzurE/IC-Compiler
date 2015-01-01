@@ -16,4 +16,10 @@ public class ReturnInstr extends Instruction {
 	public void accept(Visitor v) {
 		v.visit(this);
 	}
+
+	@Override
+	public String print() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

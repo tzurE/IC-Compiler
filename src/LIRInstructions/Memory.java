@@ -45,5 +45,11 @@ public class Memory extends Operand {
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String print() {
+		// TODO Auto-generated method stub
+		return null;
 	}	
 }

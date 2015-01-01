@@ -22,8 +22,8 @@ public class Field extends ASTNode {
 		return visitor.visit((Field)this,table);
 	}
 
-	public Object accept(LirTranslatorVisitor visitor, int regNum) {
-		return visitor.visit(this, regNum);
+	public Object accept(LirTranslatorVisitor visitor, int regCount) {
+		return visitor.visit(this, regCount);
 	}
 	
 	/**

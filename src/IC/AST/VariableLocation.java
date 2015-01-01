@@ -22,8 +22,8 @@ public class VariableLocation extends Location {
 		return visitor.visit(this,table);
 	}
 
-	public Object accept(LirTranslatorVisitor visitor, int regNum) {
-		return visitor.visit(this, regNum);
+	public Object accept(LirTranslatorVisitor visitor, int regCount) {
+		return visitor.visit(this, regCount);
 	}
 	/**
 	 * Constructs a new variable reference node.

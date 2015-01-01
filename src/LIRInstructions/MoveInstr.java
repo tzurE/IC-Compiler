@@ -21,4 +21,10 @@ public class MoveInstr extends Instruction {
 	public String toString() {
 		return "Move " + src + "," + dst;
 	}
+
+	@Override
+	public String print() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -20,8 +20,8 @@ public class VirtualMethod extends Method {
 		return visitor.visit(this,table);
 	}
 
-	public Object accept(LirTranslatorVisitor visitor, int regNum) {
-		return visitor.visit(this, regNum);
+	public Object accept(LirTranslatorVisitor visitor, int regCount) {
+		return visitor.visit(this, regCount);
 	}
 	/**
 	 * Constructs a new virtual method node.

@@ -1,7 +1,11 @@
 package IC;
 
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeMap;
 
+import LIRInstructions.LIRNode;
 import java_cup.runtime.Symbol;
 import IC.AST.*;
 import IC.Parser.Lexer;
@@ -78,7 +82,7 @@ public class Compiler {
 		GlobalSymbolTable glbTable = (GlobalSymbolTable)prog2_root.accept(symTableCreate, null);
 		SymbolVisitorChecker semanticCheckV = new SymbolVisitorChecker(glbTable);
 		prog2_root.accept(semanticCheckV, null);
-		System.out.println("Parsed " + args[0] +" successfully!");
+		System.out.println("Parsed " + args[0] +" successfully!\n");
 		
 		if(printAST){
 			PrettyPrinter printer = new PrettyPrinter(args[0]);
@@ -101,12 +105,16 @@ public class Compiler {
 		}
 		 
 		LirTranslatorVisitor lirTrans = new LirTranslatorVisitor();
-		int regNum = 0;
-		String str = prog2_root.accept(lirTrans, regNum).toString();
+		int regNum = 1;
+		@SuppressWarnings("unchecked")
+		List<LIRNode> LIRProgram = (List<LIRNode>)prog2_root.accept(lirTrans, regNum);
 		
 		if (printLIR){
-			System.out.println(str);
+			for(LIRNode node : LIRProgram){
+				node.print();
+			}
 		}
+		
 		
 		
 		}catch (SemanticError e1){

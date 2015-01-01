@@ -22,7 +22,7 @@ public abstract class ASTNode {
 	 */
 	public abstract Object accept(Visitor visitor);
 	public abstract Object accept(PropVisitor visitor,SymbolTable table);
-	public abstract Object accept(LirTranslatorVisitor visitor, int regNum);
+	public abstract Object accept(LirTranslatorVisitor visitor, int regCount);
 	/**
 	 * Constructs an AST node corresponding to a line number in the original
 	 * code. Used by subclasses.

@@ -99,7 +99,7 @@ public class Compiler {
 			// Prints Program Type Table something like this
 			TypeTable.printTypeTable(args[0]);
 		}
-		
+		 
 		LirTranslatorVisitor lirTrans = new LirTranslatorVisitor();
 		int regNum = 0;
 		String str = prog2_root.accept(lirTrans, regNum).toString();

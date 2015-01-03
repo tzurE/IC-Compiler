@@ -102,7 +102,7 @@ public class Compiler {
 			TypeTable.printTypeTable(args[0]);
 		}
 		 
-		LirTranslatorVisitor lirTrans = new LirTranslatorVisitor();
+		LirTranslatorVisitor lirTrans = new LirTranslatorVisitor(glbTable);
 		int regCount = 1;
 		@SuppressWarnings("unchecked")
 		List<LIRNode> LIRProgram = (List<LIRNode>)prog2_root.accept(lirTrans, regCount);

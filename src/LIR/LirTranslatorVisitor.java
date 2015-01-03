@@ -1,11 +1,18 @@
 package LIR;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import SemanticCheckerVisitor.SymbolVisitorChecker;
+import SymbolTables.GlobalSymbolTable;
+import SymbolTables.SymbolKinds;
 import SymbolTables.SymbolTable;
+import SymbolTables.SymbolTableType;
+import TypeTable.TypeIDs;
+import TypeTable.TypeTableType;
 import IC.BinaryOps;
 import IC.DataTypes;
 import IC.LiteralTypes;
@@ -14,13 +21,17 @@ import LIRInstructions.BinOpInstr;
 import LIRInstructions.Immediate;
 import LIRInstructions.LIRNode;
 import LIRInstructions.Label;
+import LIRInstructions.LibraryCall;
+import LIRInstructions.MoveArrayInstr;
+import LIRInstructions.MoveFieldInstr;
 import LIRInstructions.MoveInstr;
 import LIRInstructions.Operand;
 import LIRInstructions.Operator;
 import LIRInstructions.Reg;
 
 public class LirTranslatorVisitor implements LirVisitor{
-
+	
+	private GlobalSymbolTable global;
 	private String NEW_LINE = "\n";
 	private Map<String, ClassLayout> classLayouts;
 	private List<LIRNode> LIRProgram;
@@ -29,9 +40,10 @@ public class LirTranslatorVisitor implements LirVisitor{
 	private int numStringLiterals;
 
 
-	public LirTranslatorVisitor() {
+	public LirTranslatorVisitor(GlobalSymbolTable global) {
 		this.StringLiterals = new LinkedList<LIRNode>();
 		this.numStringLiterals = 0;
+		this.global = global;
 	}
 	
 	
@@ -149,11 +161,49 @@ public class LirTranslatorVisitor implements LirVisitor{
 		
 		if(assignment.getVariable() instanceof ArrayLocation){
 			ArrayLocation arrayLocation = (ArrayLocation) assignment.getVariable();
+			String arr = (String)arrayLocation.getArray().accept(this, regCount);
+			Operand reg = null, reg2 = null, reg3 = null;
+			LIRNode movearr = null;
+			if(!this.isRegister(arr)){
+				reg = new Reg("R" + regCount++);
+				LIRNode move = new MoveInstr(new Reg(arr), reg);
+				temp_Program.add(move);
+			}
+			Operand ass = (Operand) assignment.getAssignment().accept(this, regCount);
+			if(!this.isRegister(ass.toString())){
+				reg3 = new Reg("R" + regCount++);
+				LIRNode move3 = new MoveInstr(ass, reg3);
+				temp_Program.add(move3);
+				
+			}
+			Operand index = (Operand) arrayLocation.getIndex().accept(this, regCount);
+			if(!this.isRegister(index.toString())){
+				reg2 = new Reg("R" + regCount++);
+				LIRNode move2 = new MoveInstr(index, reg2);
+				temp_Program.add(move2);
+				movearr = new MoveArrayInstr(reg, reg2, reg3, false);
+			}
+			else{
+				movearr = new MoveArrayInstr(reg, index, reg3, false);
+			}
+			temp_Program.add(movearr);
+			
 		}
 		else if(assignment.getVariable() instanceof VariableLocation){
 			VariableLocation varLocation = (VariableLocation) assignment.getVariable();
-			//assignment.getAssignment()
-			assignment.getAssignment().accept(this, regCount);
+			String cName = "";
+			String Name = varLocation.getName();
+			String class_t = "";
+			boolean field = false;
+			Operand ass = (Operand) assignment.getAssignment().accept(this, regCount);
+			if(this.isRegister(ass.toString())){
+				regCount = this.getRegNum(ass.toString()) + 1;
+			}
+			if(varLocation.isExternal()){
+				field = true;
+				
+				
+			}
 			//LIRNode move = new MoveInstr(new Var, dst)
 		}
 		
@@ -218,24 +268,100 @@ public class LirTranslatorVisitor implements LirVisitor{
 
 	@Override
 	public Object visit(VariableLocation location, int regCount) {
-		Operand oper1 = new Immediate(Integer.parseInt(location.getName()));
-		Operand oper2 = new Reg("R" + regCount);
+		String name = location.getName();
+		String className = "className"; //sign for us if its init
+		String class_t = "class_t"; //sign for us if its init
+		LIRNode move = null;
+		Operand reg1 = null;
+		Operand reg2 = null;
+		boolean field = false;
+		if(location.isExternal()){
+			field = true;
+			
+			TypeTableType	classType = (TypeTableType)location.getLocation().accept(new SymbolVisitorChecker(this.global), location.getScope());
+			className= classType.getName();
+			 class_t = (String) location.getLocation().accept(this, regCount); /// we don't know what's happening here - go deeper
+			
+		}
+		else{
+			SymbolTable currScope = location.getScope();
+			while(!(currScope.getType().compareTo(SymbolTableType.CLASS) == 0)){
+				if(currScope.getType().compareTo(SymbolTableType.STATEMENT) == 0){
+					if(currScope.getEntry(name, SymbolKinds.LOCAL_VARIABLE)!=null){
+						return name;
+					}
+				}
+				if(currScope.getType().compareTo(SymbolTableType.STATIC_METHOD) == 0 || currScope.getType().compareTo(SymbolTableType.VIRTUAL_METHOD) == 0 ){
+					if(currScope.getEntry(name, SymbolKinds.LOCAL_VARIABLE)!=null || currScope.getEntry(name, SymbolKinds.PARAMETER)!=null){
+						return name;
+					}
+				}
+			}
+			currScope = currScope.getFather_table();
+			
+			if(currScope.getType().compareTo(SymbolTableType.CLASS) == 0){
+				className = currScope.getId();
+			}
+			// Check if is a field
+			if(this.classLayouts.get(className).getFieldByName().containsKey(name)){
+				field = true;
+				reg1 = new Reg(name);
+				reg2 = new Reg("R" + regCount++);
+				move = new MoveInstr(reg1, reg2);
+				temp_Program.add(move);
+			}
+			else
+				return name;
+		}
+		if(field){
+			ClassLayout clay = this.classLayouts.get(className);
+			int fieldOffset = clay.getFieldOffsetByName().get(name);
+			Operand reg3 = new Reg("R" + regCount++);
+			LIRNode movef = new MoveFieldInstr(new Reg(class_t), new Immediate(fieldOffset), reg3, true);
+
+			temp_Program.add(movef);
+		}
 		
-		SymbolTable current_scope = location.getScope();
-		LIRNode move = new MoveInstr(oper1, oper2);
-		temp_Program.add(move);
 		return null;
 	}
 
 	@Override
 	public Object visit(ArrayLocation location, int regCount) {
-		// TODO Auto-generated method stub
-		return null;
+		String arr = (String)location.getArray().accept(this, regCount);
+		Operand reg1;
+		reg1 = (Operand) location.getIndex().accept(this, regCount);
+		
+		
+		return arr + "[" + reg1.toString() + "]";
 	}
 
 	@Override
 	public Object visit(StaticCall call, int regCount) {
-		// TODO Auto-generated method stub
+		LIRNode callNode = null;
+		Operand reg = null;
+		Operand callParamOper = null;
+		List<Operand> strOpers = new ArrayList<Operand>();
+		Label func = null;
+		
+		for(Expression callParam : call.getArguments()){		
+			callParamOper = (Label) callParam.accept(this, regCount);
+			strOpers.add(callParamOper);
+		}
+		 	
+		// Static call is a library method
+		if(call.getClassName().equals("Library")){
+			
+			func = new Label("__" + call.getName());
+			reg = new Reg("R" + regCount++);
+		}
+		// Not a library method
+		else{
+			func = new Label("_" + call.getClassName() + "_" + call.getName());
+			reg = new Reg("R" + regCount++);
+		}
+		
+		callNode = new LibraryCall(func, strOpers, (Reg)reg);
+		temp_Program.add(callNode);			
 		return null;
 	}
 
@@ -259,8 +385,13 @@ public class LirTranslatorVisitor implements LirVisitor{
 
 	@Override
 	public Object visit(NewArray newArray, int regCount) {
-		// TODO Auto-generated method stub
-		return null;
+		Operand oper_size = (Operand)newArray.getSize().accept(this, regCount);
+		LIRNode allocate = null;
+		LIRNode reg1 = null;
+		reg1 = new Reg("R" + regCount++);
+		allocate = new Label("Library __allocateArray(" + oper_size.toString() + "),"+reg1.toString());
+		temp_Program.add(allocate);
+		return reg1;
 	}
 
 	@Override
@@ -279,20 +410,29 @@ public class LirTranslatorVisitor implements LirVisitor{
 		LIRNode move = null;
 		LIRNode binOpNode = null;
 					
-		reg1 = new Reg("R" + regCount);
-		regCount++;
-		move = new MoveInstr(oper1, reg1);
 		// move oper1, reg#
+		reg1 = new Reg("R" + regCount++); 
+		move = new MoveInstr(oper1, reg1);
 		temp_Program.add(move);
 		
-		reg2 = new Reg("R" + regCount);
-		regCount++;
-		move = new MoveInstr(oper2, reg2);
 		// move oper2, reg#
+		reg2 = new Reg("R" + regCount++);
+		move = new MoveInstr(oper2, reg2);
 		temp_Program.add(move);
 		
 		if(binaryOp.getOperator().getOperatorString().equals(BinaryOps.PLUS.getOperatorString())){
-			binOpNode = new BinOpInstr(reg1, reg2, Operator.ADD);
+			TypeTableType operandsType = (TypeTableType)binaryOp.getFirstOperand().accept ( new SymbolVisitorChecker(this.global), binaryOp.getScope());
+			if (operandsType.getId() == TypeIDs.INT){
+				binOpNode = new BinOpInstr(reg1, reg2, Operator.ADD);
+			}
+			else if (operandsType.getId() == TypeIDs.STRING){
+				List<Operand> strOpers = new ArrayList<Operand>();
+				strOpers.add(oper1);
+				strOpers.add(oper2);
+				Label func = new Label("__stringCat");
+				reg2 = new Reg("R" + regCount++);
+				binOpNode = new LibraryCall(func, strOpers, (Reg)reg2);
+			}
 			temp_Program.add(binOpNode);
 		}
 		else if (binaryOp.getOperator().getOperatorString().equals(BinaryOps.MINUS.getOperatorString())){
@@ -311,8 +451,6 @@ public class LirTranslatorVisitor implements LirVisitor{
 			binOpNode = new BinOpInstr(reg1, reg2, Operator.MOD);
 			temp_Program.add(binOpNode);
 		}
-		
-	//	if (isRegister(str))
 		
 		return reg2;
 	}
@@ -390,5 +528,8 @@ public class LirTranslatorVisitor implements LirVisitor{
 			return true;
 		}
 		return false;
+	}
+	private int getRegNum(String reg){
+		return Integer.parseInt(reg.substring(1));
 	}
 }

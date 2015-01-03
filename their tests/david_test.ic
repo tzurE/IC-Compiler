@@ -1,0 +1,162 @@
+/*
+*/
+ 
+class Library{
+    void println(string s) {}
+    void print(string s) {}
+    void printi(int i) {}
+    int stoi(string s, int i) {}
+   int random(int n) {}
+   void exit(int n) {}
+}
+ 
+ 
+class TestClass extends MyClass { int a; }
+ 
+class Quicksort {
+        int fieldz;
+        static void method1 (){
+				//while(a==b) int a;
+				
+               
+                 MyClass.method ( - 4 + 2 [ new string[][][a] ], method_1( 4* -3)[ new QuickSort()]) ;
+                 break ;
+                 continue ;
+               
+                 return;
+                 return a;
+               
+                 /* local variable test */
+                 Quicksort[][][][][] quick ;
+                Quicksort[][][][][] quick_sort = "wow" [ a.length ] ;
+                 int[] a =  new Class[][][this] ;
+               
+                /* while and if test */
+               
+                 if ( 4.length ) if( null) return 5 ; else if("string") continue;
+               
+                 while(  4.a4) a(4);
+               
+                 /* call test */
+                 (null).function ( this , this , 4 );
+                  A.function(false);
+                  a.function();
+                  a.function(a.method[4]);
+                  function( -4, - new int[null]);
+                 
+                 /* statement block */
+                 {
+                         {
+                                 return -4 * 3 [ new int [4] ] ;
+                                 return new int [4] [4];
+                         }
+                         a = 4;
+                        continue;
+                 }
+                 {
+                 string b;
+                 }
+                 {
+                 }
+               
+                  a.function(a.method[4]);
+               
+                 /* expression test */
+               
+                 /* location test */
+                  a = bBb329_3;
+                  a = this.a;
+                  a = null [ null . length[3]];
+               
+                 /* literal test */
+                  a = null;
+                  a = false;
+                  a = true;
+                  a = -31413134;
+                  a = 3141413;
+                  b = "this is a \\ \" string \n \t #$@()#@@!#@%@%#@ ";
+               
+                 /* unop test */
+                  a = ! 4 == 4;
+                  b = 4 != ! null;
+                  a = -!!-!new string[3];
+               
+                 /* bin op test + assoc*/
+                 a = 4 + 4;
+                 a = -4 -4 ;
+                 d= 4* 3 * 4 *2 -2;
+                 m = 4%4%4 *3; /* ?? */
+                 a = 2/3*2;
+                 t = -2/-3;
+                 a = a && b && c;
+                 y = a && b || c && b;
+                 g = a && b || c || b;
+                 l  = 1 == 2 == !3 == -4 != 2;
+                 a = 4 < 4;
+                 a = 4 <= 4;
+                 b = 3 > 2;
+                 b = 3 >= 4;
+                 c = 3 != 4;
+                 d = true || false;
+                 g = a == 4 <= 5;
+                 t = a + b < 6;
+                 t = a < 6 + b;
+                 j = a < b <= 3;
+               
+                /* length access test */
+               
+                { b = null.length [3]; }
+                return 4. length + 4.length;
+                return -4.length; /* */
+                return (4).length;
+               
+                /* new test */
+                a = new Object[][][4];
+                b = new int[][2];
+                c = new Object(); /* empty constructor */
+                d = new Class ( );
+                { a =(new Class()) ; }
+               
+                /*  this */
+                a = this[this];
+                a = this.a;
+                a = this.length;
+               
+                /* call as expression */
+                func(null);
+                a = func(null);
+                a = func(null, null);
+                b = a.func(null, a);
+                c = CLASS.func(func, -null);
+               
+                /* location test */
+               
+                a = a;
+                (new Class()).b = a;
+                this[null] = "ayo";
+               
+               
+        }
+       
+        int field;
+       
+        /* methods and formals test */
+        static void method2(A a) {}
+        static int method3(B b, A a, int a) {}
+        static boolean method4() { int b; }
+        static string method5() { int k; }
+        static A method5() { A a = new A(); }
+        void method_6(int[][][][] a, boolean[] c, Class[][]d) { break; }
+        int method_7(){}
+        string method_8(){}
+        boolean method_9(){}
+        AClass method_10(Null [] []b){ A c;}
+       
+        /* field test */
+       
+        int field;
+    A fiel2, c , d ,b, d;
+        boolean k1, k2;
+        string s;
+   
+}

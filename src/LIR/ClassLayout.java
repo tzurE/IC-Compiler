@@ -157,10 +157,8 @@ public class ClassLayout {
 
 	public boolean isMethodOverride(String method_superclass, ClassLayout clSuperClass){
 		
-		int num = clSuperClass.getMethodOffsets().get(method_superclass); 
-		if (num >= 0){
+		if (clSuperClass.getMethodOffsets().containsKey(method_superclass))
 			return true;
-		}
 		
 		return false;
 	}

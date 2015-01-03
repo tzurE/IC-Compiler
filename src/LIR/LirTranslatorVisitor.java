@@ -6,9 +6,18 @@ import java.util.List;
 import java.util.Map;
 
 import SymbolTables.SymbolTable;
+import IC.BinaryOps;
+import IC.DataTypes;
+import IC.LiteralTypes;
 import IC.AST.*;
+import LIRInstructions.BinOpInstr;
+import LIRInstructions.Immediate;
 import LIRInstructions.LIRNode;
 import LIRInstructions.Label;
+import LIRInstructions.MoveInstr;
+import LIRInstructions.Operand;
+import LIRInstructions.Operator;
+import LIRInstructions.Reg;
 
 public class LirTranslatorVisitor implements LirVisitor{
 
@@ -17,9 +26,12 @@ public class LirTranslatorVisitor implements LirVisitor{
 	private List<LIRNode> LIRProgram;
 	private List<LIRNode> temp_Program;
 	private List<LIRNode> StringLiterals;
+	private int numStringLiterals;
+
 
 	public LirTranslatorVisitor() {
 		this.StringLiterals = new LinkedList<LIRNode>();
+		this.numStringLiterals = 0;
 	}
 	
 	
@@ -57,8 +69,15 @@ public class LirTranslatorVisitor implements LirVisitor{
 				icClass.accept(this, regCount);
 			}
 		}
+		
+		// Change StringLiterals list to contain string-variable names
+		for (int i = 0; i < StringLiterals.size(); i++){
+			String label = ((Label)StringLiterals.get(i)).name;
+			((Label)StringLiterals.get(i)).setName("str" + (i+1) + ": \"" + label + "\"");
+		}
+		
 		//here we need to concatenate the 3 lists - literals, program, main. main has to be last!
-		//we maybe wont add the main list!!!!!!!!!!!!!!! we found a solution!!!!!!
+		//we maybe wont add the main list!!!!!!!!!!!!!!! we found a solution!!!!!!		
 		StringLiterals.addAll(temp_Program);
 		LIRProgram = StringLiterals;
 		return LIRProgram;
@@ -132,7 +151,10 @@ public class LirTranslatorVisitor implements LirVisitor{
 			ArrayLocation arrayLocation = (ArrayLocation) assignment.getVariable();
 		}
 		else if(assignment.getVariable() instanceof VariableLocation){
-			
+			VariableLocation varLocation = (VariableLocation) assignment.getVariable();
+			//assignment.getAssignment()
+			assignment.getAssignment().accept(this, regCount);
+			//LIRNode move = new MoveInstr(new Var, dst)
 		}
 		
 		return null;
@@ -182,13 +204,26 @@ public class LirTranslatorVisitor implements LirVisitor{
 
 	@Override
 	public Object visit(LocalVariable localVariable, int regCount) {
-		// TODO Auto-generated method stub
+		
+		if (localVariable.hasInitValue()){
+			Operand oper1 = (Operand)localVariable.getInitValue().accept(this, regCount);
+			Operand oper2 = new Reg(localVariable.getName());
+		
+			SymbolTable current_scope = localVariable.getScope();
+			LIRNode move = new MoveInstr(oper1, oper2);
+			temp_Program.add(move);
+		}
 		return null;
 	}
 
 	@Override
 	public Object visit(VariableLocation location, int regCount) {
-		// TODO Auto-generated method stub
+		Operand oper1 = new Immediate(Integer.parseInt(location.getName()));
+		Operand oper2 = new Reg("R" + regCount);
+		
+		SymbolTable current_scope = location.getScope();
+		LIRNode move = new MoveInstr(oper1, oper2);
+		temp_Program.add(move);
 		return null;
 	}
 
@@ -236,8 +271,50 @@ public class LirTranslatorVisitor implements LirVisitor{
 
 	@Override
 	public Object visit(MathBinaryOp binaryOp, int regCount) {
-		// TODO Auto-generated method stub
-		return null;
+
+		Operand oper1 = (Operand)binaryOp.getFirstOperand().accept(this, regCount);
+		Operand oper2 = (Operand)binaryOp.getSecondOperand().accept(this, regCount);
+		Operand reg1 = null;
+		Operand reg2 = null;
+		LIRNode move = null;
+		LIRNode binOpNode = null;
+					
+		reg1 = new Reg("R" + regCount);
+		regCount++;
+		move = new MoveInstr(oper1, reg1);
+		// move oper1, reg#
+		temp_Program.add(move);
+		
+		reg2 = new Reg("R" + regCount);
+		regCount++;
+		move = new MoveInstr(oper2, reg2);
+		// move oper2, reg#
+		temp_Program.add(move);
+		
+		if(binaryOp.getOperator().getOperatorString().equals(BinaryOps.PLUS.getOperatorString())){
+			binOpNode = new BinOpInstr(reg1, reg2, Operator.ADD);
+			temp_Program.add(binOpNode);
+		}
+		else if (binaryOp.getOperator().getOperatorString().equals(BinaryOps.MINUS.getOperatorString())){
+			binOpNode = new BinOpInstr(reg1, reg2, Operator.SUB);
+			temp_Program.add(binOpNode);
+		}
+		else if (binaryOp.getOperator().getOperatorString().equals(BinaryOps.MULTIPLY.getOperatorString())){
+			binOpNode = new BinOpInstr(reg1, reg2, Operator.MUL);
+			temp_Program.add(binOpNode);
+		}
+		else if (binaryOp.getOperator().getOperatorString().equals(BinaryOps.DIVIDE.getOperatorString())){
+			binOpNode = new BinOpInstr(reg1, reg2, Operator.DIV);
+			temp_Program.add(binOpNode);
+		}
+		else if (binaryOp.getOperator().getOperatorString().equals(BinaryOps.MOD.getOperatorString())){
+			binOpNode = new BinOpInstr(reg1, reg2, Operator.MOD);
+			temp_Program.add(binOpNode);
+		}
+		
+	//	if (isRegister(str))
+		
+		return reg2;
 	}
 
 	@Override
@@ -260,7 +337,32 @@ public class LirTranslatorVisitor implements LirVisitor{
 
 	@Override
 	public Object visit(Literal literal, int regCount) {
-		// TODO Auto-generated method stub
+		
+		LIRNode oper;
+		
+		if (literal.getType().getDescription().equals(LiteralTypes.INTEGER.getDescription())){
+			int i = Integer.parseInt(literal.getValue().toString());
+			oper = new Immediate(i);
+			return oper;
+		}
+		else if (literal.getType().getDescription().equals(LiteralTypes.STRING.getDescription())){
+			
+			Operand StringLitOper = new Label(literal.getValue().toString());
+			String strLit; 
+			if (!this.StringLiterals.contains(StringLitOper)){
+				numStringLiterals++;
+				strLit = "str" + numStringLiterals;
+				StringLiterals.add(StringLitOper);
+			}
+			else{
+				strLit = "str" + (this.StringLiterals.indexOf(StringLitOper)+1);
+				((Label)StringLitOper).setName(strLit);
+			}
+				
+			oper = new Label(strLit);
+
+			return oper;
+		}
 		return null;
 	}
 
@@ -277,14 +379,10 @@ public class LirTranslatorVisitor implements LirVisitor{
 			String scope_name = scope.getId();
 			((Label)methodDec).setName("_" + scope_name + "_" + method.getName() + ":" + NEW_LINE);
 			temp_Program.add(methodDec);
-			
-			
-			
 		}
 		for(Statement stmnt : method.getStatements()){
 			stmnt.accept(this, regCount);
 		}
-		
 	}
 	
 	private boolean isRegister(String str){

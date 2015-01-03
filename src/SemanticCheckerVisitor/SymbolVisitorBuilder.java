@@ -456,7 +456,7 @@ public class SymbolVisitorBuilder implements PropVisitor{
 
 	@Override
 	public Object visit(ExpressionBlock expressionBlock, SymbolTable table) {
-		expressionBlock.accept(this,table);
+		//expressionBlock.accept(this,table);
 		expressionBlock.getExpression().accept(this,table);
 		
 		return table;

@@ -55,6 +55,12 @@ public class ClassLayout {
 	public int getMethodCount() {
 		return methodCount;
 	}
+	
+	public int getDispatchTableSize(){
+		int size = 4*(fieldByOffset.size() + 1);
+		return size;
+	}
+	
 
 	//if a class has no superClass, we use this builder
 	public ClassLayout(ICClass icclass){

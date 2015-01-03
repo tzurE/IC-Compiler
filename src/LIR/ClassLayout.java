@@ -16,7 +16,9 @@ public class ClassLayout {
 	private Map<Method, String> methodByName;
 	private Map<String, Integer> methodOffsets;
 	private Map<String, Field> fieldByName;
-	private Map<Integer, Field> fieldOffsets;
+	private Map<Integer, Field> fieldByOffset;
+	private Map<String, Integer> fieldOffsetByName;
+	
 	private int fieldCount;
 	private int methodCount;
 	
@@ -38,10 +40,14 @@ public class ClassLayout {
 		return fieldByName;
 	}
 
-	public Map<Integer, Field> getFieldOffsets() {
-		return fieldOffsets;
+	public Map<Integer, Field> getFieldByOffset() {
+		return fieldByOffset;
 	}
 
+	public Map<String, Integer> getFieldOffsetByName() {
+		return fieldOffsetByName;
+	}
+	
 	public int getFieldCount() {
 		return fieldCount;
 	}
@@ -57,7 +63,8 @@ public class ClassLayout {
 		methodByName = new HashMap<Method, String>();
 		methodOffsets = new HashMap<String, Integer>();
 		fieldByName = new HashMap<String, Field>();
-		fieldOffsets = new HashMap<Integer, Field>();
+		fieldByOffset = new HashMap<Integer, Field>();
+		fieldOffsetByName = new HashMap<String, Integer>();
 		
 		fieldCount = 0;
 		methodCount = 0;
@@ -66,7 +73,8 @@ public class ClassLayout {
 		// Create HashMap of all fields
 		for(Field field : icclass.getFields()){
 			fieldByName.put(field.getName(), field);
-			fieldOffsets.put(fieldCount, field);
+			fieldByOffset.put(fieldCount, field);
+			fieldOffsetByName.put(field.getName(), fieldCount);
 			fieldCount++;
 		}
 		
@@ -93,13 +101,15 @@ public class ClassLayout {
 		methodByName = new HashMap<Method, String>();
 		methodOffsets = new HashMap<String, Integer>();
 		fieldByName = new HashMap<String, Field>();
-		fieldOffsets = new HashMap<Integer, Field>();
+		fieldByOffset = new HashMap<Integer, Field>();
+		fieldOffsetByName = new HashMap<String, Integer>();
 		
 		fieldCount = 0;
 		methodCount = 0;
 		
 		fieldByName = (HashMap<String, Field>)((HashMap<String, Field>)clSuperClass.getFieldByName()).clone();
-		fieldOffsets = (HashMap<Integer, Field>)((HashMap<Integer, Field>)clSuperClass.getFieldOffsets()).clone();
+		fieldByOffset = (HashMap<Integer, Field>)((HashMap<Integer, Field>)clSuperClass.getFieldByOffset()).clone();
+		fieldOffsetByName = (HashMap<String, Integer>)((HashMap<String, Integer>)clSuperClass.getFieldOffsetByName()).clone();
 		fieldCount = clSuperClass.getFieldCount();
 		
 		methodByName = (HashMap<Method, String>)((HashMap<Method, String>)clSuperClass.getMethodByName()).clone();
@@ -109,7 +119,8 @@ public class ClassLayout {
 		// Create HashMap of all fields
 		for(Field field : icclass.getFields()){
 			fieldByName.put(field.getName(), field);
-			fieldOffsets.put(fieldCount, field);
+			fieldByOffset.put(fieldCount, field);
+			fieldOffsetByName.put(field.getName(), fieldCount);
 			fieldCount++;
 		}
 		

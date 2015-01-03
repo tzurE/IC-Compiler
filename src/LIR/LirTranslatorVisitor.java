@@ -292,7 +292,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 
 	@Override
 	public Object visit(LocalVariable localVariable, int regCount) {
-		
+		///////////////////////////////////////////////////////////////////////////////////////////////
 		if (localVariable.hasInitValue()){
 			Operand oper1 = (Operand)localVariable.getInitValue().accept(this, regCount);
 			Operand oper2 = new Reg(localVariable.getName());
@@ -382,7 +382,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 		Label func = null;
 		
 		for(Expression callParam : call.getArguments()){		
-			callParamOper = (Label) callParam.accept(this, regCount);
+			callParamOper = (Operand) callParam.accept(this, regCount);
 			strOpers.add(callParamOper);
 		}
 		 	

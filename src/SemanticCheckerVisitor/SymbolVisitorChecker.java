@@ -1040,7 +1040,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 		String literalType = literal.getType().getDescription();
 		if(literalType.compareTo(LiteralTypes.INTEGER.getDescription()) == 0){
 			//we check that the integer value is in the integer range
-			if(((String)literal.getValue()).length()>11){
+			if((literal.getValue().toString()).length()>11){
 				try {
 					throw new SemanticError(literal.getLine(),
 							"the literal '"
@@ -1053,7 +1053,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 				}
 			}
 			else{
-				long num = Long.valueOf((String)literal.getValue());
+				long num = Long.valueOf(literal.getValue().toString());
 				if((num>(Math.pow(2,31))-1)||num<(-Math.pow(2,31))){
 					try {
 						throw new SemanticError(literal.getLine(),

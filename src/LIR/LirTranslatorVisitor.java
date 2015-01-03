@@ -161,7 +161,8 @@ public class LirTranslatorVisitor implements LirVisitor{
 		
 		if(assignment.getVariable() instanceof ArrayLocation){
 			ArrayLocation arrayLocation = (ArrayLocation) assignment.getVariable();
-			String arr = (String)arrayLocation.getArray().accept(this, regCount);
+			Operand arr1 = (Operand)arrayLocation.getArray().accept(this, regCount);
+			String arr = arr1.toString();
 			Operand reg = null, reg2 = null, reg3 = null;
 			LIRNode movearr = null;
 			if(!this.isRegister(arr)){
@@ -195,16 +196,53 @@ public class LirTranslatorVisitor implements LirVisitor{
 			String Name = varLocation.getName();
 			String class_t = "";
 			boolean field = false;
+			LIRNode move = null;
+			Operand reg1 = null;
 			Operand ass = (Operand) assignment.getAssignment().accept(this, regCount);
 			if(this.isRegister(ass.toString())){
 				regCount = this.getRegNum(ass.toString()) + 1;
+				reg1 = ass;
 			}
-			if(varLocation.isExternal()){
+			else{
+				reg1 = new Reg("R" + regCount++);
+				LIRNode move1 = new MoveInstr(ass, reg1);
+				temp_Program.add(move1);
+				
+			}
+			if(varLocation.isExternal()){//external, lets get some info on it.
 				field = true;
-				
+				TypeTableType classType = (TypeTableType)varLocation.getLocation().accept(new SymbolVisitorChecker(this.global),null);
+				cName = classType.getName();
+				//////////////////////////////////what next?
+				varLocation.getLocation().accept(this, regCount);
 				
 			}
-			//LIRNode move = new MoveInstr(new Var, dst)
+			else{//not external - meaning we need to do "this"
+				SymbolTable currScope = varLocation.getScope();
+				while(!(currScope.getType().compareTo(SymbolTableType.CLASS) == 0)){
+					currScope = currScope.getFather_table();
+				}
+				cName = currScope.getId();
+				if(this.classLayouts.get(cName).getFieldByName().containsKey(Name)){
+					field = true;
+					//need to add a move here
+//					tr += "Move this,R" + regNum + NEW_LINE;
+//					trClass = "R" + regNum; 
+				}				
+			}
+			if(field){
+//			ClassLayout cl = this.classesLayouts.get(className);
+//			int fieldOffset = cl.getFieldOffset(locationName);
+//
+//			tr += "MoveField " + trAssignValue + "," + trClass + "." + fieldOffset + NEW_LINE; 
+			}
+			else{//local!
+				move = new MoveInstr(reg1, new Reg("R" + regCount++));
+				
+			}
+			
+			
+			temp_Program.add(move);
 		}
 		
 		return null;
@@ -288,12 +326,12 @@ public class LirTranslatorVisitor implements LirVisitor{
 			while(!(currScope.getType().compareTo(SymbolTableType.CLASS) == 0)){
 				if(currScope.getType().compareTo(SymbolTableType.STATEMENT) == 0){
 					if(currScope.getEntry(name, SymbolKinds.LOCAL_VARIABLE)!=null){
-						return name;
+						return new Label(name);
 					}
 				}
 				if(currScope.getType().compareTo(SymbolTableType.STATIC_METHOD) == 0 || currScope.getType().compareTo(SymbolTableType.VIRTUAL_METHOD) == 0 ){
 					if(currScope.getEntry(name, SymbolKinds.LOCAL_VARIABLE)!=null || currScope.getEntry(name, SymbolKinds.PARAMETER)!=null){
-						return name;
+						return new Label(name);
 					}
 				}
 			}
@@ -311,7 +349,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 				temp_Program.add(move);
 			}
 			else
-				return name;
+				return new Label(name);
 		}
 		if(field){
 			ClassLayout clay = this.classLayouts.get(className);
@@ -421,10 +459,11 @@ public class LirTranslatorVisitor implements LirVisitor{
 		temp_Program.add(move);
 		
 		if(binaryOp.getOperator().getOperatorString().equals(BinaryOps.PLUS.getOperatorString())){
-			TypeTableType operandsType = (TypeTableType)binaryOp.getFirstOperand().accept ( new SymbolVisitorChecker(this.global), binaryOp.getScope());
+			TypeTableType operandsType = (TypeTableType)binaryOp.getFirstOperand().accept (new SymbolVisitorChecker(this.global), binaryOp.getScope());
 			if (operandsType.getId() == TypeIDs.INT){
 				binOpNode = new BinOpInstr(reg1, reg2, Operator.ADD);
 			}
+			
 			else if (operandsType.getId() == TypeIDs.STRING){
 				List<Operand> strOpers = new ArrayList<Operand>();
 				strOpers.add(oper1);

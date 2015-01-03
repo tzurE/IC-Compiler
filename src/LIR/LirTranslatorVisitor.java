@@ -439,7 +439,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 		}
 		
 		temp_Program.add(callNode);			
-		return null;
+		return reg;
 	}
 
 	@Override

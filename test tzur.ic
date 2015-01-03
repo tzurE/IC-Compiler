@@ -1,0 +1,5 @@
+class C {
+  static void main(string[] args) {
+    int t = 1+2*2;
+  }
+}

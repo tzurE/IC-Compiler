@@ -17,6 +17,10 @@ public class ClassSymbolTable extends SymbolTable {
 	private HashMap<String, ClassSymbolTable> classChildTableList = new HashMap<String, ClassSymbolTable>();
 	private HashMap<String, MethodSymbolTable> methodChildTableList = new HashMap<String, MethodSymbolTable>();
 
+	public HashMap<String, MethodSymbolTable> getMethodChildTableList() {
+		return methodChildTableList;
+	}
+
 	// For Printing Fields
 	private int fieldCount = 0;
 	private HashMap<Integer, String> fieldsByOrder = new HashMap<Integer, String>();

@@ -28,6 +28,14 @@ public class MethodSymbolTable extends SymbolTable{
 	private HashMap<Integer,String> localVariablesByOrder = new HashMap<Integer,String>();
 	private int parameterCount = 0;
 	
+	public int getParameterCount() {
+		return parameterCount;
+	}
+
+	public HashMap<Integer, String> getParametersByOrder() {
+		return parametersByOrder;
+	}
+
 	// For Printing parameters
 	private HashMap<Integer,String> parametersByOrder = new HashMap<Integer,String>();
 	

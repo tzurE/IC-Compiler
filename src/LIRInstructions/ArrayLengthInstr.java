@@ -1,5 +1,7 @@
 package LIRInstructions;
 
+import IC.AST.This;
+
 /** An ArrayLength instruction that retrieves the length
  * of an array or a string.
  */
@@ -23,7 +25,7 @@ public class ArrayLengthInstr extends Instruction {
 
 	@Override
 	public String print() {
-		// TODO Auto-generated method stub
+		System.out.println(this.toString());
 		return null;
 	}
 }

@@ -46,7 +46,7 @@ public class Immediate extends Operand {
 
 	@Override
 	public String print() {
-		// TODO Auto-generated method stub
+		System.out.println(this.toString());
 		return null;
 	}
 }

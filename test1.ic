@@ -1,5 +1,14 @@
-class C {
+class B {
+
   static void main(string[] args) {
-    int t = 1+2*2;
+
+    int x = C.func(5, "y");
+  }
+}
+
+class C {
+
+  static int func(int x, string y){     
+     return 2+3;
   }
 }

@@ -21,7 +21,7 @@ public class UnaryOpInstr extends Instruction {
 
 	@Override
 	public String print() {
-		// TODO Auto-generated method stub
+		System.out.println(this.toString());
 		return null;
 	}
 }

@@ -1,0 +1,504 @@
+
+Abstract Syntax Tree: D:\test\test_file.ic
+
+1: Declaration of class: Library
+  2: Declaration of virtual method: println
+    2: Primitive data type: void
+    2: Parameter: s
+     2: Primitive data type: string
+  3: Declaration of virtual method: print
+    3: Primitive data type: void
+    3: Parameter: s
+     3: Primitive data type: string
+  4: Declaration of virtual method: printi
+    4: Primitive data type: void
+    4: Parameter: i
+     4: Primitive data type: int
+  5: Declaration of virtual method: stoi
+    5: Primitive data type: int
+    5: Parameter: s
+     5: Primitive data type: string
+    5: Parameter: i
+     5: Primitive data type: int
+  6: Declaration of virtual method: random
+    6: Primitive data type: int
+    6: Parameter: n
+     6: Primitive data type: int
+  7: Declaration of virtual method: exit
+    7: Primitive data type: void
+    7: Parameter: n
+     7: Primitive data type: int
+11: Declaration of class: TestClass, subclass of MyClass
+  11: Declaration of field: a
+   11: Primitive data type: int
+13: Declaration of class: Quicksort
+  14: Declaration of field: fieldz
+   14: Primitive data type: int
+  136: Declaration of field: field
+   136: Primitive data type: int
+  152: Declaration of field: field
+   152: Primitive data type: int
+  153: Declaration of field: fiel2
+   153: User-defined data type: A
+  153: Declaration of field: c
+   153: User-defined data type: A
+  153: Declaration of field: d
+   153: User-defined data type: A
+  153: Declaration of field: b
+   153: User-defined data type: A
+  153: Declaration of field: d
+   153: User-defined data type: A
+  154: Declaration of field: k1
+   154: Primitive data type: boolean
+  154: Declaration of field: k2
+   154: Primitive data type: boolean
+  155: Declaration of field: s
+   155: Primitive data type: string
+  15: Declaration of static method: method1
+    15: Primitive data type: void
+    17: Method call statement
+     17: Call to static method: method, in class MyClass
+       17: Reference to array
+         17: Mathematical binary operation: addition
+           17: Mathematical unary operation: unary subtraction
+            17: Integer literal: 4
+           17: Integer literal: 2
+         17: Array allocation
+           17: Primitive data type: 2-dimensional array of string
+           17: Reference to variable: a
+       17: Reference to array
+         17: Call to virtual method: method_1
+           17: Mathematical binary operation: multiplication
+             17: Integer literal: 4
+             17: Mathematical unary operation: unary subtraction
+              17: Integer literal: 3
+         17: Instantiation of class: QuickSort
+    18: Break statement
+    19: Continue statement
+    21: Return statement
+    22: Return statement, with return value
+     22: Reference to variable: a
+    25: Declaration of local variable: quick
+     25: User-defined data type: 5-dimensional array of Quicksort
+    26: Declaration of local variable: quick_sort, with initial value
+      26: User-defined data type: 5-dimensional array of Quicksort
+      26: Reference to array
+        26: String literal: "wow"
+        26: Reference to array length
+         26: Reference to variable: a
+    27: Declaration of local variable: a, with initial value
+      27: Primitive data type: 1-dimensional array of int
+      27: Array allocation
+        27: User-defined data type: 2-dimensional array of Class
+        27: Reference to 'this' instance
+    31: If statement
+      31: Reference to array length
+       31: Integer literal: 4
+      31: If statement, with Else operation
+        31: Literal: null
+        31: Return statement, with return value
+         31: Integer literal: 5
+        31: If statement
+          31: String literal: "string"
+          31: Continue statement
+    33: While statement
+      33: Reference to variable: a4, in external scope
+       33: Integer literal: 4
+      33: Method call statement
+       33: Call to virtual method: a
+         33: Integer literal: 4
+    36: Method call statement
+     36: Call to virtual method: function, in external scope
+       36: Parenthesized expression
+        36: Literal: null
+       36: Reference to 'this' instance
+       36: Reference to 'this' instance
+       36: Integer literal: 4
+    37: Method call statement
+     37: Call to static method: function, in class A
+       37: Boolean literal: false
+    38: Method call statement
+     38: Call to virtual method: function, in external scope
+       38: Reference to variable: a
+    39: Method call statement
+     39: Call to virtual method: function, in external scope
+       39: Reference to variable: a
+       39: Reference to array
+         39: Reference to variable: method, in external scope
+          39: Reference to variable: a
+         39: Integer literal: 4
+    40: Method call statement
+     40: Call to virtual method: function
+       40: Mathematical unary operation: unary subtraction
+        40: Integer literal: 4
+       40: Mathematical unary operation: unary subtraction
+        40: Array allocation
+          40: Primitive data type: int
+          40: Literal: null
+    43: Block of statements
+      44: Block of statements
+        45: Return statement, with return value
+         45: Reference to array
+           45: Mathematical binary operation: multiplication
+             45: Mathematical unary operation: unary subtraction
+              45: Integer literal: 4
+             45: Integer literal: 3
+           45: Array allocation
+             45: Primitive data type: int
+             45: Integer literal: 4
+        46: Return statement, with return value
+         46: Reference to array
+           46: Array allocation
+             46: Primitive data type: int
+             46: Integer literal: 4
+           46: Integer literal: 4
+      48: Assignment statement
+        48: Reference to variable: a
+        48: Integer literal: 4
+      49: Continue statement
+    51: Block of statements
+      52: Declaration of local variable: b
+       52: Primitive data type: string
+    54: Block of statements
+    57: Method call statement
+     57: Call to virtual method: function, in external scope
+       57: Reference to variable: a
+       57: Reference to array
+         57: Reference to variable: method, in external scope
+          57: Reference to variable: a
+         57: Integer literal: 4
+    62: Assignment statement
+      62: Reference to variable: a
+      62: Reference to variable: bBb329_3
+    63: Assignment statement
+      63: Reference to variable: a
+      63: Reference to variable: a, in external scope
+       63: Reference to 'this' instance
+    64: Assignment statement
+      64: Reference to variable: a
+      64: Reference to array
+        64: Literal: null
+        64: Reference to array
+          64: Reference to array length
+           64: Literal: null
+          64: Integer literal: 3
+    67: Assignment statement
+      67: Reference to variable: a
+      67: Literal: null
+    68: Assignment statement
+      68: Reference to variable: a
+      68: Boolean literal: false
+    69: Assignment statement
+      69: Reference to variable: a
+      69: Boolean literal: true
+    70: Assignment statement
+      70: Reference to variable: a
+      70: Mathematical unary operation: unary subtraction
+       70: Integer literal: 31413134
+    71: Assignment statement
+      71: Reference to variable: a
+      71: Integer literal: 3141413
+    72: Assignment statement
+      72: Reference to variable: b
+      72: String literal: "this is a \\ \" string \n \t #$@()#@@!#@%@%#@ "
+    75: Assignment statement
+      75: Reference to variable: a
+      75: Logical binary operation: equality
+        75: Logical unary operation: logical negation
+         75: Integer literal: 4
+        75: Integer literal: 4
+    76: Assignment statement
+      76: Reference to variable: b
+      76: Logical binary operation: inequality
+        76: Integer literal: 4
+        76: Logical unary operation: logical negation
+         76: Literal: null
+    77: Assignment statement
+      77: Reference to variable: a
+      77: Mathematical unary operation: unary subtraction
+       77: Logical unary operation: logical negation
+        77: Logical unary operation: logical negation
+         77: Mathematical unary operation: unary subtraction
+          77: Logical unary operation: logical negation
+           77: Array allocation
+             77: Primitive data type: string
+             77: Integer literal: 3
+    80: Assignment statement
+      80: Reference to variable: a
+      80: Mathematical binary operation: addition
+        80: Integer literal: 4
+        80: Integer literal: 4
+    81: Assignment statement
+      81: Reference to variable: a
+      81: Mathematical binary operation: subtraction
+        81: Mathematical unary operation: unary subtraction
+         81: Integer literal: 4
+        81: Integer literal: 4
+    82: Assignment statement
+      82: Reference to variable: d
+      82: Mathematical binary operation: subtraction
+        82: Mathematical binary operation: multiplication
+          82: Mathematical binary operation: multiplication
+            82: Mathematical binary operation: multiplication
+              82: Integer literal: 4
+              82: Integer literal: 3
+            82: Integer literal: 4
+          82: Integer literal: 2
+        82: Integer literal: 2
+    83: Assignment statement
+      83: Reference to variable: m
+      83: Mathematical binary operation: multiplication
+        83: Mathematical binary operation: modulo
+          83: Mathematical binary operation: modulo
+            83: Integer literal: 4
+            83: Integer literal: 4
+          83: Integer literal: 4
+        83: Integer literal: 3
+    84: Assignment statement
+      84: Reference to variable: a
+      84: Mathematical binary operation: multiplication
+        84: Mathematical binary operation: division
+          84: Integer literal: 2
+          84: Integer literal: 3
+        84: Integer literal: 2
+    85: Assignment statement
+      85: Reference to variable: t
+      85: Mathematical binary operation: division
+        85: Mathematical unary operation: unary subtraction
+         85: Integer literal: 2
+        85: Mathematical unary operation: unary subtraction
+         85: Integer literal: 3
+    86: Assignment statement
+      86: Reference to variable: a
+      86: Logical binary operation: logical and
+        86: Logical binary operation: logical and
+          86: Reference to variable: a
+          86: Reference to variable: b
+        86: Reference to variable: c
+    87: Assignment statement
+      87: Reference to variable: y
+      87: Logical binary operation: logical or
+        87: Logical binary operation: logical and
+          87: Reference to variable: a
+          87: Reference to variable: b
+        87: Logical binary operation: logical and
+          87: Reference to variable: c
+          87: Reference to variable: b
+    88: Assignment statement
+      88: Reference to variable: g
+      88: Logical binary operation: logical or
+        88: Logical binary operation: logical or
+          88: Logical binary operation: logical and
+            88: Reference to variable: a
+            88: Reference to variable: b
+          88: Reference to variable: c
+        88: Reference to variable: b
+    89: Assignment statement
+      89: Reference to variable: l
+      89: Logical binary operation: inequality
+        89: Logical binary operation: equality
+          89: Logical binary operation: equality
+            89: Logical binary operation: equality
+              89: Integer literal: 1
+              89: Integer literal: 2
+            89: Logical unary operation: logical negation
+             89: Integer literal: 3
+          89: Mathematical unary operation: unary subtraction
+           89: Integer literal: 4
+        89: Integer literal: 2
+    90: Assignment statement
+      90: Reference to variable: a
+      90: Logical binary operation: less than
+        90: Integer literal: 4
+        90: Integer literal: 4
+    91: Assignment statement
+      91: Reference to variable: a
+      91: Logical binary operation: less than or equal to
+        91: Integer literal: 4
+        91: Integer literal: 4
+    92: Assignment statement
+      92: Reference to variable: b
+      92: Logical binary operation: greater than
+        92: Integer literal: 3
+        92: Integer literal: 2
+    93: Assignment statement
+      93: Reference to variable: b
+      93: Logical binary operation: greater than or equal to
+        93: Integer literal: 3
+        93: Integer literal: 4
+    94: Assignment statement
+      94: Reference to variable: c
+      94: Logical binary operation: inequality
+        94: Integer literal: 3
+        94: Integer literal: 4
+    95: Assignment statement
+      95: Reference to variable: d
+      95: Logical binary operation: logical or
+        95: Boolean literal: true
+        95: Boolean literal: false
+    96: Assignment statement
+      96: Reference to variable: g
+      96: Logical binary operation: equality
+        96: Reference to variable: a
+        96: Logical binary operation: less than or equal to
+          96: Integer literal: 4
+          96: Integer literal: 5
+    97: Assignment statement
+      97: Reference to variable: t
+      97: Logical binary operation: less than
+        97: Mathematical binary operation: addition
+          97: Reference to variable: a
+          97: Reference to variable: b
+        97: Integer literal: 6
+    98: Assignment statement
+      98: Reference to variable: t
+      98: Logical binary operation: less than
+        98: Reference to variable: a
+        98: Mathematical binary operation: addition
+          98: Integer literal: 6
+          98: Reference to variable: b
+    99: Assignment statement
+      99: Reference to variable: j
+      99: Logical binary operation: less than or equal to
+        99: Logical binary operation: less than
+          99: Reference to variable: a
+          99: Reference to variable: b
+        99: Integer literal: 3
+    103: Block of statements
+      103: Assignment statement
+        103: Reference to variable: b
+        103: Reference to array
+          103: Reference to array length
+           103: Literal: null
+          103: Integer literal: 3
+    104: Return statement, with return value
+     104: Mathematical binary operation: addition
+       104: Reference to array length
+        104: Integer literal: 4
+       104: Reference to array length
+        104: Integer literal: 4
+    105: Return statement, with return value
+     105: Mathematical unary operation: unary subtraction
+      105: Reference to array length
+       105: Integer literal: 4
+    106: Return statement, with return value
+     106: Reference to array length
+      106: Parenthesized expression
+       106: Integer literal: 4
+    109: Assignment statement
+      109: Reference to variable: a
+      109: Array allocation
+        109: User-defined data type: 2-dimensional array of Object
+        109: Integer literal: 4
+    110: Assignment statement
+      110: Reference to variable: b
+      110: Array allocation
+        110: Primitive data type: 1-dimensional array of int
+        110: Integer literal: 2
+    111: Assignment statement
+      111: Reference to variable: c
+      111: Instantiation of class: Object
+    112: Assignment statement
+      112: Reference to variable: d
+      112: Instantiation of class: Class
+    113: Block of statements
+      113: Assignment statement
+        113: Reference to variable: a
+        113: Parenthesized expression
+         113: Instantiation of class: Class
+    116: Assignment statement
+      116: Reference to variable: a
+      116: Reference to array
+        116: Reference to 'this' instance
+        116: Reference to 'this' instance
+    117: Assignment statement
+      117: Reference to variable: a
+      117: Reference to variable: a, in external scope
+       117: Reference to 'this' instance
+    118: Assignment statement
+      118: Reference to variable: a
+      118: Reference to array length
+       118: Reference to 'this' instance
+    121: Method call statement
+     121: Call to virtual method: func
+       121: Literal: null
+    122: Assignment statement
+      122: Reference to variable: a
+      122: Call to virtual method: func
+        122: Literal: null
+    123: Assignment statement
+      123: Reference to variable: a
+      123: Call to virtual method: func
+        123: Literal: null
+        123: Literal: null
+    124: Assignment statement
+      124: Reference to variable: b
+      124: Call to virtual method: func, in external scope
+        124: Reference to variable: a
+        124: Literal: null
+        124: Reference to variable: a
+    125: Assignment statement
+      125: Reference to variable: c
+      125: Call to static method: func, in class CLASS
+        125: Reference to variable: func
+        125: Mathematical unary operation: unary subtraction
+         125: Literal: null
+    129: Assignment statement
+      129: Reference to variable: a
+      129: Reference to variable: a
+    130: Assignment statement
+      130: Reference to variable: b, in external scope
+       130: Parenthesized expression
+        130: Instantiation of class: Class
+      130: Reference to variable: a
+    131: Assignment statement
+      131: Reference to array
+        131: Reference to 'this' instance
+        131: Literal: null
+      131: String literal: "ayo"
+  139: Declaration of static method: method2
+    139: Primitive data type: void
+    139: Parameter: a
+     139: User-defined data type: A
+  140: Declaration of static method: method3
+    140: Primitive data type: int
+    140: Parameter: b
+     140: User-defined data type: B
+    140: Parameter: a
+     140: User-defined data type: A
+    140: Parameter: a
+     140: Primitive data type: int
+  141: Declaration of static method: method4
+    141: Primitive data type: boolean
+    141: Declaration of local variable: b
+     141: Primitive data type: int
+  142: Declaration of static method: method5
+    142: Primitive data type: string
+    142: Declaration of local variable: k
+     142: Primitive data type: int
+  143: Declaration of static method: method5
+    143: User-defined data type: A
+    143: Declaration of local variable: a, with initial value
+      143: User-defined data type: A
+      143: Instantiation of class: A
+  144: Declaration of virtual method: method_6
+    144: Primitive data type: void
+    144: Parameter: a
+     144: Primitive data type: 4-dimensional array of int
+    144: Parameter: c
+     144: Primitive data type: 1-dimensional array of boolean
+    144: Parameter: d
+     144: User-defined data type: 2-dimensional array of Class
+    144: Break statement
+  145: Declaration of virtual method: method_7
+    145: Primitive data type: int
+  146: Declaration of virtual method: method_8
+    146: Primitive data type: string
+  147: Declaration of virtual method: method_9
+    147: Primitive data type: boolean
+  148: Declaration of virtual method: method_10
+    148: User-defined data type: AClass
+    148: Parameter: b
+     148: User-defined data type: 2-dimensional array of Null
+    148: Declaration of local variable: c
+     148: User-defined data type: A

@@ -1,0 +1,7 @@
+//calling a local from inside a static method
+class C {
+  	int j;
+	static void main(string[] args) {
+  		j=5;
+	}
+}

@@ -2,6 +2,7 @@
 class C {
   	int j;
 	static void main(string[] args) {
-  		j=5;
+  		//int j;
+		j=5;
 	}
 }

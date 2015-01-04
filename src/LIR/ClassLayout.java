@@ -72,7 +72,7 @@ public class ClassLayout {
 		fieldByOffset = new HashMap<Integer, Field>();
 		fieldOffsetByName = new HashMap<String, Integer>();
 		
-		fieldCount = 0;
+		fieldCount = 1;
 		methodCount = 0;
 		
 		

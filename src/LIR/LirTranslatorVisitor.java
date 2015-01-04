@@ -189,7 +189,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 			LIRNode movearr = null;
 			if(!this.isRegister(arr)){
 				reg = new Reg("R" + regCount++);
-				LIRNode move = new MoveInstr(new Reg(arr), reg);
+				LIRNode move = new MoveInstr(new Memory(arr), reg);
 				temp_Program.add(move);
 			}
 			Operand ass = (Operand) assignment.getAssignment().accept(this, regCount);
@@ -221,7 +221,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 			String class_t = "";
 			boolean field = false;
 			LIRNode move = null, move2 = null;
-			Operand reg1 = null,  op = null, reg3= null;
+			Operand reg1 = null,  op = null, reg3= null, mem = null;
 			Operand ass = (Operand) assignment.getAssignment().accept(this, regCount);
 			if(this.isRegister(ass.toString())){
 				regCount = this.getRegNum(ass.toString()) + 1;
@@ -252,7 +252,9 @@ public class LirTranslatorVisitor implements LirVisitor{
 				cName = currScope.getId();
 				if(this.classLayouts.get(cName).getFieldByName().containsKey(Name)){
 					field = true;
-					//need to add a move here?
+					Operand reg2 = new Reg("R" + regCount++);
+					mem = new Memory(Name);
+					temp_Program.add(new MoveInstr(mem, reg2));
 				}				
 			}
 			if(field){
@@ -294,28 +296,36 @@ public class LirTranslatorVisitor implements LirVisitor{
 	@Override
 	public Object visit(If ifStatement, int regCount) {
 
-		temp_Program.add(new Label(NEW_LINE + "# begin if statement"));
+		temp_Program.add(new Label(NEW_LINE + "#begin_if"));
 		Operand condOper = (Operand)ifStatement.getCondition().accept(this, regCount);
-		LIRNode cmp = new CompareInstr(new Immediate(0), condOper);
+		
+		if (!isRegister(condOper.toString())){
+			
+			temp_Program.add(new MoveInstr(condOper, new Reg("R" + regCount)));
+			condOper = new Reg("R" + regCount);
+		}
+		temp_Program.add(new CompareInstr(new Immediate(1), condOper));
+		this.numEndLabel++;
 		
 		if(ifStatement.hasElse()){
 		
-			/*tr += "JumpTrue _false_label" + this.falseLableCounter + NEW_LINE;
-			ifStatement.getOperation().accept(this,regNum);
-			tr += "Jump _end_label"+ this.endLableCounter + NEW_LINE;
-			tr += "_false_label"+ this.falseLableCounter +":" + NEW_LINE;
-			ifStatement.getElseOperation().accept(this, regNum);
-			tr += "_end_label" + this.endLableCounter +": " + NEW_LINE;
-			this.falseLableCounter ++;
-			this.endLableCounter ++;*/
+			this.numFalseLabel++;
+			this.numTrueLabel++;
+			temp_Program.add(new CondJumpInstr(new Label(this.falseCondLbl + numFalseLabel), Cond.False));
+			ifStatement.getOperation().accept(this, regCount);
+			temp_Program.add(new JumpInstr(new Label(this.endCondLbl + numEndLabel)));
+			temp_Program.add(new Label(this.falseCondLbl + this.numFalseLabel + ":"));
+			ifStatement.getElseOperation().accept(this, regCount);
+			temp_Program.add(new Label(this.endCondLbl + this.numEndLabel + ":"));
 		}
 		else{
-			LIRNode condJump = new CondJumpInstr(new Label("_end_label" + ++numEndLabel), Cond.False);
-			temp_Program.add(condJump);
+			
+			temp_Program.add(new CondJumpInstr(new Label(this.endCondLbl + numEndLabel), Cond.True));
 			ifStatement.getOperation().accept(this, regCount);
-			temp_Program.add(new Label("_end_label" + this.numEndLabel +": "));
+			temp_Program.add(new Label(this.endCondLbl + this.numEndLabel + ":"));
 		}
-		temp_Program.add(new Label("#end if"));
+		
+		temp_Program.add(new Label("#end _if"));
 		
 		return null;
 	}
@@ -522,39 +532,64 @@ public class LirTranslatorVisitor implements LirVisitor{
 
 	@Override
 	public Object visit(VirtualCall call, int regCount) {
-		/*
+		
 		// The virtual method to be called 
 		String methodName = call.getName();
 		String	className = "";
-		String locationReg = "";
+		Operand loc = null, reg1 = null, reg2 = null, reg3 = null;
 
 		if(call.isExternal()){
-		// TODO add null exception run time check
 
-					// Gets method's class name	
-					//Types	classType = (Types)call.getLocation().accept(new SemanticCheckVisitor(this.globalSymTab));
+			// we get here the method's class name	
+			TypeTableType classType = (TypeTableType)call.getLocation().accept(new SymbolVisitorChecker(this.global), call.getScope());
 			className = classType.getName();
 
-					// Gets the register containing the address of the receiver object  
-			locationReg = (String)call.getLocation().accept(this, regCount);
-			if(!this.isReg(locationReg)){
-				tr += "Move " + locationReg + ",R" + regNum + NEW_LINE;
-				locationReg = "R" + regNum;
+			// Gets the the address of the receiver object  
+			loc = (Operand)call.getLocation().accept(this, regCount);
+			if(!this.isRegister(loc.toString())){
+				reg1 = new Reg("R" + regCount++);
+				temp_Program.add(new MoveInstr(loc, reg1));
+				loc = reg1;
 			}
 		}
-				else{
-					SymbolTable currScope = call.getEnclosingScope();
-					while(!(currScope.getTableKind().compareTo(TableKinds.CLASS) == 0)){
-						currScope = currScope.getParent();
+			else{
+					SymbolTable scope = call.getScope();
+					while(!(scope.getType().equals(SymbolTableType.CLASS))){
+						scope = scope.getFather_table();
 					}
 
-					className = currScope.getTableName();
-
-					tr += "Move this,R" + regNum + NEW_LINE;
-					locationReg = "R" + regNum;
-				
+					className = scope.getId();
+					reg2 = new Reg("R" + regCount++);
+					temp_Program.add(new MoveInstr(new Memory("this"), reg2));
+					loc = reg2;
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		}
+		//get the method offset from the dispatch
+		ClassLayout clay = this.classLayouts.get(className);
+		int methodoff = clay.getMethodOffsets().get("_" + className+"_"+ methodName);
+		Method m = clay.getMethodByName().get("_" + className+"_"+ methodName);
+		List<Formal> formals = m.getFormals();
+		int numFormals = 0;
+		ParamOpPair pop = null; 
+		List<ParamOpPair> paramPairs = new ArrayList<ParamOpPair>();
 		
-		*/
+		// Collect all params of call
+		for(Expression callParam : call.getArguments()){
+			Memory mem = new Memory(formals.get(numFormals).getName());
+			Operand value = (Operand)callParam.accept(this, regCount);
+			if(!this.isRegister(value.toString())){
+				reg3 = new Reg("R" + regCount++);
+				temp_Program.add(new MoveInstr(value, reg3));
+				value = reg3;
+			}
+			pop = new ParamOpPair(mem, value);
+			paramPairs.add(pop);
+			numFormals++;
+		}
+		//Operand func = new Label("_" + className + "_" + call.getName());
+		Operand reg = new Reg("Rdummy");
+		LIRNode callNode = new LIRInstructions.VirtualCall((Reg) loc, new Immediate(methodoff), paramPairs, (Reg)reg);
+		temp_Program.add(callNode);
 		return null;
 	}
 
@@ -698,18 +733,13 @@ public class LirTranslatorVisitor implements LirVisitor{
 		temp_Program.add(move);
 		
 		// move oper2, reg#
-		reg2 = new Reg("R" + regCount++);
+		reg2 = new Reg("R" + regCount);
 		move = new MoveInstr(oper2, reg2);
 		temp_Program.add(move);
 		LIRNode cmp = null;
 		
 		if(binaryOp.getOperator().compareTo(BinaryOps.LOR) != 0 && binaryOp.getOperator().compareTo(BinaryOps.LAND) != 0){
-			if(this.isRegister(oper1.toString())){
-				cmp = new CompareInstr(reg2, reg1);
-			}
-			else{
-				cmp = new CompareInstr(reg1, reg2);	
-			}
+			cmp = new CompareInstr(reg2, reg1);		
 			temp_Program.add(cmp);
 		}
 		
@@ -733,20 +763,20 @@ public class LirTranslatorVisitor implements LirVisitor{
 			temp_Program.add(new CondJumpInstr(new Label(trueCondLbl + numTrueLabel), Cond.LE));
 		}
 		else if (binaryOp.getOperator().compareTo(BinaryOps.LAND) == 0) {
-			Reg reg = new Reg("R" + ++regCount);
-			temp_Program.add(new CompareInstr(new Immediate(0), reg));
+			
+			temp_Program.add(new CompareInstr(new Immediate(0), reg1));
 			temp_Program.add(new CondJumpInstr(new Label(endCondLbl + numEndLabel), Cond.True));
-			temp_Program.add(new BinOpInstr(oper2, reg, Operator.AND));
+			temp_Program.add(new BinOpInstr(reg2, reg1, Operator.AND));
 			temp_Program.add(new Label(LirTranslatorVisitor.endCondLbl + this.numEndLabel + ":"));
-			return reg;
+			return reg1;
 		}
-		else if (binaryOp.getOperator().compareTo(BinaryOps.LAND) == 0) {
-			Reg reg = new Reg("R" + ++regCount);
-			temp_Program.add(new CompareInstr(new Immediate(1), reg));
-			temp_Program.add(new CondJumpInstr(new Label(trueCondLbl + numTrueLabel), Cond.True));
-			temp_Program.add(new BinOpInstr(oper2, reg, Operator.OR));
+		else if (binaryOp.getOperator().compareTo(BinaryOps.LOR) == 0) {
+			
+			temp_Program.add(new CompareInstr(new Immediate(1), reg1));
+			temp_Program.add(new CondJumpInstr(new Label(endCondLbl + numTrueLabel), Cond.True));
+			temp_Program.add(new BinOpInstr(reg2, reg1, Operator.OR));
 			temp_Program.add(new Label(LirTranslatorVisitor.endCondLbl + this.numEndLabel + ":"));
-			return reg;
+			return reg1;
 		}
 		
 		LIRNode node = null;

@@ -13,7 +13,7 @@ import SymbolTables.SymbolKinds;
  */
 public class ClassLayout {
 
-	private Map<Method, String> methodByName;
+	private Map<String, Method> methodByName;
 	private Map<String, Integer> methodOffsets;
 	private Map<String, Field> fieldByName;
 	private Map<Integer, Field> fieldByOffset;
@@ -28,7 +28,7 @@ public class ClassLayout {
 		return classIdent;
 	}
 
-	public Map<Method, String> getMethodByName() {
+	public Map<String, Method> getMethodByName() {
 		return methodByName;
 	}
 	
@@ -66,7 +66,7 @@ public class ClassLayout {
 	public ClassLayout(ICClass icclass){
 		this.classIdent = icclass.getName();
 
-		methodByName = new HashMap<Method, String>();
+		methodByName = new HashMap<String, Method>();
 		methodOffsets = new HashMap<String, Integer>();
 		fieldByName = new HashMap<String, Field>();
 		fieldByOffset = new HashMap<Integer, Field>();
@@ -91,7 +91,7 @@ public class ClassLayout {
 			String method_str = "_" + icclass.getName() + "_" + method.getName();
 			
 			if (!isMethodStatic(method)){
-				methodByName.put(method, method_str);
+				methodByName.put(method_str, method);
 				methodOffsets.put(method_str, methodCount);
 				methodCount++;
 			}
@@ -104,7 +104,7 @@ public class ClassLayout {
 		
 		this.classIdent = icclass.getName();
 
-		methodByName = new HashMap<Method, String>();
+		methodByName = new HashMap<String, Method>();
 		methodOffsets = new HashMap<String, Integer>();
 		fieldByName = new HashMap<String, Field>();
 		fieldByOffset = new HashMap<Integer, Field>();
@@ -118,7 +118,7 @@ public class ClassLayout {
 		fieldOffsetByName = (HashMap<String, Integer>)((HashMap<String, Integer>)clSuperClass.getFieldOffsetByName()).clone();
 		fieldCount = clSuperClass.getFieldCount();
 		
-		methodByName = (HashMap<Method, String>)((HashMap<Method, String>)clSuperClass.getMethodByName()).clone();
+		methodByName = (HashMap<String, Method>)((HashMap<String, Method>)clSuperClass.getMethodByName()).clone();
 		methodOffsets = (HashMap<String, Integer>)((HashMap<String, Integer>)clSuperClass.getMethodOffsets()).clone();
 		methodCount = clSuperClass.getMethodCount();
 		
@@ -144,13 +144,13 @@ public class ClassLayout {
 					int methodLoc = this.methodOffsets.get(method_superclass);
 					methodByName.remove(method_superclass);
 					methodOffsets.remove(method_superclass);
-					methodByName.put(method, method_str);
+					methodByName.put(method_str, method);
 					methodOffsets.put(method_str, methodLoc);
 				}
 				
 				// Method is unique
 				else{
-					this.methodByName.put(method, method_str);
+					this.methodByName.put(method_str, method);
 					this.methodOffsets.put(method_str, methodCount);
 					this.methodCount++;
 				}

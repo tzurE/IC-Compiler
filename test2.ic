@@ -1,0 +1,19 @@
+class B {
+
+
+  static void main(string[] args) {
+
+	boolean y = (1==2);
+	Library.printb(y);
+	y = (1<2);
+	Library.printb(y);
+	y = (1>2);
+	Library.printb(y);
+	y = (true&&false);
+	Library.printb(y);
+	y = (true||false);
+	Library.printb(y);
+	y = (1!=1);
+	Library.printb(y);
+  }
+}

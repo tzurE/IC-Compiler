@@ -502,7 +502,15 @@ public class SymbolVisitorChecker implements PropVisitor {
 		}
 		else{
 			SymbolTable enclosingTable = location.getScope();
-			SymbolEntry variableSymbol = enclosingTable.searchForVar(location.getName(),location.getLine());
+			SymbolEntry variableSymbol = null;
+			if(insideStaticMethodScope){
+				// search only in the method scope
+				variableSymbol = (SymbolEntry) enclosingTable.searchTable(location.getName(), SymbolKinds.LOCAL_VARIABLE);
+				if(variableSymbol == null)
+					variableSymbol = (SymbolEntry) enclosingTable.searchTable(location.getName(), SymbolKinds.PARAMETER);
+			}
+			else
+				variableSymbol = enclosingTable.searchForVar(location.getName(),location.getLine());
 			if(variableSymbol==null){
 				try {
 					throw new SemanticError(location.getLine(),

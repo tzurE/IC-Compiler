@@ -1,8 +1,10 @@
 class B {
 
+
   static void main(string[] args) {
 
-    int x = C.func(5, "y");
+    int[] arr = new int[5];
+    int r = arr.length;
   }
 }
 

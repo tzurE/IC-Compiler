@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import jdk.internal.org.objectweb.asm.tree.JumpInsnNode;
 import SemanticCheckerVisitor.SymbolVisitorChecker;
 import SymbolTables.GlobalSymbolTable;
 import SymbolTables.SymbolKinds;
@@ -19,8 +20,10 @@ import IC.BinaryOps;
 import IC.DataTypes;
 import IC.LiteralTypes;
 import IC.AST.*;
+import LIRInstructions.ArrayLengthInstr;
 import LIRInstructions.BinOpInstr;
 import LIRInstructions.Immediate;
+import LIRInstructions.JumpInstr;
 import LIRInstructions.Memory; 
 import LIRInstructions.ParamOpPair; 
 import LIRInstructions.ReturnInstr;
@@ -44,13 +47,15 @@ public class LirTranslatorVisitor implements LirVisitor{
 	private List<LIRNode> StringLiterals;
 	private int numStringLiterals;
 	private boolean isReturnExist; 
+	private int numOfWhiles;
 	
 
 	public LirTranslatorVisitor(GlobalSymbolTable global) {
 		this.StringLiterals = new LinkedList<LIRNode>();
 		this.numStringLiterals = 0;
 		this.global = global;
-		this.isReturnExist = false; 
+		this.isReturnExist = false;
+		this.numOfWhiles = 0;
 	}
 	
 	
@@ -62,7 +67,6 @@ public class LirTranslatorVisitor implements LirVisitor{
 		LIRNode dispatchTable = new Label("");
 		temp_Program = new LinkedList<LIRNode>();
 		temp_Program.add(dispatchTable);
-		
 		
 		for (ICClass icClass : program.getClasses()){
 			if (!icClass.getName().equals("Library")){
@@ -82,9 +86,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 		((Label)temp_Program.get(0)).setName(strbld.toString());
 		
 		for(ICClass icClass : program.getClasses()) {
-			
 			if(icClass.getName() != "Library"){
-				
 				icClass.accept(this, regCount);
 			}
 		}
@@ -112,7 +114,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 
 	@Override
 	public Object visit(Field field, int regCount) {
-		// TODO Auto-generated method stub
+		// Nothing to do 
 		return null;
 	}
 
@@ -134,32 +136,31 @@ public class LirTranslatorVisitor implements LirVisitor{
 			methodToLir(method, regCount);
 			LIRNode ic_main_end = new Label("Library __exit(0),Rdummy" + NEW_LINE);
 			temp_Program.add(ic_main_end);
-			
 		}
 		return null;
 	}
 
 	@Override
 	public Object visit(LibraryMethod method, int regCount) {
-		// TODO Auto-generated method stub
+		// Nothing to do 
 		return null;
 	}
 
 	@Override
 	public Object visit(Formal formal, int regCount) {
-		// TODO Auto-generated method stub
+		// Nothing to do 
 		return null;
 	}
 
 	@Override
 	public Object visit(PrimitiveType type, int regCount) {
-		// TODO Auto-generated method stub
+		// Nothing to do 
 		return null;
 	}
 
 	@Override
 	public Object visit(UserType type, int regCount) {
-		// TODO Auto-generated method stub
+		// Nothing to do 
 		return null;
 	}
 
@@ -214,7 +215,6 @@ public class LirTranslatorVisitor implements LirVisitor{
 				reg1 = new Reg("R" + regCount++);
 				LIRNode move1 = new MoveInstr(ass, reg1);
 				temp_Program.add(move1);
-				
 			}
 			if(varLocation.isExternal()){//external, lets get some info on it.
 				field = true;
@@ -222,7 +222,6 @@ public class LirTranslatorVisitor implements LirVisitor{
 				cName = classType.getName();
 				//////////////////////////////////what next?
 				varLocation.getLocation().accept(this, regCount);
-				
 			}
 			else{//not external - meaning we need to do "this"
 				SymbolTable currScope = varLocation.getScope();
@@ -246,14 +245,9 @@ public class LirTranslatorVisitor implements LirVisitor{
 			else{//local!
 				move2 = new MoveInstr(reg1, new Label(Name));
 				temp_Program.add(move2);
-				return null;
-				
-			}
-			
-			
-			
+				return null;		
+			}			
 		}
-		
 		return null;
 	}
 
@@ -282,30 +276,40 @@ public class LirTranslatorVisitor implements LirVisitor{
 
 	@Override
 	public Object visit(While whileStatement, int regCount) {
+		this.numOfWhiles++;
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Object visit(Break breakStatement, int regCount) {
-		// TODO Auto-generated method stub
+		
+		this.numOfWhiles++;
+		Operand loopEnd = new Label("_end_while" + this.numOfWhiles);
+		LIRNode jump_inst = new JumpInstr((Label)loopEnd);
+		
 		return null;
 	}
 
 	@Override
 	public Object visit(Continue continueStatement, int regCount) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public Object visit(StatementsBlock statementsBlock, int regCount) {
-		// TODO Auto-generated method stub
+
+		// Tranlate all enclosed statements of block
+		for(Statement stmnt : statementsBlock.getStatements()){
+			stmnt.accept(this, regCount);
+		}
 		return null;
 	}
 
 	@Override
 	public Object visit(LocalVariable localVariable, int regCount) {
+		
 		LIRNode move = null,move1 = null;
 		if (localVariable.hasInitValue()){
 			Operand oper1 = (Operand)localVariable.getInitValue().accept(this, regCount);
@@ -316,9 +320,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 			else{
 				move1 = new MoveInstr(oper1, new Reg(localVariable.getName()));
 				temp_Program.add(move1);
-			}
-
-			
+			}		
 		}
 		return null;
 	}
@@ -388,7 +390,6 @@ public class LirTranslatorVisitor implements LirVisitor{
 		Operand reg1;
 		reg1 = (Operand) location.getIndex().accept(this, regCount);
 		
-		
 		return arr + "[" + reg1.toString() + "]";
 	}
 
@@ -402,12 +403,14 @@ public class LirTranslatorVisitor implements LirVisitor{
 		// Static call is a library method
 		if(call.getClassName().equals("Library")){
 			List<Operand> strOpers = new ArrayList<Operand>();
-			
+
+			// Collect all params of call
 			for(Expression callParam : call.getArguments()){		
 				callParamOper = (Operand) callParam.accept(this, regCount);
 				strOpers.add(callParamOper);
 			}
 			
+			// Creates new Static call instruction
 			func = new Label("__" + call.getName());
 			reg = new Reg("R" + regCount++);
 			callNode = new LibraryCall(func, strOpers, (Reg)reg);
@@ -416,23 +419,24 @@ public class LirTranslatorVisitor implements LirVisitor{
 		else{
 			
 			List<ParamOpPair> paramPairs = new ArrayList<ParamOpPair>();
-			// Gets the method object
 			ClassSymbolTable classSymbolTable = this.global.getChildTableList().get(call.getClassName());
 			MethodSymbolTable methodST = (MethodSymbolTable) classSymbolTable.getMethodChildTableList().get(call.getName());
 			int numFormals = 1;
 			ParamOpPair pop = null; 
-			// Gets formal parameters 
+			
+			// Gets formal params 
 			HashMap<Integer, String> formals = methodST.getParametersByOrder();
 			
+			// Collect all params of call
 			for(Expression callParam : call.getArguments()){
 				Memory mem = new Memory(formals.get(numFormals-1));
-				Operand val = (Operand)callParam.accept(this, regCount);
-				pop = new ParamOpPair(mem, val);
+				Operand value = (Operand)callParam.accept(this, regCount);
+				pop = new ParamOpPair(mem, value);
 				paramPairs.add(pop);
 				numFormals++;
 			}
 			
-			
+			// Creates new Static call instruction
 			func = new Label("_" + call.getClassName() + "_" + call.getName());
 			reg = new Reg("R" + regCount++);
 			callNode = new LIRInstructions.StaticCall(func, paramPairs, (Reg)reg);
@@ -456,14 +460,23 @@ public class LirTranslatorVisitor implements LirVisitor{
 
 	@Override
 	public Object visit(NewClass newClass, int regCount) {
-		ClassLayout cClassLayout = this.classLayouts.get(newClass.getName()); 
-		int cSize = cClassLayout.getDispatchTableSize();
+		
+		ClassLayout cClassLayout = this.classLayouts.get(newClass.getName());
+		
+		// Create AllocateObject call
+		Operand cSize = new Immediate(cClassLayout.getDispatchTableSize());
 		Operand reg1 = new Reg("R" + regCount++);
-		LIRNode classAlloc = new Label("Library __allocateObject(" + cSize + ")" + reg1.toString());
+		Label func = new Label("__allocateObject");
+		List<Operand> opers = new ArrayList<Operand>();
+		opers.add(cSize);
+		
+		// Create MoveField Node
+		LIRNode classAlloc = new LibraryCall(func, opers, (Reg)reg1); 
 		temp_Program.add(classAlloc);
 		Operand c = new Label("_DV_"+ cClassLayout.getClassIdent());
 		LIRNode dv = new MoveFieldInstr(reg1, new Immediate(0), c, false);
 		temp_Program.add(dv);
+		
 		return reg1;
 	}
 
@@ -471,17 +484,29 @@ public class LirTranslatorVisitor implements LirVisitor{
 	public Object visit(NewArray newArray, int regCount) {
 		Operand oper_size = (Operand)newArray.getSize().accept(this, regCount);
 		LIRNode allocate = null;
-		LIRNode reg1 = null;
-		reg1 = new Reg("R" + regCount++);
-		allocate = new Label("Library __allocateArray(" + oper_size.toString() + "),"+reg1.toString());
+		Reg reg1 = new Reg("R" + regCount++);
+
+		// Create AllocateArray library call 
+		List<Operand> strOpers = new ArrayList<Operand>();
+		strOpers.add(oper_size);
+		Label func = new Label("__allocateArray");
+		
+		allocate = new LibraryCall(func, strOpers, reg1);
 		temp_Program.add(allocate);
 		return reg1;
 	}
 
 	@Override
+	//////// MUST CHECK IF IT'S OK !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	public Object visit(Length length, int regCount) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		// Create ArrayLength Instruction
+		Operand arrLength = (Operand)length.getArray().accept(this, regCount);
+		Operand reg = new Reg("R" + regCount++);
+		LIRNode arryLenInst = new ArrayLengthInstr(arrLength, (Reg)reg);
+		temp_Program.add(arryLenInst);
+
+		return reg;
 	}
 
 	@Override
@@ -591,7 +616,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 
 	@Override
 	public Object visit(ExpressionBlock expressionBlock, int regCount) {
-		// TODO Auto-generated method stub
+		// Nothing to do here
 		return null;
 	}
 

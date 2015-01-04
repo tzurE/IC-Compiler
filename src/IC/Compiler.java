@@ -119,7 +119,7 @@ public class Compiler {
 			e1.getErrorMessage();
 		}
 		catch(Exception e){
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 	}
 }

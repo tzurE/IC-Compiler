@@ -22,6 +22,9 @@ import IC.LiteralTypes;
 import IC.AST.*;
 import LIRInstructions.ArrayLengthInstr;
 import LIRInstructions.BinOpInstr;
+import LIRInstructions.CompareInstr;
+import LIRInstructions.Cond;
+import LIRInstructions.CondJumpInstr;
 import LIRInstructions.Immediate;
 import LIRInstructions.JumpInstr;
 import LIRInstructions.Memory; 
@@ -36,6 +39,7 @@ import LIRInstructions.MoveInstr;
 import LIRInstructions.Operand;
 import LIRInstructions.Operator;
 import LIRInstructions.Reg;
+import LIRInstructions.StringLiteral;
 
 public class LirTranslatorVisitor implements LirVisitor{
 	
@@ -48,6 +52,9 @@ public class LirTranslatorVisitor implements LirVisitor{
 	private int numStringLiterals;
 	private boolean isReturnExist; 
 	private int numOfWhiles;
+	private int numEndLabel;
+	private int numFalseLabel;
+	private int numTrueLabel;
 	
 
 	public LirTranslatorVisitor(GlobalSymbolTable global) {
@@ -56,6 +63,9 @@ public class LirTranslatorVisitor implements LirVisitor{
 		this.global = global;
 		this.isReturnExist = false;
 		this.numOfWhiles = 0;
+		this.numEndLabel = 0;
+		this.numTrueLabel = 0;
+		this.numFalseLabel = 0;
 	}
 	
 	
@@ -88,13 +98,8 @@ public class LirTranslatorVisitor implements LirVisitor{
 		for(ICClass icClass : program.getClasses()) {
 			if(icClass.getName() != "Library"){
 				icClass.accept(this, regCount);
+				temp_Program.add(new Label(""));
 			}
-		}
-		
-		// Change StringLiterals list to contain string-variable names
-		for (int i = 0; i < StringLiterals.size(); i++){
-			String label = ((Label)StringLiterals.get(i)).name;
-			((Label)StringLiterals.get(i)).setName("str" + (i+1) + ": \"" + label + "\"");
 		}
 		
 		//here we need to concatenate the 3 lists - literals, program, main. main has to be last!
@@ -131,10 +136,15 @@ public class LirTranslatorVisitor implements LirVisitor{
 			methodToLir(method, regCount);
 		}
 		else{
-			LIRNode ic_main = new Label("_ic_main:" + NEW_LINE);
+			LIRNode ic_main = new Label("_ic_main:");
 			temp_Program.add(ic_main);
 			methodToLir(method, regCount);
-			LIRNode ic_main_end = new Label("Library __exit(0),Rdummy" + NEW_LINE);
+			
+			List<Operand> lstOopers = new ArrayList<Operand>();
+			Operand oper = new Immediate(0);
+			lstOopers.add(oper);
+			
+			LIRNode ic_main_end = new LibraryCall(new Label("__exit"), lstOopers, new Reg("regDummy"));
 			temp_Program.add(ic_main_end);
 		}
 		return null;
@@ -270,7 +280,30 @@ public class LirTranslatorVisitor implements LirVisitor{
 
 	@Override
 	public Object visit(If ifStatement, int regCount) {
-		// TODO Auto-generated method stub
+
+		temp_Program.add(new Label(NEW_LINE + "# begin if statement"));
+		Operand condOper = (Operand)ifStatement.getCondition().accept(this, regCount);
+		LIRNode cmp = new CompareInstr(new Immediate(0), condOper);
+		
+		if(ifStatement.hasElse()){
+		/*
+			tr += "JumpTrue _false_label" + this.falseLableCounter + NEW_LINE;
+			ifStatement.getOperation().accept(this,regNum);
+			tr += "Jump _end_label"+ this.endLableCounter + NEW_LINE;
+			tr += "_false_label"+ this.falseLableCounter +":" + NEW_LINE;
+			ifStatement.getElseOperation().accept(this, regNum);
+			tr += "_end_label" + this.endLableCounter +": " + NEW_LINE;
+			this.falseLableCounter ++;
+			this.endLableCounter ++;*/
+		}
+		else{
+			LIRNode condJump = new CondJumpInstr(new Label("_end_label" + ++numEndLabel), Cond.True);
+			temp_Program.add(condJump);
+			ifStatement.getOperation().accept(this, regCount);
+			temp_Program.add(new Label("_end_label" + this.numEndLabel +": "));
+		}
+		temp_Program.add(new Label("#end if"));
+		
 		return null;
 	}
 
@@ -347,12 +380,12 @@ public class LirTranslatorVisitor implements LirVisitor{
 			while(!(currScope.getType().compareTo(SymbolTableType.CLASS) == 0)){
 				if(currScope.getType().compareTo(SymbolTableType.STATEMENT) == 0){
 					if(currScope.getEntry(name, SymbolKinds.LOCAL_VARIABLE)!=null){
-						return new Label(name);
+						return new Label(name); // replace with mem????????????
 					}
 				}
 				if(currScope.getType().compareTo(SymbolTableType.STATIC_METHOD) == 0 || currScope.getType().compareTo(SymbolTableType.VIRTUAL_METHOD) == 0 ){
 					if(currScope.getEntry(name, SymbolKinds.LOCAL_VARIABLE)!=null || currScope.getEntry(name, SymbolKinds.PARAMETER)!=null){
-						return new Label(name);
+						return new Label(name); // replace with mem ??????????/
 					}
 				}
 			}
@@ -448,14 +481,52 @@ public class LirTranslatorVisitor implements LirVisitor{
 
 	@Override
 	public Object visit(VirtualCall call, int regCount) {
-		// TODO Auto-generated method stub
+		/*
+		// The virtual method to be called 
+		String methodName = call.getName();
+		String	className = "";
+		String locationReg = "";
+
+		if(call.isExternal()){
+		// TODO add null exception run time check
+
+					// Gets method's class name	
+					//Types	classType = (Types)call.getLocation().accept(new SemanticCheckVisitor(this.globalSymTab));
+			className = classType.getName();
+
+					// Gets the register containing the address of the receiver object  
+			locationReg = (String)call.getLocation().accept(this, regCount);
+			if(!this.isReg(locationReg)){
+				tr += "Move " + locationReg + ",R" + regNum + NEW_LINE;
+				locationReg = "R" + regNum;
+			}
+		}
+				else{
+					SymbolTable currScope = call.getEnclosingScope();
+					while(!(currScope.getTableKind().compareTo(TableKinds.CLASS) == 0)){
+						currScope = currScope.getParent();
+					}
+
+					className = currScope.getTableName();
+
+					tr += "Move this,R" + regNum + NEW_LINE;
+					locationReg = "R" + regNum;
+				
+		
+		*/
 		return null;
 	}
 
 	@Override
 	public Object visit(This thisExpression, int regCount) {
-		// TODO Auto-generated method stub
-		return null;
+
+		// Move 'this' to reg
+		Operand reg = new Reg("R" + regCount++);
+		Operand mem = new Memory("this");
+		LIRNode move = new MoveInstr(mem, reg);
+		temp_Program.add(move);
+		
+		return reg;
 	}
 
 	@Override
@@ -587,6 +658,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 	public Object visit(Literal literal, int regCount) {
 		
 		LIRNode oper;
+		boolean isStrLitExist = false;
 		
 		if (literal.getType().getDescription().equals(LiteralTypes.INTEGER.getDescription())){
 			int i = Integer.parseInt(literal.getValue().toString());
@@ -595,20 +667,21 @@ public class LirTranslatorVisitor implements LirVisitor{
 		}
 		else if (literal.getType().getDescription().equals(LiteralTypes.STRING.getDescription())){
 			
-			Operand StringLitOper = new Label(literal.getValue().toString());
-			String strLit; 
-			if (!this.StringLiterals.contains(StringLitOper)){
-				numStringLiterals++;
-				strLit = "str" + numStringLiterals;
-				StringLiterals.add(StringLitOper);
+			LIRNode strLit = new StringLiteral("str" + (numStringLiterals+1), literal.getValue().toString());
+			
+			for(LIRNode str : this.StringLiterals){
+				if (((StringLiteral)str).getValue().equals(((StringLiteral)strLit).getValue())){
+					((StringLiteral)strLit).setVar(((StringLiteral)str).getVar());
+					isStrLitExist = true;
+				}
 			}
-			else{
-				strLit = "str" + (this.StringLiterals.indexOf(StringLitOper)+1);
-				((Label)StringLitOper).setName(strLit);
+			
+			if (!isStrLitExist){
+				numStringLiterals++;
+				StringLiterals.add(strLit);
 			}
 				
-			oper = new Label(strLit);
-
+			oper = new Memory(((StringLiteral)strLit).getVar());
 			return oper;
 		}
 		return null;
@@ -621,13 +694,16 @@ public class LirTranslatorVisitor implements LirVisitor{
 	}
 
 	private void methodToLir(Method method, int regCount) {
-		LIRNode methodDec = new Label(""); 
+		
+		LIRNode methodDec = null; 
+		
 		if(!method.getName().equals("main")){
 			SymbolTable scope = method.getScope();
 			String scope_name = scope.getId();
-			((Label)methodDec).setName("_" + scope_name + "_" + method.getName() + ":" + NEW_LINE);
+			methodDec = new Label("_" + scope_name + "_" + method.getName() + ":");
 			temp_Program.add(methodDec);
 		}
+		
 		for(Statement stmnt : method.getStatements()){
 			stmnt.accept(this, regCount);
 		}

@@ -4,7 +4,7 @@ import java.util.*;
 
 /** A dispatch vector.
  */
-public class DispatchVector {
+public class DispatchVector extends LIRNode{
 	public final Label name;
 	public final List<String> labels;
 	
@@ -22,5 +22,10 @@ public class DispatchVector {
 	
 	public String toString() {
 		return name + ": " + labels;
+	}
+	
+	public String print() {
+		System.out.println(this.toString());
+		return null;
 	}
 }

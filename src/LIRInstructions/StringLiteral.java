@@ -2,8 +2,8 @@ package LIRInstructions;
 
 /** A string literal.
  */
-public class StringLiteral {
-	public final String var;
+public class StringLiteral extends LIRNode{
+	public String var;
 	public final String value;
 	protected int address = -1;
 	
@@ -11,8 +11,7 @@ public class StringLiteral {
 	
 	public StringLiteral(String var, String value) {
 		this.var = var;
-		// Get rid of the quotation characters.
-		this.value = value.substring(1, value.length()-1);
+		this.value = value;
 		++numberOfStringLiterals;
 	}
 	
@@ -33,7 +32,24 @@ public class StringLiteral {
 		return address;
 	}
 	
+	public String getVar() {
+		return var;
+	}
+
+	public void setVar(String var) {
+		this.var = var;
+	}
+
+	public String getValue() {
+		return value;
+	}
+	
 	public String toString() {
-		return var + ": " + value;
+		return var + ": \"" + value + "\"";
+	}
+	
+	public String print() {
+		System.out.println(this.toString());
+		return null;
 	}
 }

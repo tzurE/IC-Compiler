@@ -3,14 +3,16 @@ class B {
 
   static void main(string[] args) {
 
-    int[] arr = new int[5];
-    int r = arr.length;
+	if (true){
+	   int x = 0;
+	}
+
   }
 }
 
 class C {
 
-  static int func(int x, string y){     
+  int func(int x, string y){     
      return 2+3;
   }
 }

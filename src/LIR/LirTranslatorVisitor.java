@@ -223,7 +223,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 			String class_t = "";
 			boolean field = false;
 			LIRNode move = null, move2 = null;
-			Operand reg1 = null,  op = null, reg3= null, mem = null;
+			Operand reg1 = null,  op = null, reg3= null, mem = null, reg2 = null;
 			Operand ass = (Operand) assignment.getAssignment().accept(this, regCount);
 			if(this.isRegister(ass.toString())){
 				regCount = this.getRegNum(ass.toString()) + 1;
@@ -254,16 +254,17 @@ public class LirTranslatorVisitor implements LirVisitor{
 				cName = currScope.getId();
 				if(this.classLayouts.get(cName).getFieldByName().containsKey(Name)){
 					field = true;
-					Operand reg2 = new Reg("R" + regCount++);
-					mem = new Memory(Name);
+					reg2 = new Reg("R" + regCount++);
+					mem = new Memory("this");
 					temp_Program.add(new MoveInstr(mem, reg2));
 				}				
 			}
 			if(field){
 			ClassLayout cl = this.classLayouts.get(cName);
 			int fieldOffset = cl.getFieldOffsetByName().get(Name);
-			
-			
+			if(op == null && reg2 != null){
+				op = reg2;
+			}
 			LIRNode move1 = new MoveFieldInstr(op, new Immediate(fieldOffset), reg1, false);
 			temp_Program.add(move1);
 
@@ -425,6 +426,7 @@ public Object visit(While whileStatement, int regCount) {
 				 temp_Program.add(new MoveInstr(op, reg));
 				 class_t = reg.toString();
 			 }
+			 
 			
 		}
 		else{
@@ -439,28 +441,23 @@ public Object visit(While whileStatement, int regCount) {
 					if(currScope.getEntry(name, SymbolKinds.LOCAL_VARIABLE)!=null || currScope.getEntry(name, SymbolKinds.PARAMETER)!=null){
 						return new Memory(name);
 					}
-					else{
-						className = currScope.getFather_table().getId();
-						if(this.classLayouts.get(className).getFieldByName().get(name).getName().equals(name)){
-							this.classLayouts.get(className).getFieldByName().get(name).accept(this, regCount);
-								return new Memory(name);
-						}
-					}
+
 				}
+				currScope = currScope.getFather_table();
 			}
-			currScope = currScope.getFather_table();
+			
 			
 			if(currScope.getType().compareTo(SymbolTableType.CLASS) == 0){
 				className = currScope.getId();
 			}
-			// Check if is a field
+			// Check if is a field. do we need this?
 			if(this.classLayouts.get(className).getFieldByName().containsKey(name)){
 				field = true;
-				reg1 = new Reg(name);
+				reg1 = new Memory("this");
 				reg2 = new Reg("R" + regCount++);
 				move = new MoveInstr(reg1, reg2);
 				temp_Program.add(move);
-				
+				class_t = reg2.toString();
 			}
 			else
 				return new Memory(name);
@@ -469,7 +466,7 @@ public Object visit(While whileStatement, int regCount) {
 			ClassLayout clay = this.classLayouts.get(className);
 			int fieldOffset = clay.getFieldOffsetByName().get(name);
 			Operand reg3 = new Reg("R" + regCount++);
-			LIRNode movef = new MoveFieldInstr(new Reg(class_t), new Immediate(fieldOffset), reg3, true);
+			LIRNode movef = new MoveFieldInstr(new Memory(class_t), new Immediate(fieldOffset), reg3, true);
 			temp_Program.add(movef);
 			return reg3;
 		}

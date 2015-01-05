@@ -59,7 +59,8 @@ public class LirTranslatorVisitor implements LirVisitor{
 	private static String trueCondLbl = "_true_cond_lable";
 	private static String falseCondLbl = "_false_cond_lable";
 	private static String endCondLbl = "_end_cond_lable";
-	
+	private static String startWhileLbl = "_start_while_lable";
+	private static String endWhileLbl = "_end_while_lable";
 
 	public LirTranslatorVisitor(GlobalSymbolTable global) {
 		this.StringLiterals = new LinkedList<LIRNode>();
@@ -100,6 +101,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 		((Label)temp_Program.get(0)).setName(strbld.toString());
 		
 		for(ICClass icClass : program.getClasses()) {
+			
 			if(icClass.getName() != "Library"){
 				icClass.accept(this, regCount);
 				temp_Program.add(new Label(""));
@@ -331,9 +333,30 @@ public class LirTranslatorVisitor implements LirVisitor{
 	}
 
 	@Override
-	public Object visit(While whileStatement, int regCount) {
+public Object visit(While whileStatement, int regCount) {
+		
+		boolean removeEndLbl = false;
 		this.numOfWhiles++;
-		// TODO Auto-generated method stub
+		LIRNode lastNode = temp_Program.get(temp_Program.size()-1);
+		
+		temp_Program.add(new Label(this.startWhileLbl + this.numOfWhiles + ":"));
+
+		// Translating loop's condition
+		Operand cond = (Operand) whileStatement.getCondition().accept(this, regCount);
+		
+		if (!(cond instanceof Immediate)){
+			removeEndLbl = true;
+			temp_Program.remove(temp_Program.size()-1);
+		}
+		
+		
+		whileStatement.getOperation().accept(this, regCount);
+		temp_Program.add(new JumpInstr(new Label(this.startWhileLbl + this.numOfWhiles)));
+		temp_Program.add(new Label(this.endWhileLbl + this.numEndLabel + ":"));
+		
+		if (removeEndLbl)
+			temp_Program.add(lastNode);
+		
 		return null;
 	}
 
@@ -416,6 +439,13 @@ public class LirTranslatorVisitor implements LirVisitor{
 					if(currScope.getEntry(name, SymbolKinds.LOCAL_VARIABLE)!=null || currScope.getEntry(name, SymbolKinds.PARAMETER)!=null){
 						return new Memory(name);
 					}
+					else{
+						className = currScope.getFather_table().getId();
+						if(this.classLayouts.get(className).getFieldByName().get(name).getName().equals(name)){
+							this.classLayouts.get(className).getFieldByName().get(name).accept(this, regCount);
+								return new Memory(name);
+						}
+					}
 				}
 			}
 			currScope = currScope.getFather_table();
@@ -480,7 +510,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 	@Override
 	public Object visit(StaticCall call, int regCount) {
 		LIRNode callNode = null;
-		Operand reg = null;
+		Operand reg = null, reg3 = null;
 		Operand callParamOper = null;
 		Label func = null;
 		 	
@@ -491,12 +521,20 @@ public class LirTranslatorVisitor implements LirVisitor{
 			// Collect all params of call
 			for(Expression callParam : call.getArguments()){		
 				callParamOper = (Operand) callParam.accept(this, regCount);
+				if(!this.isRegister(callParamOper.toString())){
+					reg3 = new Reg("R" + regCount++);
+					temp_Program.add(new MoveInstr(callParamOper, reg3));
+					callParamOper = reg3;
+				}
 				strOpers.add(callParamOper);
 			}
 			
 			// Creates new Static call instruction
 			func = new Label("__" + call.getName());
-			reg = new Reg("Rdummy");
+			if(call.getName().startsWith("print"))
+				reg = new Reg("Rdummy");
+			else
+				reg = new Reg("R" + regCount++);
 			callNode = new LibraryCall(func, strOpers, (Reg)reg);
 		}
 		// Not a library method
@@ -515,6 +553,11 @@ public class LirTranslatorVisitor implements LirVisitor{
 			for(Expression callParam : call.getArguments()){
 				Memory mem = new Memory(formals.get(numFormals-1));
 				Operand value = (Operand)callParam.accept(this, regCount);
+				if(!this.isRegister(value.toString())){
+					reg3 = new Reg("R" + regCount++);
+					temp_Program.add(new MoveInstr(value, reg3));
+					value = reg3;
+				}
 				pop = new ParamOpPair(mem, value);
 				paramPairs.add(pop);
 				numFormals++;
@@ -737,7 +780,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 		move = new MoveInstr(oper2, reg2);
 		temp_Program.add(move);
 		LIRNode cmp = null;
-		
+		 
 		if(binaryOp.getOperator().compareTo(BinaryOps.LOR) != 0 && binaryOp.getOperator().compareTo(BinaryOps.LAND) != 0){
 			cmp = new CompareInstr(reg2, reg1);		
 			temp_Program.add(cmp);

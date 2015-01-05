@@ -93,7 +93,7 @@ public class Compiler {
 			}
 		}
 		
-		else if(PrintSymTables){
+		if(PrintSymTables){
 			
 			System.out.println();
 			glbTable.print();

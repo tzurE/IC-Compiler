@@ -1,10 +1,14 @@
 package IC;
 
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.Writer;
 import java.util.List;
 
 import LIRInstructions.LIRNode;
 import java_cup.runtime.Symbol;
+import jdk.jfr.events.FileWriteEvent;
 import IC.AST.*;
 import IC.Parser.Lexer;
 import IC.Parser.LibParser;
@@ -56,6 +60,7 @@ public class Compiler {
 			else if (current.equals("-print-lir")){
 				printLIR = true;
 			}
+			
 					
 		}
 		try{
@@ -107,9 +112,15 @@ public class Compiler {
 		List<LIRNode> LIRProgram = (List<LIRNode>)prog2_root.accept(lirTrans, regCount);
 		
 		if (printLIR){
+			FileWriter writer = new FileWriter("ff" + ".lir");
+			BufferedWriter bw = new BufferedWriter(writer);
 			for(LIRNode node : LIRProgram){
-				node.print();
+				node.print();	
 			}
+			for(LIRNode nn : LIRProgram)
+				bw.write(nn.toString()+"\n");
+			
+			bw.close();
 		}
 		
 		

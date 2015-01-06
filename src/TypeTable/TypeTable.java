@@ -19,6 +19,7 @@ public class TypeTable {
 	private static Map<String,ClassType> uniqueClassByTypes;
 
 	private static Map<Method,MethodType> uniqueMethodByTypes;
+	private static HashMap<String,MethodType> uniqueMethodByNames = new HashMap<String,MethodType>();
 	//used to check if 2 methods has the same type of args
 	private static Map<MethodType,List<Formal>> uniqueMethodByArgs;
 
@@ -33,6 +34,7 @@ public class TypeTable {
 	// For Printing the Method Types
 	private static int methodCount = 0;
 	private static HashMap<Integer,Method> methodTypesByOrder = new HashMap<Integer,Method>();
+	
 		
 	public static void TypeTableInit(){
 		booleanType = new BooleanType(2);
@@ -86,19 +88,22 @@ public class TypeTable {
 	//this creates a new kind of method. if it exists we return it, otherwise we create a unique one!
 	public static MethodType methodType(Method method) {
 		//first we check if there is a method like this
+		MethodType m;
 		if (uniqueMethodByTypes.containsKey(method)){
-			
+			m = uniqueMethodByTypes.get(method);
+			if(! method.getName().equals(m.getName()))
+				uniqueMethodByNames.put(method.getName(), m);
 			return uniqueMethodByTypes.get(method);
 		}		
 		else{
 			// no method like this exists, so we create it
 			id++;
-			MethodType mtdt = new MethodType(method,id);
-			uniqueMethodByTypes.put(method, mtdt);
+			m = new MethodType(method,id);
 			methodTypesByOrder.put(methodCount,method);
 			methodCount++;
-			
-			return mtdt;
+			uniqueMethodByNames.put(method.getName(), m);
+			uniqueMethodByTypes.put(method, m);
+			return m;
 		}
 	}
 	
@@ -170,14 +175,18 @@ public class TypeTable {
 			
 			return strb.toString();
 		}
-		
+		else if(uniqueMethodByNames.containsKey(name)){
+			MethodType m = uniqueMethodByNames.get(name);
+			return m.toStringSymTable();
+		}
+		/* old code		
 		for (i = 0; i < methodCount; i++){
-			
 			method = methodTypesByOrder.get(i);
 			if (method.getName().equals(name)){
 				return uniqueMethodByTypes.get(method).toStringSymTable();	
 			}	
 		}
+		*/
 		
 		//////////// Added for array reference
 		if (arrayTypesByOrder.containsKey(name)){

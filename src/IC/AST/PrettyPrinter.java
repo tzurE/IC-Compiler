@@ -125,11 +125,13 @@ public class PrettyPrinter implements Visitor {
 	public Object visit(LibraryMethod method) {
 		StringBuffer output = new StringBuffer();
 		SymbolTable MethodScope = method.getScope();
+		String s;//debug
 		
 		indent(output, method);
 		output.append("Declaration of library method: " + method.getName());
 		depth++;
-		output.append(method.getType().accept(this));
+		output.append(", Type: " + TypeTable.getTypeNameByString(method.getName()) +
+				", Symbol table: " + MethodScope.getId());
 		for (Formal formal : method.getFormals())
 			output.append(formal.accept(this));
 		depth--;
@@ -444,7 +446,7 @@ public class PrettyPrinter implements Visitor {
 		indent(output, call);
 		output.append("Call to static method: " + call.getName()
 				+ ", in class " + call.getClassName());
-		output.append(", Type: " + TypeTable.getTypeNameByString(call.getName())
+		output.append(", Type: " + getReturnTypeString(TypeTable.getTypeNameByString(call.getName()))
 				+ ", Symbol Table: " + call.getScope().getId());
 		depth++;
 		for (Expression argument : call.getArguments())
@@ -452,15 +454,24 @@ public class PrettyPrinter implements Visitor {
 		depth--;
 		return output.toString();
 	}
-
+	
+	public static String getReturnTypeString(String MethodType){
+		String returnTypeString;
+		int beginIndex = MethodType.indexOf("-> ");
+		int endIndex = MethodType.indexOf('}');
+		returnTypeString = MethodType.substring(beginIndex+3, endIndex);
+		return returnTypeString;
+	}
+	
+	
 	public Object visit(VirtualCall call) {
 		StringBuffer output = new StringBuffer();
-
+		
 		indent(output, call);
 		output.append("Call to virtual method: " + call.getName());
 		if (call.isExternal())
 			output.append(", in external scope");
-		output.append(", Type: " + TypeTable.getTypeNameByString(call.getName()) +
+		output.append(", Type: " + getReturnTypeString(TypeTable.getTypeNameByString(call.getName())) +
 				", Symbol table: " + call.getScope().getId());
 		depth++;
 		if (call.isExternal())

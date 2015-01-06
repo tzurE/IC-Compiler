@@ -94,7 +94,6 @@ public class Compiler {
 		}
 		
 		if(PrintSymTables){
-			
 			System.out.println();
 			glbTable.print();
 

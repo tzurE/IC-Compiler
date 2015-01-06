@@ -203,4 +203,26 @@ public class ClassLayout {
 		return string;
 	}
 	
+public StringBuilder printFieldOffsets(){
+		
+		String[] dv_fields = new String[getFieldCount()];
+		StringBuilder string = new StringBuilder();
+		string.append("# Class_" + this.getClassIdent() + " Offset Assignment: [");
+		
+		for (String field_name : getFieldOffsetByName().keySet()){
+			
+			dv_fields[getFieldOffsetByName().get(field_name)] = field_name; 
+		}
+		
+		for (int i = 1; i < this.getFieldCount(); i++){	
+			if (i == 1)
+				string.append(i + ":" + dv_fields[i]);
+			else
+				string.append("," + i + ":" + dv_fields[i]);
+		}
+		
+		string.append("]\n");
+		return string;
+	}
+	
 }

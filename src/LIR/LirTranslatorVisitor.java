@@ -100,6 +100,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 				}
 				this.classLayouts.put(icClass.getName(), icClassLayout);
 				strbld.append(icClassLayout.printDispatchTable());
+				strbld.append(icClassLayout.printFieldOffsets());
 			}
 		}
 		((Label)temp_Program.get(0)).setName(strbld.toString());
@@ -254,6 +255,9 @@ public class LirTranslatorVisitor implements LirVisitor{
 				SymbolTable currScope = varLocation.getScope();
 				while(!(currScope.getType().compareTo(SymbolTableType.CLASS) == 0)){
 					currScope = currScope.getFather_table();
+					if(currScope.searchForVar(Name, varLocation.getLine()) != null){
+						Name = "v" + currScope.getUniqueId() + Name;
+					}
 				}
 				cName = currScope.getId();
 				if(this.classLayouts.get(cName).getFieldByName().containsKey(Name)){

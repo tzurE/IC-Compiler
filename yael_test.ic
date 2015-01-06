@@ -1,0 +1,9 @@
+class B {
+
+  static void main(string[] args) {
+
+	string s1 = "saba";
+	string s2 = "savta";
+	Library.println(s1+s2);
+  }
+}

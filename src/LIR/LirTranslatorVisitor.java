@@ -223,6 +223,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 			LIRNode move = null, move2 = null;
 			Operand reg1 = null,  op = null, reg3= null, mem = null, reg2 = null;
 			Operand ass = (Operand) assignment.getAssignment().accept(this, regCount);
+			
 			if(this.isRegister(ass.toString())){
 				regCount = this.getRegNum(ass.toString()) + 1;
 				reg1 = ass;
@@ -312,7 +313,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 		
 			this.numFalseLabel++;
 			this.numTrueLabel++;
-			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.falseCondLbl + numFalseLabel), Cond.False));
+			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.falseCondLbl + numFalseLabel), Cond.True));
 			ifStatement.getOperation().accept(this, regCount);
 			temp_Program.add(new JumpInstr(new Label(LirTranslatorVisitor.endCondLbl + numEndLabel)));
 			temp_Program.add(new Label(LirTranslatorVisitor.falseCondLbl + this.numFalseLabel + ":"));
@@ -340,12 +341,15 @@ public Object visit(While whileStatement, int regCount) {
 		temp_Program.add(new Label(LirTranslatorVisitor.startWhileLbl + this.numOfWhiles + ":"));
 
 		// Translating loop's condition
-		Operand cond = (Operand) whileStatement.getCondition().accept(this, regCount);
+		Operand condOper = (Operand) whileStatement.getCondition().accept(this, regCount);
 		
-		if (!(cond instanceof Immediate)){
+		temp_Program.add(new CompareInstr(new Immediate(0), condOper));
+		temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.endWhileLbl + numFalseLabel), Cond.True));
+		
+		/*if (!(cond instanceof Immediate)){
 			removeEndLbl = true;
 			temp_Program.remove(temp_Program.size()-1);
-		}
+		}*/
 		
 		
 		whileStatement.getOperation().accept(this, regCount);
@@ -387,19 +391,25 @@ public Object visit(While whileStatement, int regCount) {
 	@Override
 	public Object visit(LocalVariable localVariable, int regCount) {
 		
-		LIRNode move = null,move1 = null;
+		LIRNode move = null;
+		Operand localVar = new Memory(localVariable.getName());
+		
 		if (localVariable.hasInitValue()){
 			Operand oper1 = (Operand)localVariable.getInitValue().accept(this, regCount);
+			
 			if(!this.isRegister(oper1.toString())){
-				move = new MoveInstr(oper1, new Reg(localVariable.getName()));
+				Operand tmpReg = new Reg("R" + regCount); 
+				move = new MoveInstr(oper1, tmpReg);
+				temp_Program.add(move);
+				move = new MoveInstr(tmpReg, localVar);
 				temp_Program.add(move);
 			}
 			else{
-				move1 = new MoveInstr(oper1, new Reg(localVariable.getName()));
-				temp_Program.add(move1);
-			}		
+				move = new MoveInstr(oper1, localVar);
+				temp_Program.add(move);				
+			}
 		}
-		return null;
+		return localVar;
 	}
 
 	@Override
@@ -422,9 +432,7 @@ public Object visit(While whileStatement, int regCount) {
 				 Operand reg = new Reg("R" +regCount++);
 				 temp_Program.add(new MoveInstr(op, reg));
 				 class_t = reg.toString();
-			 }
-			 
-			
+			 }		
 		}
 		else{
 			SymbolTable currScope = location.getScope();
@@ -699,13 +707,30 @@ public Object visit(While whileStatement, int regCount) {
 	public Object visit(MathBinaryOp binaryOp, int regCount) {
 
 		Operand oper1 = (Operand)binaryOp.getFirstOperand().accept(this, regCount);
-		Operand oper2 = (Operand)binaryOp.getSecondOperand().accept(this, regCount);
-		Operand reg1 = null;
-		Operand reg2 = null;
+		Operand oper2 = null; //(Operand)binaryOp.getSecondOperand().accept(this, regCount);
 		LIRNode move = null;
 		LIRNode binOpNode = null;
 					
-		// move oper1, reg#
+		
+		// Added for verification!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		if (isRegister(oper1.toString())){ 
+			oper2 = (Operand)binaryOp.getSecondOperand().accept(this, ++regCount);			
+		}
+		else{ 
+			move = new MoveInstr(oper1, new Reg("R" + regCount));
+			temp_Program.add(move);
+			oper1 = new Reg("R" + regCount);
+			oper2 = (Operand)binaryOp.getSecondOperand().accept(this, ++regCount);
+		}
+		
+		if (!isRegister(oper2.toString())){ 			 
+			move = new MoveInstr(oper2, new Reg("R" + regCount));
+			temp_Program.add(move);
+			oper2 = new Reg("R" + regCount);
+		}
+		// Added for verification!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		
+	/*	// move oper1, reg#
 		reg1 = new Reg("R" + regCount++); 
 		move = new MoveInstr(oper1, reg1);
 		temp_Program.add(move);
@@ -713,12 +738,12 @@ public Object visit(While whileStatement, int regCount) {
 		// move oper2, reg#
 		reg2 = new Reg("R" + regCount++);
 		move = new MoveInstr(oper2, reg2);
-		temp_Program.add(move);
+		temp_Program.add(move);*/
 		
 		if(binaryOp.getOperator().getOperatorString().equals(BinaryOps.PLUS.getOperatorString())){
 			TypeTableType operandsType = (TypeTableType)binaryOp.getFirstOperand().accept (new SymbolVisitorChecker(this.global), binaryOp.getScope());
 			if (operandsType.getId() == TypeIDs.INT){
-				binOpNode = new BinOpInstr(reg1, reg2, Operator.ADD);
+				binOpNode = new BinOpInstr(oper2, oper1, Operator.ADD);
 			}
 			
 			else if (operandsType.getId() == TypeIDs.STRING){
@@ -726,29 +751,29 @@ public Object visit(While whileStatement, int regCount) {
 				strOpers.add(oper1);
 				strOpers.add(oper2);
 				Label func = new Label("__stringCat");
-				reg2 = new Reg("R" + regCount++);
-				binOpNode = new LibraryCall(func, strOpers, (Reg)reg2);
+				//reg2 = new Reg("R" + regCount++);
+				binOpNode = new LibraryCall(func, strOpers, (Reg)oper1);
 			}
 			temp_Program.add(binOpNode);
 		}
 		else if (binaryOp.getOperator().getOperatorString().equals(BinaryOps.MINUS.getOperatorString())){
-			binOpNode = new BinOpInstr(reg1, reg2, Operator.SUB);
+			binOpNode = new BinOpInstr(oper2, oper1, Operator.SUB);
 			temp_Program.add(binOpNode);
 		}
 		else if (binaryOp.getOperator().getOperatorString().equals(BinaryOps.MULTIPLY.getOperatorString())){
-			binOpNode = new BinOpInstr(reg1, reg2, Operator.MUL);
+			binOpNode = new BinOpInstr(oper2, oper1, Operator.MUL);
 			temp_Program.add(binOpNode);
 		}
 		else if (binaryOp.getOperator().getOperatorString().equals(BinaryOps.DIVIDE.getOperatorString())){
-			binOpNode = new BinOpInstr(reg1, reg2, Operator.DIV);
+			binOpNode = new BinOpInstr(oper2, oper1, Operator.DIV);
 			temp_Program.add(binOpNode);
 		}
 		else if (binaryOp.getOperator().getOperatorString().equals(BinaryOps.MOD.getOperatorString())){
-			binOpNode = new BinOpInstr(reg1, reg2, Operator.MOD);
+			binOpNode = new BinOpInstr(oper2, oper1, Operator.MOD);
 			temp_Program.add(binOpNode);
 		}
 		
-		return reg2;
+		return oper1;
 	}
 
 	@Override

@@ -1,10 +1,29 @@
-class B {
+class A {
+	int x;
+	void f(int x) {
+		if (x > 0) {
+			int x = 5;
 
-  static void main(string[] args) {
+			Library.print("Five: ");
+			Library.print(Library.itos(x));
+			Library.print(", ");
 
-    boolean y = true;
-	y = (y&&!y);
-	Library.printb(y);
-	Library.println("");
-  }
+			if (x < 5)
+				Library.print("ERROR!");
+
+			x = x + 1;
+
+			Library.print("Six: ");
+			Library.print(Library.itos(x));
+			Library.print(", ");
+		}
+
+		Library.print("Three: ");
+		Library.print(Library.itos(x));
+		Library.print(", ");
+	}
+	static void main(string[] args) {
+		A a = new A();
+		a.f(3);
+	}
 }

@@ -28,4 +28,5 @@ public abstract class SymbolEntry {
 	public void setType(TypeTableType type) {
 		this.type = type;
 	}
+	
 }

@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import SemanticCheckerVisitor.SymbolVisitorChecker;
 import SymbolTables.GlobalSymbolTable;
+import SymbolTables.SymbolEntry;
 import SymbolTables.SymbolKinds;
 import SymbolTables.SymbolTable;
 import SymbolTables.ClassSymbolTable;
@@ -377,9 +379,11 @@ public Object visit(While whileStatement, int regCount) {
 
 	@Override
 	public Object visit(LocalVariable localVariable, int regCount) {
-		
+		String lName = "v" + localVariable.getScope().getUniqueId() + localVariable.getName();
 		LIRNode move = null;
-		Operand localVar = new Memory(localVariable.getName());
+		
+		
+		Operand localVar = new Memory(lName);
 		
 		if (localVariable.hasInitValue()){
 			Operand oper1 = (Operand)localVariable.getInitValue().accept(this, regCount);
@@ -426,12 +430,12 @@ public Object visit(While whileStatement, int regCount) {
 			while(!(currScope.getType().compareTo(SymbolTableType.CLASS) == 0)){
 				if(currScope.getType().compareTo(SymbolTableType.STATEMENT) == 0){
 					if(currScope.getEntry(name, SymbolKinds.LOCAL_VARIABLE)!=null){
-						return new Memory(name); 
+						return new Memory("v" + currScope.getUniqueId() + location.getName()); 
 					}
 				}
 				if(currScope.getType().compareTo(SymbolTableType.STATIC_METHOD) == 0 || currScope.getType().compareTo(SymbolTableType.VIRTUAL_METHOD) == 0 ){
 					if(currScope.getEntry(name, SymbolKinds.LOCAL_VARIABLE)!=null || currScope.getEntry(name, SymbolKinds.PARAMETER)!=null){
-						return new Memory(name);
+						return new Memory("v" + currScope.getUniqueId() + location.getName());
 					}
 
 				}
@@ -506,6 +510,7 @@ public Object visit(While whileStatement, int regCount) {
 		// Static call is a library method
 		if(call.getClassName().equals("Library")){
 			List<Operand> strOpers = new ArrayList<Operand>();
+			ClassSymbolTable classSymbolTable = this.global.getChildTableList().get(call.getClassName());
 
 			// Collect all params of call
 			for(Expression callParam : call.getArguments()){		
@@ -540,7 +545,7 @@ public Object visit(While whileStatement, int regCount) {
 			
 			// Collect all params of call
 			for(Expression callParam : call.getArguments()){
-				Memory mem = new Memory(formals.get(numFormals-1));
+				Memory mem = new Memory("v" + classSymbolTable.getUniqueId() + formals.get(numFormals-1));
 				Operand value = (Operand)callParam.accept(this, regCount);
 				if(!this.isRegister(value.toString())){
 					reg3 = new Reg("R" + regCount++);
@@ -608,7 +613,9 @@ public Object visit(While whileStatement, int regCount) {
 		
 		// Collect all params of call
 		for(Expression callParam : call.getArguments()){
-			Memory mem = new Memory(formals.get(numFormals).getName());
+			int method_unique =  global.findUniqueId(m.getScope().getId(), call.getName(), SymbolTableType.VIRTUAL_METHOD);
+			
+			Memory mem = new Memory("v"+method_unique+formals.get(numFormals).getName());
 			Operand value = (Operand)callParam.accept(this, regCount);
 			if(!this.isRegister(value.toString())){
 				reg3 = new Reg("R" + regCount++);

@@ -18,7 +18,7 @@ public class MethodSymbolTable extends SymbolTable{
 	
 	//all the local variables
 	private HashMap<String, SymbolEntry> LocalVariables = new HashMap<String, SymbolEntry>();
-	//do we need this?
+
 	private HashMap<String, Integer> LocalVariablesDeclerationLine = new HashMap<String, Integer>();
 	/////////////////
 	private HashMap<String, SymbolEntry> Parameters = new HashMap<String, SymbolEntry>();
@@ -163,7 +163,7 @@ public class MethodSymbolTable extends SymbolTable{
 	public SymbolEntry searchForVar(String id, int line) {
 		
 		if(LocalVariables.containsKey(id)){
-			if(LocalVariablesDeclerationLine.get(id) < line)
+			if(LocalVariablesDeclerationLine.get(id) <= line)
 				return LocalVariables.get(id);
 			}
 		else if(this.Parameters.containsKey(id))

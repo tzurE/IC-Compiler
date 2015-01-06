@@ -135,6 +135,12 @@ public class GlobalSymbolTable extends SymbolTable {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public int findUniqueId(String class_name, String method_name ,SymbolTableType type){
+		return this.childTableList.get(class_name).findMethodTable(method_name, type).getUniqueId();
+		
+		
+	}
 
 
 	@Override

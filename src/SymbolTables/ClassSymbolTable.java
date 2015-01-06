@@ -293,6 +293,10 @@ public class ClassSymbolTable extends SymbolTable {
 		}
 		return null;
 	}
+	
+	public SymbolTable findMethodTable(String method_name, SymbolTableType type){
+		return this.methodChildTableList.get(method_name);
+	}
 
 	@Override
 	public void setTableTypeForVariable(String fieldName, TypeTableType type) {

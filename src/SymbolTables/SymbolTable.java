@@ -20,7 +20,8 @@ public abstract class SymbolTable {
 	private SymbolTableType type;
 	private String id;
 	private SymbolTable father_table;
-
+	private int unique;
+	private static int unique_id = 0; 
 	
 
 	public SymbolTable(SymbolTableType type, String id,
@@ -28,6 +29,7 @@ public abstract class SymbolTable {
 		this.type = type;
 		this.id = id;
 		this.father_table = father_table;
+		this.unique = unique_id++;
 	}
 
 	public SymbolTableType getType() {
@@ -40,6 +42,10 @@ public abstract class SymbolTable {
 
 	public SymbolTable getFather_table() {
 		return father_table;
+	}
+	
+	public int getUniqueId(){
+		return this.unique;
 	}
 	
 	//all the method every offspring must implement

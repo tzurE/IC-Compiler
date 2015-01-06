@@ -608,13 +608,11 @@ public Object visit(While whileStatement, int regCount) {
 		
 		//get the method offset from the dispatch
 		ClassLayout clay = this.classLayouts.get(className);
-		String methodstr = clay.methodOverride(methodName);
-		int methodoff;
-		if(methodstr.equals(""))
-				 methodoff = clay.getMethodOffsets().get("_" + className+"_"+ methodName);
-		else
-			methodoff = clay.getMethodOffsets().get(methodstr);
-		Method m = clay.getMethodByName().get("_" + className+"_"+ methodName);
+		String method_str = clay.methodOverride(methodName, className);
+		int methodoff = clay.getMethodOffsets().get(method_str);
+		Method m = clay.getMethodByName().get(method_str);
+		
+		
 		List<Formal> formals = m.getFormals();
 		int numFormals = 0;
 		ParamOpPair pop = null; 
@@ -636,10 +634,10 @@ public Object visit(While whileStatement, int regCount) {
 			numFormals++;
 		}
 		//Operand func = new Label("_" + className + "_" + call.getName());
-		Operand reg = new Reg("Rdummy");
+		Operand reg = new Reg("R" + regCount++);
 		LIRNode callNode = new LIRInstructions.VirtualCall((Reg) loc, new Immediate(methodoff), paramPairs, (Reg)reg);
 		temp_Program.add(callNode);
-		return null;
+		return reg;
 	}
 
 	@Override

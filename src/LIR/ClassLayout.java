@@ -148,7 +148,7 @@ public class ClassLayout {
 			if (!isMethodStatic(method)){
 				
 				// Method overrides superclass -> override it in the table
-				String method_superclass = methodOverride(method.getName());
+				String method_superclass = methodOverride(method.getName(), icclass.getName());
 				if (!method_superclass.equals("")){
 					int methodLoc = this.methodOffsets.get(method_superclass);
 					methodByName.remove(method_superclass);
@@ -181,11 +181,14 @@ public class ClassLayout {
 	
 
 
-	public String methodOverride(String method_name){
+	public String methodOverride(String method_name, String class_name){
 		
 		ClassLayout clLayout = this;
-		String method_str;
+		String method_str, this_method_str = "_" + class_name + "_" + method_name;
 		
+		if (clLayout.getMethodByName().containsKey(this_method_str)){
+			return this_method_str;
+		}
 		while (clLayout.hasSuperClass){
 			clLayout = clLayout.getSuperClass();
 			method_str = "_" + clLayout.getClassIdent() + "_" + method_name;

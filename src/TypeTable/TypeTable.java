@@ -96,11 +96,14 @@ public class TypeTable {
 		//TODO: check return type first
 		if(method.getType().getDimension() > 0)
 			arrayType(method.getType());
+		
+		/*
 		for(Map.Entry <Method, MethodType> e : uniqueMethodByTypes.entrySet()){
 			m1 = e.getKey(); 
 			if(m1.equals(method))
 				System.out.println();
 		}
+		*/
 		
 		if (uniqueMethodByTypes.containsKey(method)){
 			m = uniqueMethodByTypes.get(method);

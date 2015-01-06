@@ -321,7 +321,7 @@ public class SymbolVisitorChecker implements PropVisitor {
 		MethodType mType = (MethodType)mSymbol.getType();
 		methodReturnType = mType.getReturnType();
 		//checks if the expression in the return statement is from the return type of the method
-		if(!returnStmtType.isExtendedFrom(methodReturnType)){
+		if(! methodReturnType.isExtendedFrom(returnStmtType)){
 			try {
 				throw new SemanticError(returnStatement.getLine(),
 						"the type of the returned value in method '"

@@ -677,9 +677,21 @@ public Object visit(While whileStatement, int regCount) {
 	public Object visit(NewArray newArray, int regCount) {
 		Operand oper_size = (Operand)newArray.getSize().accept(this, regCount);
 		LIRNode allocate = null;
+		Operand reg = null;
 		Reg reg1 = new Reg("R" + regCount++);
-		int size = Integer.parseInt(oper_size.toString())*4;
-		oper_size = new Immediate(size);
+		int size = 0;
+		if(oper_size.toString().startsWith("v")){
+			reg = new Reg("R"+regCount++);
+			temp_Program.add(new MoveInstr(oper_size, reg));
+			temp_Program.add(new BinOpInstr(reg, new Immediate(4), Operator.MUL));
+			oper_size = reg;
+			
+		}
+		else {
+			size = Integer.parseInt(oper_size.toString())*4;
+			oper_size = new Immediate(size);
+		}
+		
 
 		// Create AllocateArray library call 
 		List<Operand> strOpers = new ArrayList<Operand>();

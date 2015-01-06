@@ -112,7 +112,7 @@ public class Compiler {
 		List<LIRNode> LIRProgram = (List<LIRNode>)prog2_root.accept(lirTrans, regCount);
 		
 		if (printLIR){
-			FileWriter writer = new FileWriter("ff" + ".lir");
+			FileWriter writer = new FileWriter(args[0].substring(0 ,args[0].indexOf(".")) + ".lir");
 			BufferedWriter bw = new BufferedWriter(writer);
 			for(LIRNode node : LIRProgram){
 				node.print();	

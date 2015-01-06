@@ -1,19 +1,51 @@
-_DV_B: []
+str1: "Five: "
+str2: ", "
+str3: "Three: "
+_DV_A: [_A_f]
+# Class_A Offset Assignment: [1:x]
 
 
-_ic_main:
-Move 1,R1
-Move 1,R2
-Compare R2,R2
-JumpTrue _true_cond_lable1
-_false_cond_lable1:
+_A_f:
+Move 3,R1
+Move R1,v17x
+
+#begin_if
+Move v17x,R1
 Move 0,R2
-Jump _end_cond_lable1
-_true_cond_lable1:
-Move 1,R2
-_end_cond_lable1:
-Move R2,y
-Move y,R1
-Library __printb(R1),Rdummy
+Compare R2,R1
+JumpG _true_cmp_label1
+_false_cmp_label1:
+Move 0,R1
+Jump _end_cmp_label1
+_true_cmp_label1:
+Move 1,R1
+_end_cmp_label1:
+Compare 0,R1
+JumpTrue _end_cond_label1
+Move 5,R1
+Move R1,v18x
+Move str1,R1
+Library __print(R1),Rdummy
+Move v18x,R1
+Library __itos(R1),R2
+Library __print(R2),Rdummy
+Move str2,R1
+Library __print(R1),Rdummy
+_end_cond_label1:
+#end_if
+Move str3,R1
+Library __print(R1),Rdummy
+Move v17x,R1
+Library __itos(R1),R2
+Library __print(R2),Rdummy
+Move str2,R1
+Library __print(R1),Rdummy
+Return Rdummy
+_ic_main:
+Library __allocateObject(8),R1
+MoveField _DV_A,R1.0
+Move R1,v19a
+Move v19a,R1
+VirtualCall R1.0(),Rdummy
 Library __exit(0),Rdummy
 

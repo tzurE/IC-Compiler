@@ -88,8 +88,20 @@ public class TypeTable {
 	//this creates a new kind of method. if it exists we return it, otherwise we create a unique one!
 	public static MethodType methodType(Method method) {
 		//first we check if there is a method like this
+		if(id == 22)
+			System.out.println();
 		MethodType m;
+		Method m1;
+		
 		//TODO: check return type first
+		if(method.getType().getDimension() > 0)
+			arrayType(method.getType());
+		for(Map.Entry <Method, MethodType> e : uniqueMethodByTypes.entrySet()){
+			m1 = e.getKey(); 
+			if(m1.equals(method))
+				System.out.println();
+		}
+		
 		if (uniqueMethodByTypes.containsKey(method)){
 			m = uniqueMethodByTypes.get(method);
 			if(! method.getName().equals(m.getName()))
@@ -99,8 +111,6 @@ public class TypeTable {
 		else{
 			// no method like this exists, so we create it
 			id++;
-			if(id == 16)
-				System.out.println();
 			m = new MethodType(method,id);
 			methodTypesByOrder.put(methodCount,method);
 			methodCount++;

@@ -285,7 +285,7 @@ public class PrettyPrinter implements Visitor {
 		StringBuffer output = new StringBuffer();
 		SymbolTable statementsBlockScope = statementsBlock.getScope();
 		
-		indent(output, statementsBlock);
+		indent(output, statementsBlock);	
 		output.append("Block of statements, Symbol table: " + statementsBlockScope.getId());
 		depth++;
 		for (Statement statement : statementsBlock.getStatements())
@@ -631,13 +631,22 @@ public class PrettyPrinter implements Visitor {
 
 	public Object visit(ExpressionBlock expressionBlock) {
 		StringBuffer output = new StringBuffer();
+		String exprStr, typeStr;
+		int beginIndex, endIndex;
 		SymbolTable expressionBlockScope = expressionBlock.getScope();
 		
 		indent(output, expressionBlock);
 		output.append("Parenthesized expression");
-		output.append(", Symbol table: " + expressionBlockScope.getId());
+		
 		++depth;
-		output.append(expressionBlock.getExpression().accept(this));
+		exprStr = (String) expressionBlock.getExpression().accept(this);
+		beginIndex = exprStr.indexOf("Type: ") + 6;
+		endIndex = exprStr.indexOf(',', beginIndex);
+		typeStr = exprStr.substring(beginIndex, endIndex);
+		--depth;
+		output.append(", Type: " + typeStr + ", Symbol table: " + expressionBlockScope.getId());
+		++depth;
+		output.append(exprStr);
 		--depth;
 		return output.toString();
 	}

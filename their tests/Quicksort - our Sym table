@@ -2,7 +2,6 @@ Parsed libic.sig successfully!
 
 Parsed their tests\Quicksort.ic successfully!
 
-
 Abstract Syntax Tree: their tests\Quicksort.ic
 
 1: Declaration of class: Library, Type: Library, Symbol table: Global
@@ -345,7 +344,6 @@ Statement Block Symbol Table ( located in main )
 
 Statement Block Symbol Table ( located in main )
 
-
 Type Table: their tests\Quicksort.ic
     1: Primitive type: int
     2: Primitive type: boolean
@@ -355,7 +353,7 @@ Type Table: their tests\Quicksort.ic
     8: Class: Library
     21: Class: Quicksort
     6: Array type: string[]
-    19: Array type: int[]
+    17: Array type: int[]
     7: Method type: {string[] -> void}
     9: Method type: {string -> void}
     10: Method type: {int -> void}
@@ -365,11 +363,9 @@ Type Table: their tests\Quicksort.ic
     14: Method type: { -> boolean}
     15: Method type: {string, int -> int}
     16: Method type: {int -> string}
-    17: Method type: {string -> int[]}
-    18: Method type: {int[] -> string}
+    18: Method type: {string -> int[]}
+    19: Method type: {int[] -> string}
     20: Method type: {int -> int}
     22: Method type: {int, int -> int}
     23: Method type: {int, int -> void}
     24: Method type: { -> void}
-    
-    

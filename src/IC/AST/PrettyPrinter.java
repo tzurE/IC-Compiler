@@ -447,7 +447,7 @@ public class PrettyPrinter implements Visitor {
 		output.append("Call to static method: " + call.getName()
 				+ ", in class " + call.getClassName());
 		output.append(", Type: " + getReturnTypeString(TypeTable.getTypeNameByString(call.getName()))
-				+ ", Symbol Table: " + call.getScope().getId());
+				+ ", Symbol table: " + call.getScope().getId());
 		depth++;
 		for (Expression argument : call.getArguments())
 			output.append(argument.accept(this));

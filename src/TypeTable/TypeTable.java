@@ -89,6 +89,7 @@ public class TypeTable {
 	public static MethodType methodType(Method method) {
 		//first we check if there is a method like this
 		MethodType m;
+		//TODO: check return type first
 		if (uniqueMethodByTypes.containsKey(method)){
 			m = uniqueMethodByTypes.get(method);
 			if(! method.getName().equals(m.getName()))
@@ -98,6 +99,8 @@ public class TypeTable {
 		else{
 			// no method like this exists, so we create it
 			id++;
+			if(id == 16)
+				System.out.println();
 			m = new MethodType(method,id);
 			methodTypesByOrder.put(methodCount,method);
 			methodCount++;

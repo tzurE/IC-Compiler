@@ -27,7 +27,7 @@ Abstract Syntax Tree: their tests\Quicksort.ic
     15: Declaration of library method: atos, Type: {int[] -> string}, Symbol table: Library
         15: Parameter: a, Type: int[], Symbol table: atos
     17: Declaration of library method: random, Type: {int -> int}, Symbol table: Library
-        17: Parameter: n, Type: int, Symbol table: random
+        17: Parameter: i, Type: int, Symbol table: random
     18: Declaration of library method: time, Type: { -> int}, Symbol table: Library
     19: Declaration of library method: exit, Type: {int -> int}, Symbol table: Library
         19: Parameter: i, Type: int, Symbol table: exit
@@ -139,7 +139,7 @@ Abstract Syntax Tree: their tests\Quicksort.ic
                     51: Reference to array, Type: int, Symbol table: statement block in initArray
                         51: Reference to variable: a, Type: int[], Symbol table: statement block in initArray
                         51: Reference to variable: i, Type: int, Symbol table: statement block in initArray
-                    51: Call to static method: random, in class Library, Type: int, Symbol Table: statement block in initArray
+                    51: Call to static method: random, in class Library, Type: int, Symbol table: statement block in initArray
                         51: Mathematical binary operation: multiplication, Type: int, Symbol table: statement block in initArray
                             51: Reference to array length, Type: int, Symbol table: statement block in initArray
                                 51: Reference to variable: a, Type: int[], Symbol table: statement block in initArray
@@ -153,7 +153,7 @@ Abstract Syntax Tree: their tests\Quicksort.ic
         57: Declaration of local variable: i, with initial value, Type: int, Symbol table: printArray
             57: Integer literal: 0, Type: int, Symbol table: printArray
         59: Method call statement, Symbol table: printArray
-            59: Call to static method: print, in class Library, Type: void, Symbol Table: printArray
+            59: Call to static method: print, in class Library, Type: void, Symbol table: printArray
                 59: String literal: "Array elements: ", Type: string, Symbol table: printArray
         60: While statement, Symbol table: printArray
             60: Logical binary operation: less than, Type: boolean, Symbol table: printArray
@@ -162,12 +162,12 @@ Abstract Syntax Tree: their tests\Quicksort.ic
                     60: Reference to variable: a, Type: int[], Symbol table: printArray
             60: Block of statements, Symbol table: printArray
                 61: Method call statement, Symbol table: statement block in printArray
-                    61: Call to static method: printi, in class Library, Type: void, Symbol Table: statement block in printArray
+                    61: Call to static method: printi, in class Library, Type: void, Symbol table: statement block in printArray
                         61: Reference to array, Type: int, Symbol table: statement block in printArray
                             61: Reference to variable: a, Type: int[], Symbol table: statement block in printArray
                             61: Reference to variable: i, Type: int, Symbol table: statement block in printArray
                 62: Method call statement, Symbol table: statement block in printArray
-                    62: Call to static method: print, in class Library, Type: void, Symbol Table: statement block in printArray
+                    62: Call to static method: print, in class Library, Type: void, Symbol table: statement block in printArray
                         62: String literal: " ", Type: string, Symbol table: statement block in printArray
                 63: Assignment statement, Symbol table: statement block in printArray
                     63: Reference to variable: i, Type: int, Symbol table: statement block in printArray
@@ -175,7 +175,7 @@ Abstract Syntax Tree: their tests\Quicksort.ic
                         63: Reference to variable: i, Type: int, Symbol table: statement block in printArray
                         63: Integer literal: 1, Type: int, Symbol table: statement block in printArray
         65: Method call statement, Symbol table: printArray
-            65: Call to static method: print, in class Library, Type: void, Symbol Table: printArray
+            65: Call to static method: print, in class Library, Type: void, Symbol table: printArray
                 65: String literal: "\n", Type: string, Symbol table: printArray
     68: Declaration of static method: main, Type: {string[] -> void}, Symbol table: Quicksort
         68: Parameter: args, Type: string[], Symbol table: main
@@ -187,14 +187,14 @@ Abstract Syntax Tree: their tests\Quicksort.ic
                 71: Integer literal: 1, Type: int, Symbol table: main
             71: Block of statements, Symbol table: main
                 72: Method call statement, Symbol table: statement block in main
-                    72: Call to static method: println, in class Library, Type: void, Symbol Table: statement block in main
+                    72: Call to static method: println, in class Library, Type: void, Symbol table: statement block in main
                         72: String literal: "Unspecified array length", Type: string, Symbol table: statement block in main
                 73: Method call statement, Symbol table: statement block in main
-                    73: Call to static method: exit, in class Library, Type: int, Symbol Table: statement block in main
+                    73: Call to static method: exit, in class Library, Type: int, Symbol table: statement block in main
                         73: Integer literal: 1, Type: int, Symbol table: statement block in main
         76: Assignment statement, Symbol table: main
             76: Reference to variable: n, Type: int, Symbol table: main
-            76: Call to static method: stoi, in class Library, Type: int, Symbol Table: main
+            76: Call to static method: stoi, in class Library, Type: int, Symbol table: main
                 76: Reference to array, Type: string, Symbol table: main
                     76: Reference to variable: args, Type: string[], Symbol table: main
                     76: Integer literal: 0, Type: int, Symbol table: main
@@ -205,10 +205,10 @@ Abstract Syntax Tree: their tests\Quicksort.ic
                 77: Integer literal: 0, Type: int, Symbol table: main
             77: Block of statements, Symbol table: main
                 78: Method call statement, Symbol table: statement block in main
-                    78: Call to static method: println, in class Library, Type: void, Symbol Table: statement block in main
+                    78: Call to static method: println, in class Library, Type: void, Symbol table: statement block in main
                         78: String literal: "Invalid array length", Type: string, Symbol table: statement block in main
                 79: Method call statement, Symbol table: statement block in main
-                    79: Call to static method: exit, in class Library, Type: int, Symbol Table: statement block in main
+                    79: Call to static method: exit, in class Library, Type: int, Symbol table: statement block in main
                         79: Integer literal: 1, Type: int, Symbol table: statement block in main
         81: Declaration of local variable: s, with initial value, Type: Quicksort, Symbol table: main
             81: Instantiation of class: Quicksort, Type: Quicksort, Symbol table: main
@@ -233,7 +233,6 @@ Abstract Syntax Tree: their tests\Quicksort.ic
         87: Method call statement, Symbol table: main
             87: Call to virtual method: printArray, in external scope, Type: void, Symbol table: main
                 87: Reference to variable: s, Type: Quicksort, Symbol table: main
-
 
 Global Symbol Table: their tests\Quicksort.ic
     Class: Library
@@ -289,7 +288,7 @@ Method Symbol Table: atos
     Parameter: int[] a
 
 Method Symbol Table: random
-    Parameter: int n
+    Parameter: int i
 
 Method Symbol Table: time
 

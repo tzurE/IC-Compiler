@@ -157,20 +157,20 @@ public class ClassSymbolTable extends SymbolTable {
 			System.out.println("    Field: " + fType + " " + name);
 		}
 
-		for (i = 0; i < staticMethodCount; i++) {
-			String name = staticMethodByOrder.get(i);
-			String methodType = staticMethodEntries.get(name).getType()
-					.toStringSymTable();
-			System.out.println("    Static method: " + name + " " + methodType);
-
-		}
-
 		for (i = 0; i < virtualMethodCount; i++) {
 			String name = virtualMethodsByOrder.get(i);
 			String methodType = virtualMethodEntries.get(name).getType()
 					.toStringSymTable();
 			System.out
 					.println("    Virtual method: " + name + " " + methodType);
+		}
+		
+		for (i = 0; i < staticMethodCount; i++) {
+			String name = staticMethodByOrder.get(i);
+			String methodType = staticMethodEntries.get(name).getType()
+					.toStringSymTable();
+			System.out.println("    Static method: " + name + " " + methodType);
+
 		}
 
 		if ((methodChildTableList.size() != 0)

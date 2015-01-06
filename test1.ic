@@ -2,8 +2,9 @@ class B {
 
   static void main(string[] args) {
 
-      while (1==1) {
-         Library.print("x=");
-      }
+    boolean y = true;
+	y = (y&&!y);
+	Library.printb(y);
+	Library.println("");
   }
 }

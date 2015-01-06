@@ -1,0 +1,19 @@
+_DV_B: []
+
+
+_ic_main:
+Move 1,R1
+Move 1,R2
+Compare R2,R2
+JumpTrue _true_cond_lable1
+_false_cond_lable1:
+Move 0,R2
+Jump _end_cond_lable1
+_true_cond_lable1:
+Move 1,R2
+_end_cond_lable1:
+Move R2,y
+Move y,R1
+Library __printb(R1),Rdummy
+Library __exit(0),Rdummy
+

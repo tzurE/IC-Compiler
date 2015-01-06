@@ -1,29 +1,15 @@
 class A {
 	int x;
-	void f(int x) {
-		if (x > 0) {
-			int x = 5;
-
-			Library.print("Five: ");
-			Library.print(Library.itos(x));
-			Library.print(", ");
-
-			if (x < 5)
-				Library.print("ERROR!");
-
-			x = x + 1;
-
-			Library.print("Six: ");
-			Library.print(Library.itos(x));
-			Library.print(", ");
-		}
-
-		Library.print("Three: ");
+	void f() {
+		x = 3;
 		Library.print(Library.itos(x));
-		Library.print(", ");
+		Library.println("");
+		x = x + 1;
+		Library.print(Library.itos(x));
+		Library.println("");
 	}
 	static void main(string[] args) {
 		A a = new A();
-		a.f(3);
+		a.f();
 	}
 }

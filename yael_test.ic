@@ -2,8 +2,11 @@ class B {
 
   static void main(string[] args) {
 
-	string s1 = "saba";
-	string s2 = "savta";
-	Library.println(s1+s2);
+	int x = 6;
+	while (x > 0){
+		Library.printi(x);
+		Library.println("");
+		x = x-1;
+	}
   }
 }

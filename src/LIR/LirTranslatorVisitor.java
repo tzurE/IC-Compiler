@@ -50,15 +50,17 @@ public class LirTranslatorVisitor implements LirVisitor{
 	private int numStringLiterals;
 	private boolean isReturnExist; 
 	private int numOfWhiles;
-	private int numEndLabel;
-	private int numFalseLabel;
-	private int numTrueLabel;
+	private int numOfIfs;
+	private int numOfCmps;
 	
-	private static String trueCondLbl = "_true_cond_lable";
-	private static String falseCondLbl = "_false_cond_lable";
-	private static String endCondLbl = "_end_cond_lable";
-	private static String startWhileLbl = "_start_while_lable";
-	private static String endWhileLbl = "_end_while_lable";
+	//private static String trueCondLbl = "_true_cond_label";
+	private static String falseCondLbl = "_false_cond_label";
+	private static String endCondLbl = "_end_cond_label";
+	private static String trueCmpLbl = "_true_cmp_label";
+	private static String falseCmpLbl = "_false_cmp_label";
+	private static String endCmpLbl = "_end_cmp_label";
+	private static String startWhileLbl = "_start_while_label";
+	private static String endWhileLbl = "_end_while_label";
 
 	public LirTranslatorVisitor(GlobalSymbolTable global) {
 		this.StringLiterals = new LinkedList<LIRNode>();
@@ -66,9 +68,11 @@ public class LirTranslatorVisitor implements LirVisitor{
 		this.global = global;
 		this.isReturnExist = false;
 		this.numOfWhiles = 0;
-		this.numEndLabel = 0;
-		this.numTrueLabel = 0;
-		this.numFalseLabel = 0;
+		this.numOfIfs = 0;
+		this.numOfCmps = 0;
+		//this.numEndLabel = 0;
+		//this.numTrueLabel = 0;
+		//this.numFalseLabel = 0;
 	}
 	
 	
@@ -218,9 +222,8 @@ public class LirTranslatorVisitor implements LirVisitor{
 			VariableLocation varLocation = (VariableLocation) assignment.getVariable();
 			String cName = "";
 			String Name = varLocation.getName();
-			String class_t = "";
 			boolean field = false;
-			LIRNode move = null, move2 = null;
+			LIRNode move2 = null;
 			Operand reg1 = null,  op = null, reg3= null, mem = null, reg2 = null;
 			Operand ass = (Operand) assignment.getAssignment().accept(this, regCount);
 			
@@ -259,14 +262,13 @@ public class LirTranslatorVisitor implements LirVisitor{
 				}				
 			}
 			if(field){
-			ClassLayout cl = this.classLayouts.get(cName);
-			int fieldOffset = cl.getFieldOffsetByName().get(Name);
-			if(op == null && reg2 != null){
-				op = reg2;
-			}
-			LIRNode move1 = new MoveFieldInstr(op, new Immediate(fieldOffset), reg1, false);
-			temp_Program.add(move1);
-
+				ClassLayout cl = this.classLayouts.get(cName);
+				int fieldOffset = cl.getFieldOffsetByName().get(Name);
+				if(op == null && reg2 != null){
+					op = reg2;
+				}
+				LIRNode move1 = new MoveFieldInstr(op, new Immediate(fieldOffset), reg1, false);
+				temp_Program.add(move1);
 			}
 			else{//local!
 				Operand name = new Memory(Name);
@@ -298,6 +300,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 	@Override
 	public Object visit(If ifStatement, int regCount) {
 
+		int localNumIf = ++this.numOfIfs;
 		temp_Program.add(new Label(NEW_LINE + "#begin_if"));
 		Operand condOper = (Operand)ifStatement.getCondition().accept(this, regCount);
 		
@@ -307,23 +310,20 @@ public class LirTranslatorVisitor implements LirVisitor{
 		}
 		
 		temp_Program.add(new CompareInstr(new Immediate(0), condOper));
-		this.numEndLabel++;
 		
 		if(ifStatement.hasElse()){
 		
-			this.numFalseLabel++;
-			this.numTrueLabel++;
-			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.falseCondLbl + numFalseLabel), Cond.True));
+			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.falseCondLbl + localNumIf), Cond.True));
 			ifStatement.getOperation().accept(this, regCount);
-			temp_Program.add(new JumpInstr(new Label(LirTranslatorVisitor.endCondLbl + numEndLabel)));
-			temp_Program.add(new Label(LirTranslatorVisitor.falseCondLbl + this.numFalseLabel + ":"));
+			temp_Program.add(new JumpInstr(new Label(LirTranslatorVisitor.endCondLbl + localNumIf)));
+			temp_Program.add(new Label(LirTranslatorVisitor.falseCondLbl + localNumIf + ":"));
 			ifStatement.getElseOperation().accept(this, regCount);
-			temp_Program.add(new Label(LirTranslatorVisitor.endCondLbl + this.numEndLabel + ":"));
+			temp_Program.add(new Label(LirTranslatorVisitor.endCondLbl + localNumIf + ":"));
 		}
 		else{	
-			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.endCondLbl + numEndLabel), Cond.True));
+			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.endCondLbl + localNumIf), Cond.True));
 			ifStatement.getOperation().accept(this, regCount);
-			temp_Program.add(new Label(LirTranslatorVisitor.endCondLbl + this.numEndLabel + ":"));
+			temp_Program.add(new Label(LirTranslatorVisitor.endCondLbl + localNumIf + ":"));
 		}
 		
 		temp_Program.add(new Label("#end_if"));
@@ -334,30 +334,19 @@ public class LirTranslatorVisitor implements LirVisitor{
 	@Override
 public Object visit(While whileStatement, int regCount) {
 		
-		boolean removeEndLbl = false;
-		this.numOfWhiles++;
-		LIRNode lastNode = temp_Program.get(temp_Program.size()-1);
+		int localNumOfWhiles = ++this.numOfWhiles;
 		
-		temp_Program.add(new Label(LirTranslatorVisitor.startWhileLbl + this.numOfWhiles + ":"));
+		temp_Program.add(new Label(LirTranslatorVisitor.startWhileLbl + localNumOfWhiles + ":"));
 
 		// Translating loop's condition
 		Operand condOper = (Operand) whileStatement.getCondition().accept(this, regCount);
 		
 		temp_Program.add(new CompareInstr(new Immediate(0), condOper));
-		temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.endWhileLbl + numFalseLabel), Cond.True));
-		
-		/*if (!(cond instanceof Immediate)){
-			removeEndLbl = true;
-			temp_Program.remove(temp_Program.size()-1);
-		}*/
-		
+		temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.endWhileLbl + localNumOfWhiles), Cond.True));
 		
 		whileStatement.getOperation().accept(this, regCount);
-		temp_Program.add(new JumpInstr(new Label(LirTranslatorVisitor.startWhileLbl + this.numOfWhiles)));
-		temp_Program.add(new Label(LirTranslatorVisitor.endWhileLbl + this.numEndLabel + ":"));
-		
-		if (removeEndLbl)
-			temp_Program.add(lastNode);
+		temp_Program.add(new JumpInstr(new Label(LirTranslatorVisitor.startWhileLbl + localNumOfWhiles)));
+		temp_Program.add(new Label(LirTranslatorVisitor.endWhileLbl + localNumOfWhiles + ":"));
 		
 		return null;
 	}
@@ -365,10 +354,8 @@ public Object visit(While whileStatement, int regCount) {
 	@Override
 	public Object visit(Break breakStatement, int regCount) {
 		
-		this.numOfWhiles++;
-		Operand loopEnd = new Label("_end_while" + this.numOfWhiles);
-		LIRNode jump_inst = new JumpInstr((Label)loopEnd); // ??????????????????????
-		
+		LIRNode jump_inst = new JumpInstr(new Label(LirTranslatorVisitor.endWhileLbl + this.numOfWhiles));
+		temp_Program.add(jump_inst);
 		return null;
 	}
 
@@ -597,18 +584,19 @@ public Object visit(While whileStatement, int regCount) {
 				loc = reg1;
 			}
 		}
-			else{
-					SymbolTable scope = call.getScope();
-					while(!(scope.getType().equals(SymbolTableType.CLASS))){
-						scope = scope.getFather_table();
-					}
-
-					className = scope.getId();
-					reg2 = new Reg("R" + regCount++);
-					temp_Program.add(new MoveInstr(new Memory("this"), reg2));
-					loc = reg2;
+		else{
+			SymbolTable scope = call.getScope();
+			while(!(scope.getType().equals(SymbolTableType.CLASS))){
+				scope = scope.getFather_table();
+			}
+			
+			className = scope.getId();
+			reg2 = new Reg("R" + regCount++);
+			temp_Program.add(new MoveInstr(new Memory("this"), reg2));
+			loc = reg2;
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		}
+		
 		//get the method offset from the dispatch
 		ClassLayout clay = this.classLayouts.get(className);
 		int methodoff = clay.getMethodOffsets().get("_" + className+"_"+ methodName);
@@ -642,9 +630,8 @@ public Object visit(While whileStatement, int regCount) {
 	public Object visit(This thisExpression, int regCount) {
 
 		// Move 'this' to reg
-		Operand reg = new Reg("R" + regCount++);
-		Operand mem = new Memory("this");
-		LIRNode move = new MoveInstr(mem, reg);
+		Operand reg = new Reg("R" + regCount);
+		LIRNode move = new MoveInstr(new Memory("this"), reg);
 		temp_Program.add(move);
 		
 		return reg;
@@ -714,31 +701,23 @@ public Object visit(While whileStatement, int regCount) {
 		
 		// Added for verification!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		if (isRegister(oper1.toString())){ 
-			oper2 = (Operand)binaryOp.getSecondOperand().accept(this, ++regCount);			
+			regCount = Integer.parseInt(oper1.toString().substring(1)) + 1;
+			oper2 = (Operand)binaryOp.getSecondOperand().accept(this, regCount++);			
 		}
 		else{ 
 			move = new MoveInstr(oper1, new Reg("R" + regCount));
 			temp_Program.add(move);
-			oper1 = new Reg("R" + regCount);
-			oper2 = (Operand)binaryOp.getSecondOperand().accept(this, ++regCount);
+			oper1 = new Reg("R" + regCount++);
+			oper2 = (Operand)binaryOp.getSecondOperand().accept(this, regCount);
 		}
 		
 		if (!isRegister(oper2.toString())){ 			 
 			move = new MoveInstr(oper2, new Reg("R" + regCount));
 			temp_Program.add(move);
-			oper2 = new Reg("R" + regCount);
+			oper2 = new Reg("R" + regCount++);
 		}
 		// Added for verification!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		
-	/*	// move oper1, reg#
-		reg1 = new Reg("R" + regCount++); 
-		move = new MoveInstr(oper1, reg1);
-		temp_Program.add(move);
-		
-		// move oper2, reg#
-		reg2 = new Reg("R" + regCount++);
-		move = new MoveInstr(oper2, reg2);
-		temp_Program.add(move);*/
+
 		
 		if(binaryOp.getOperator().getOperatorString().equals(BinaryOps.PLUS.getOperatorString())){
 			TypeTableType operandsType = (TypeTableType)binaryOp.getFirstOperand().accept (new SymbolVisitorChecker(this.global), binaryOp.getScope());
@@ -782,24 +761,23 @@ public Object visit(While whileStatement, int regCount) {
 		Operand oper1 = (Operand)binaryOp.getFirstOperand().accept(this, regCount);
 		Operand oper2 = null;
 		LIRNode move = null;
-		this.numEndLabel++;
-		this.numFalseLabel++;
-		this.numTrueLabel++;
+		int localNumOfCmp = ++this.numOfCmps;
 		
 		if (isRegister(oper1.toString())){ 
-			oper2 = (Operand)binaryOp.getSecondOperand().accept(this, ++regCount);			
+			regCount = Integer.parseInt(oper1.toString().substring(1)) + 1;
+			oper2 = (Operand)binaryOp.getSecondOperand().accept(this, regCount++);			
 		}
 		else{ 
 			move = new MoveInstr(oper1, new Reg("R" + regCount));
 			temp_Program.add(move);
-			oper1 = new Reg("R" + regCount);
-			oper2 = (Operand)binaryOp.getSecondOperand().accept(this, ++regCount);
+			oper1 = new Reg("R" + regCount++);
+			oper2 = (Operand)binaryOp.getSecondOperand().accept(this, regCount);
 		}
 		
 		if (!isRegister(oper2.toString())){ 			 
 			move = new MoveInstr(oper2, new Reg("R" + regCount));
 			temp_Program.add(move);
-			oper2 = new Reg("R" + regCount);
+			oper2 = new Reg("R" + regCount++);
 		}
 		
 		LIRNode cmp = null;
@@ -810,48 +788,48 @@ public Object visit(While whileStatement, int regCount) {
 		}
 		
 		if (binaryOp.getOperator().compareTo(BinaryOps.EQUAL) == 0) {	
-			temp_Program.add(new CondJumpInstr(new Label(trueCondLbl + numTrueLabel), Cond.True));
+			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.trueCmpLbl + localNumOfCmp), Cond.True));
 		}
 		else if (binaryOp.getOperator().compareTo(BinaryOps.NEQUAL) == 0) {
-			temp_Program.add(new CondJumpInstr(new Label(trueCondLbl + numTrueLabel), Cond.False));
+			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.trueCmpLbl + localNumOfCmp), Cond.False));
 		}
 		else if (binaryOp.getOperator().compareTo(BinaryOps.GT) == 0) {
-			temp_Program.add(new CondJumpInstr(new Label(trueCondLbl + numTrueLabel), Cond.G));
+			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.trueCmpLbl + localNumOfCmp), Cond.G));
 		}
 		else if (binaryOp.getOperator().compareTo(BinaryOps.GTE) == 0) {
-			temp_Program.add(new CondJumpInstr(new Label(trueCondLbl + numTrueLabel), Cond.GE));
+			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.trueCmpLbl + localNumOfCmp), Cond.GE));
 		}
 		else if (binaryOp.getOperator().compareTo(BinaryOps.LT) == 0) {
-			temp_Program.add(new CondJumpInstr(new Label(trueCondLbl + numTrueLabel), Cond.L));
+			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.trueCmpLbl + localNumOfCmp), Cond.L));
 		}
 		else if (binaryOp.getOperator().compareTo(BinaryOps.LTE) == 0) {
-			temp_Program.add(new CondJumpInstr(new Label(trueCondLbl + numTrueLabel), Cond.LE));
+			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.trueCmpLbl + localNumOfCmp), Cond.LE));
 		}
 		else if (binaryOp.getOperator().compareTo(BinaryOps.LAND) == 0) {
 			
 			temp_Program.add(new CompareInstr(new Immediate(0), oper1));
-			temp_Program.add(new CondJumpInstr(new Label(endCondLbl + numEndLabel), Cond.True));
+			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.endCmpLbl + localNumOfCmp), Cond.True));
 			temp_Program.add(new BinOpInstr(oper2, oper1, Operator.AND));
-			temp_Program.add(new Label(LirTranslatorVisitor.endCondLbl + this.numEndLabel + ":"));
+			temp_Program.add(new Label(LirTranslatorVisitor.endCmpLbl + localNumOfCmp + ":"));
 			return oper1;
 		}
 		else if (binaryOp.getOperator().compareTo(BinaryOps.LOR) == 0) {
 			
 			temp_Program.add(new CompareInstr(new Immediate(1), oper1));
-			temp_Program.add(new CondJumpInstr(new Label(endCondLbl + numTrueLabel), Cond.True));
+			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.endCmpLbl + localNumOfCmp), Cond.True));
 			temp_Program.add(new BinOpInstr(oper2, oper1, Operator.OR));
-			temp_Program.add(new Label(LirTranslatorVisitor.endCondLbl + this.numEndLabel + ":"));
+			temp_Program.add(new Label(LirTranslatorVisitor.endCmpLbl + localNumOfCmp + ":"));
 			return oper1;
 		}
 	
-		temp_Program.add(new Label(LirTranslatorVisitor.falseCondLbl + this.numFalseLabel + ":"));
+		temp_Program.add(new Label(LirTranslatorVisitor.falseCmpLbl + localNumOfCmp + ":"));
 		temp_Program.add(new MoveInstr(new Immediate(0), oper1));
-		temp_Program.add(new JumpInstr(new Label(LirTranslatorVisitor.endCondLbl + this.numEndLabel)));
-		temp_Program.add(new Label(LirTranslatorVisitor.trueCondLbl + this.numTrueLabel + ":"));
+		temp_Program.add(new JumpInstr(new Label(LirTranslatorVisitor.endCmpLbl + localNumOfCmp)));
+		temp_Program.add(new Label(LirTranslatorVisitor.trueCmpLbl + localNumOfCmp + ":"));
 		temp_Program.add(new MoveInstr(new Immediate(1), oper1));
-		temp_Program.add(new Label(LirTranslatorVisitor.endCondLbl + this.numEndLabel + ":"));
+		temp_Program.add(new Label(LirTranslatorVisitor.endCmpLbl + localNumOfCmp + ":"));
 		
-		return (oper1);
+		return oper1;
 	}
 
 	@Override
@@ -952,6 +930,11 @@ public Object visit(While whileStatement, int regCount) {
 		
 		for(Statement stmnt : method.getStatements()){
 			stmnt.accept(this, regCount);
+		}
+		
+		if (!method.getName().equals("main") && !this.isReturnExist){
+			temp_Program.add(new ReturnInstr(new Reg("Rdummy")));
+			this.isReturnExist = false;
 		}
 	}
 	

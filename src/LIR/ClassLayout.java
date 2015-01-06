@@ -19,10 +19,16 @@ public class ClassLayout {
 	private Map<Integer, Field> fieldByOffset;
 	private Map<String, Integer> fieldOffsetByName;
 	
+	private ClassLayout clSuper;
 	private int fieldCount;
 	private int methodCount;
 	
 	private String classIdent;
+	private boolean hasSuperClass;
+	
+	public ClassLayout getSuperClass(){
+		return this.clSuper;
+	}
 	
 	public String getClassIdent() {
 		return classIdent;
@@ -74,7 +80,8 @@ public class ClassLayout {
 		
 		fieldCount = 1;
 		methodCount = 0;
-		
+		hasSuperClass = false;
+		clSuper = null;
 		
 		// Create HashMap of all fields
 		for(Field field : icclass.getFields()){
@@ -110,8 +117,11 @@ public class ClassLayout {
 		fieldByOffset = new HashMap<Integer, Field>();
 		fieldOffsetByName = new HashMap<String, Integer>();
 		
+		clSuper = clSuperClass; 
 		fieldCount = 1;
 		methodCount = 0;
+		
+		hasSuperClass = true;
 		
 		fieldByName = (HashMap<String, Field>)((HashMap<String, Field>)clSuperClass.getFieldByName()).clone();
 		fieldByOffset = (HashMap<Integer, Field>)((HashMap<Integer, Field>)clSuperClass.getFieldByOffset()).clone();
@@ -137,10 +147,9 @@ public class ClassLayout {
 			
 			if (!isMethodStatic(method)){
 				
-				String method_superclass = "_" + clSuperClass.getClassIdent() + "_" + method.getName();
-				
-				// Method overrides superclass -> override it in the table 
-				if (isMethodOverride(method_superclass, clSuperClass)){
+				// Method overrides superclass -> override it in the table
+				String method_superclass = methodOverride(method.getName());
+				if (!method_superclass.equals("")){
 					int methodLoc = this.methodOffsets.get(method_superclass);
 					methodByName.remove(method_superclass);
 					methodOffsets.remove(method_superclass);
@@ -172,12 +181,18 @@ public class ClassLayout {
 	
 
 
-	public boolean isMethodOverride(String method_superclass, ClassLayout clSuperClass){
+	public String methodOverride(String method_name){
 		
-		if (clSuperClass.getMethodOffsets().containsKey(method_superclass))
-			return true;
+		ClassLayout clLayout = this;
+		String method_str;
 		
-		return false;
+		while (clLayout.hasSuperClass){
+			clLayout = clLayout.getSuperClass();
+			method_str = "_" + clLayout.getClassIdent() + "_" + method_name;
+			if (clLayout.getMethodByName().containsKey(method_str))
+				return method_str;
+		}
+		return "";
 	}
 
 	public StringBuilder printDispatchTable(){

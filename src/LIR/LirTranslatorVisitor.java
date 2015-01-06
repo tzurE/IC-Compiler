@@ -608,7 +608,12 @@ public Object visit(While whileStatement, int regCount) {
 		
 		//get the method offset from the dispatch
 		ClassLayout clay = this.classLayouts.get(className);
-		int methodoff = clay.getMethodOffsets().get("_" + className+"_"+ methodName);
+		String methodstr = clay.methodOverride(methodName);
+		int methodoff;
+		if(methodstr.equals(""))
+				 methodoff = clay.getMethodOffsets().get("_" + className+"_"+ methodName);
+		else
+			methodoff = clay.getMethodOffsets().get(methodstr);
 		Method m = clay.getMethodByName().get("_" + className+"_"+ methodName);
 		List<Formal> formals = m.getFormals();
 		int numFormals = 0;

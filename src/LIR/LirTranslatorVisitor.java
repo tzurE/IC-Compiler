@@ -263,26 +263,30 @@ public class LirTranslatorVisitor implements LirVisitor {
 
 				SymbolTable currScope = varLocation.getScope();
 				while (!(currScope.getType().compareTo(SymbolTableType.CLASS) == 0)) {
-					currScope = currScope.getFather_table();
 					SymbolEntry sym = currScope.searchForVar(
 							varLocation.getName(), varLocation.getLine());
 					if (sym != null) {
-						if (sym.getKind().equals(SymbolKinds.PARAMETER))
+						if (sym.getKind().equals(SymbolKinds.PARAMETER)){
 							Name = (varLocation.getName());
+							break;
+							
+						}
 						else {
-							Name = ("v" + currScope.getUniqueId() + varLocation
-									.getName());
+							Name = ("v" + currScope.getUniqueId() + varLocation.getName());
+							break;
 						}
 					}
+					currScope = currScope.getFather_table();
 				}
 				cName = currScope.getId();
-
-				if (this.classLayouts.get(cName).getFieldByName()
-						.containsKey(varLocation.getName())) {
-					field = true;
-					reg2 = new Reg("R" + regCount++);
-					mem = new Memory("this");
-					temp_Program.add(new MoveInstr(mem, reg2));
+				if(this.classLayouts.get(cName) != null){
+					if (this.classLayouts.get(cName).getFieldByName()
+							.containsKey(varLocation.getName())) {
+						field = true;
+						reg2 = new Reg("R" + regCount++);
+						mem = new Memory("this");
+						temp_Program.add(new MoveInstr(mem, reg2));
+					}
 				}
 			}
 
@@ -462,16 +466,7 @@ public class LirTranslatorVisitor implements LirVisitor {
 					.accept(new SymbolVisitorChecker(this.global),
 							location.getScope());
 			className = classType.getName();
-			op = (Operand) location.getLocation().accept(this, regCount); // /
-																			// we
-																			// don't
-																			// know
-																			// what's
-																			// happening
-																			// here
-																			// -
-																			// go
-																			// deeper
+			op = (Operand) location.getLocation().accept(this, regCount); //go deeper
 			if (!this.isRegister(op.toString())) {
 				Operand reg = new Reg("R" + regCount++);
 				temp_Program.add(new MoveInstr(op, reg));

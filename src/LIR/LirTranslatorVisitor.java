@@ -963,17 +963,26 @@ public class LirTranslatorVisitor implements LirVisitor {
 	@Override
 	public Object visit(LogicalUnaryOp unaryOp, int regCount) {
 
+		int localNumOfCmp = ++this.numOfCmps;
 		Operand oper = (Operand) unaryOp.getOperand().accept(this, regCount);
 		if (!this.isRegister(oper.toString())) {
 
-			LIRNode move = new MoveInstr(oper, new Reg("R" + ++regCount));
+			LIRNode move = new MoveInstr(oper, new Reg("R" + regCount));
 			temp_Program.add(move);
 		}
-		Operand register = new Reg("R" + regCount);
-		LIRNode unOpInst = new UnaryOpInstr(register, Operator.NOT);
-		temp_Program.add(unOpInst);
+		
+		oper = new Reg("R" + regCount++);
+		temp_Program.add(new CompareInstr(new Immediate(0), oper));
+		temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.trueCmpLbl + localNumOfCmp),Cond.True));
+		temp_Program.add(new Label(LirTranslatorVisitor.falseCmpLbl	+ localNumOfCmp + ":"));
+		temp_Program.add(new MoveInstr(new Immediate(0), oper));
+		temp_Program.add(new JumpInstr(new Label(LirTranslatorVisitor.endCmpLbl + localNumOfCmp)));
+		temp_Program.add(new Label(LirTranslatorVisitor.trueCmpLbl	+ localNumOfCmp + ":"));
+		temp_Program.add(new MoveInstr(new Immediate(1), oper));
+		temp_Program.add(new Label(LirTranslatorVisitor.endCmpLbl
+				+ localNumOfCmp + ":"));		
 
-		return register;
+		return oper;
 	}
 
 	@Override

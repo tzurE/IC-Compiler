@@ -268,8 +268,7 @@ public class LirTranslatorVisitor implements LirVisitor {
 					if (sym != null) {
 						if (sym.getKind().equals(SymbolKinds.PARAMETER)){
 							Name = (varLocation.getName());
-							break;
-							
+							break;	
 						}
 						else {
 							Name = ("v" + currScope.getUniqueId() + varLocation.getName());
@@ -278,15 +277,18 @@ public class LirTranslatorVisitor implements LirVisitor {
 					}
 					currScope = currScope.getFather_table();
 				}
-				cName = currScope.getId();
-				if(this.classLayouts.get(cName) != null){
-					if (this.classLayouts.get(cName).getFieldByName()
-							.containsKey(varLocation.getName())) {
-						field = true;
-						reg2 = new Reg("R" + regCount++);
-						mem = new Memory("this");
-						temp_Program.add(new MoveInstr(mem, reg2));
+				while(!currScope.getType().equals(SymbolTableType.CLASS)){
+					cName = currScope.getId();
+					if(this.classLayouts.get(cName) != null){
+						if (this.classLayouts.get(cName).getFieldByName()
+								.containsKey(varLocation.getName())) {
+							field = true;
+							reg2 = new Reg("R" + regCount++);
+							mem = new Memory("this");
+							temp_Program.add(new MoveInstr(mem, reg2));
+						}
 					}
+					currScope = currScope.getFather_table();
 				}
 			}
 
@@ -477,8 +479,15 @@ public class LirTranslatorVisitor implements LirVisitor {
 			while (!(currScope.getType().compareTo(SymbolTableType.CLASS) == 0)) {
 				if (currScope.getType().compareTo(SymbolTableType.STATEMENT) == 0) {
 					if (currScope.getEntry(name, SymbolKinds.LOCAL_VARIABLE) != null) {
-						if (sym.getKind().equals(SymbolKinds.PARAMETER))
+						if (sym.getKind().equals(SymbolKinds.PARAMETER)){
 							return new Memory(location.getName());
+						}
+						//we need to somehow find the same X.
+//						else if(sym.getKind().equals(SymbolKinds.LOCAL_VARIABLE)){
+//							while(!(currScope.getType().equals(SymbolTableType.STATIC_METHOD)) && !(currScope.getType().equals(SymbolTableType.VIRTUAL_METHOD)))
+//								currScope = currScope.getFather_table();
+//							return new Memory("v" + currScope.getUniqueId()+ location.getName());
+//						}
 						else {
 							return new Memory("v" + currScope.getUniqueId()
 									+ location.getName());

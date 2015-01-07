@@ -295,6 +295,7 @@ public class ClassSymbolTable extends SymbolTable {
 	}
 	
 	public SymbolTable findMethodTable(String method_name, SymbolTableType type){
+		
 		return this.methodChildTableList.get(method_name);
 	}
 

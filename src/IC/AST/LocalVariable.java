@@ -11,6 +11,14 @@ import SymbolTables.SymbolTable;
 public class LocalVariable extends Statement {
 
 	private Type type;
+	private String dynamic_class;
+	
+	public String getDynamic_class() {
+		return dynamic_class;
+	}
+	public void setDynamic_class(String dynamic_class) {
+		this.dynamic_class = dynamic_class;
+	}
 
 	private String name;
 

@@ -54,6 +54,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 	private int numOfWhiles;
 	private int numOfIfs;
 	private int numOfCmps;
+	private boolean inNewClass = false;
 	
 	//private static String trueCondLbl = "_true_cond_label";
 	private static String falseCondLbl = "_false_cond_label";
@@ -390,7 +391,7 @@ public Object visit(While whileStatement, int regCount) {
 		Operand localVar = new Memory(lName);
 		
 		if (localVariable.hasInitValue()){
-			Operand oper1 = (Operand)localVariable.getInitValue().accept(this, regCount);
+			Operand oper1 = (Operand)localVariable.getInitValue().accept(this, regCount);			
 			
 			if(!this.isRegister(oper1.toString())){
 				Operand tmpReg = new Reg("R" + regCount); 
@@ -578,7 +579,7 @@ public Object visit(While whileStatement, int regCount) {
 		String methodName = call.getName();
 		String	className = "";
 		Operand loc = null, reg1 = null, reg2 = null, reg3 = null;
-
+		
 		if(call.isExternal()){
 
 			// we get here the method's class name	
@@ -654,6 +655,7 @@ public Object visit(While whileStatement, int regCount) {
 	@Override
 	public Object visit(NewClass newClass, int regCount) {
 		
+		inNewClass = true;
 		ClassLayout cClassLayout = this.classLayouts.get(newClass.getName());
 		
 		// Create AllocateObject call

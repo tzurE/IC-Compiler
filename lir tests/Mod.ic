@@ -1,9 +1,0 @@
-class A {
-	static void main(string[] args) {
-		int a = 7;
-		if (a % 3 != 1)
-			Library.println("Error");
-		else
-			Library.println("Good");
-	}
-}

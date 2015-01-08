@@ -1,3 +1,0 @@
-this folder contains IC code and it's LIR translation.
-for example "test.ic" and "test - result verified.lir"
-means that test is verified and works good with the microlir simulator.

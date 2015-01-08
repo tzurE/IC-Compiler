@@ -259,7 +259,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 				//get the class where it defined
 				for(classScope = definingScope; classScope.getClass() != ClassSymbolTable.class; classScope = classScope.getFather_table());
 				cName = classScope.getId();
-				if(this.classLayouts.get(cName).getFieldByName().containsKey(Name)){
+				if(this.classLayouts.get(cName).getFieldByName().containsKey(varLocation.getName())){
 					field = true;
 					reg2 = new Reg("R" + regCount++);
 					mem = new Memory("this");
@@ -268,7 +268,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 			}
 			if(field){
 				ClassLayout cl = this.classLayouts.get(cName);
-				int fieldOffset = cl.getFieldOffsetByName().get(Name);
+				int fieldOffset = cl.getFieldOffsetByName().get(varLocation.getName());
 				if(op == null && reg2 != null){
 					op = reg2;
 				}
@@ -421,7 +421,6 @@ public Object visit(While whileStatement, int regCount) {
 		boolean field = false;
 		if(location.isExternal()){
 			field = true;
-			
 			TypeTableType	classType = (TypeTableType)location.getLocation().accept(new SymbolVisitorChecker(this.global), location.getScope());
 			className = classType.getName();
 			 op = (Operand) location.getLocation().accept(this, regCount); /// we don't know what's happening here - go deeper
@@ -434,10 +433,33 @@ public Object visit(While whileStatement, int regCount) {
 		else{
 			SymbolTable definingScope;
 			definingScope = location.getScope().get_defining_scope_for_var(name, location.getLine(), null);
-			name = "v" + definingScope.getUniqueId() + name;
-			SymbolTable classScope;
+			SymbolEntry sym = definingScope.searchForVar(location.getName(), location.getLine());
+			if(sym != null && sym.getKind().equals(SymbolKinds.PARAMETER)){
+				name = location.getName();
+			}
+			else{
+				name = "v" + definingScope.getUniqueId() + name;
+			}
 			//get the class where it defined
-			for(classScope = definingScope; classScope.getClass() != ClassSymbolTable.class; classScope = classScope.getFather_table());
+//			for(classScope = definingScope; classScope.getClass() != ClassSymbolTable.class; classScope = classScope.getFather_table());
+//			className = classScope.getId();
+			SymbolTable classScope = location.getScope();
+			while(!(classScope.getType().compareTo(SymbolTableType.CLASS) == 0)){
+				if(classScope.getType().compareTo(SymbolTableType.STATEMENT) == 0){
+					if(classScope.getEntry(location.getName(), SymbolKinds.LOCAL_VARIABLE)!=null){
+						return new Memory(name);
+					}
+				}
+				if(classScope.getType().compareTo(SymbolTableType.STATIC_METHOD) == 0 || classScope.getType().compareTo(SymbolTableType.VIRTUAL_METHOD) == 0 ){
+					if(classScope.getEntry(location.getName(), SymbolKinds.LOCAL_VARIABLE)!=null || classScope.getEntry(location.getName(), SymbolKinds.PARAMETER)!=null){
+						return new Memory(name);
+					}
+				}
+				
+				
+				classScope = classScope.getFather_table();
+			}
+			
 			className = classScope.getId();
 			/* from assignment
 			if(this.classLayouts.get(cName).getFieldByName().containsKey(Name)){
@@ -448,7 +470,7 @@ public Object visit(While whileStatement, int regCount) {
 			}
 			*/				
 			// Check if is a field. do we need this?
-			if(this.classLayouts.get(className).getFieldByName().containsKey(name)){
+			if(this.classLayouts.get(className).getFieldByName().containsKey(location.getName())){
 				field = true;
 				reg1 = new Memory("this");
 				reg2 = new Reg("R" + regCount++);
@@ -461,7 +483,7 @@ public Object visit(While whileStatement, int regCount) {
 		}
 		if(field){
 			ClassLayout clay = this.classLayouts.get(className);
-			int fieldOffset = clay.getFieldOffsetByName().get(name);
+			int fieldOffset = clay.getFieldOffsetByName().get(location.getName());
 			Operand reg3 = new Reg("R" + regCount++);
 			LIRNode movef = new MoveFieldInstr(new Memory(class_t), new Immediate(fieldOffset), reg3, true);
 			temp_Program.add(movef);
@@ -546,7 +568,8 @@ public Object visit(While whileStatement, int regCount) {
 			
 			// Collect all params of call
 			for(Expression callParam : call.getArguments()){
-				Memory mem = new Memory("v" + classSymbolTable.getUniqueId() + formals.get(numFormals-1));
+				//"v" + classSymbolTable.getUniqueId() + formals.get(numFormals-1)
+				Memory mem = new Memory(formals.get(numFormals-1));
 				Operand value = (Operand)callParam.accept(this, regCount);
 				if(!this.isRegister(value.toString())){
 					reg3 = new Reg("R" + regCount++);
@@ -618,8 +641,8 @@ public Object visit(While whileStatement, int regCount) {
 		// Collect all params of call
 		for(Expression callParam : call.getArguments()){
 			int method_unique =  global.findUniqueId(m.getScope().getId(), call.getName(), SymbolTableType.VIRTUAL_METHOD);
-			
-			Memory mem = new Memory("v"+method_unique+formals.get(numFormals).getName());
+			//"v"+method_unique+formals.get(numFormals).getName()
+			Memory mem = new Memory(formals.get(numFormals).getName());
 			Operand value = (Operand)callParam.accept(this, regCount);
 			if(!this.isRegister(value.toString())){
 				reg3 = new Reg("R" + regCount++);

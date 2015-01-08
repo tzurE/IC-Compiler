@@ -137,7 +137,10 @@ public class GlobalSymbolTable extends SymbolTable {
 	}
 	
 	public int findUniqueId(String class_name, String method_name ,SymbolTableType type){
-		return this.childTableList.get(class_name).findMethodTable(method_name, type).getUniqueId();
+		ClassSymbolTable classi = this.findInnerChild(class_name);
+		MethodSymbolTable methi =  (MethodSymbolTable)classi.findMethodTable(method_name, type);
+		return methi.getUniqueId();
+		//return this.childTableList.get(class_name).findMethodTable(method_name, type).getUniqueId();
 		
 		
 	}

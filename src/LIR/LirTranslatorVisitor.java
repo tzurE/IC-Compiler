@@ -429,7 +429,9 @@ public Object visit(While whileStatement, int regCount) {
 				 temp_Program.add(new MoveInstr(op, reg));
 				 class_t = reg.toString();
 			 }	
-			 class_t = op.toString();
+			 else{
+				 class_t = op.toString();
+			 }
 		}
 		else{
 			SymbolTable definingScope;
@@ -486,6 +488,7 @@ public Object visit(While whileStatement, int regCount) {
 			ClassLayout clay = this.classLayouts.get(className);
 			int fieldOffset = clay.getFieldOffsetByName().get(location.getName());
 			Operand reg3 = new Reg("R" + regCount++);
+			
 			LIRNode movef = new MoveFieldInstr(new Memory(class_t), new Immediate(fieldOffset), reg3, true);
 			temp_Program.add(movef);
 			return reg3;

@@ -1,0 +1,62 @@
+str1: "In Foo_rise"
+str2: "In Foo_shine"
+str3: "In Bar_rise"
+str4: "In Bar_twinkle"
+_DV_Foo: [_Foo_rise,_Foo_shine]
+# Class_Foo Offset Assignment: [1:x,2:y]
+_DV_Bar: [_Bar_rise,_Foo_shine,_Bar_twinkle]
+# Class_Bar Offset Assignment: [1:x,2:y,3:z]
+
+
+_Foo_rise:
+Move str1,R1
+Library __println(R1),Rdummy
+Move x,R1
+Library __printi(R1),Rdummy
+Return 2
+_Foo_shine:
+Move str2,R1
+Library __println(R1),Rdummy
+Move x,R1
+Library __printi(R1),Rdummy
+Return 1
+_ic_main:
+Library __allocateObject(16),R1
+MoveField _DV_Bar,R1.0
+Move R1,v19f
+Move v19f,R1
+Move 1,R2
+VirtualCall R1.0(x=R2),R3
+Move v19f,R1
+Move 2,R2
+VirtualCall R1.1(x=R2),R3
+Library __allocateObject(12),R1
+MoveField _DV_Foo,R1.0
+Move R1,v19f
+Move v19f,R1
+Move 4,R2
+VirtualCall R1.0(x=R2),R3
+Move v19f,R1
+Move 5,R2
+VirtualCall R1.1(x=R2),R3
+Library __allocateObject(16),R1
+MoveField _DV_Bar,R1.0
+Move R1,v19b
+Move v19b,R1
+Move 3,R2
+VirtualCall R1.2(x=R2),R3
+Library __exit(0),Rdummy
+
+_Bar_rise:
+Move str3,R1
+Library __println(R1),Rdummy
+Move x,R1
+Library __printi(R1),Rdummy
+Return 3
+_Bar_twinkle:
+Move str4,R1
+Library __println(R1),Rdummy
+Move x,R1
+Library __printi(R1),Rdummy
+Return 4
+

@@ -1,0 +1,24 @@
+_DV_A: [_A_f,_A_g]
+# Class_A Offset Assignment: [1:xA,2:yA]
+
+
+_A_f:
+Return Rdummy
+_A_g:
+Move 4,R1
+Move R1,v16xA
+Move 5,R1
+Move R1,v16yA
+Move this,R1
+VirtualCall R1.0(),R2
+Move R2,v18var
+Move 4,R1
+Move R1,v18f
+_ic_main:
+Library __allocateObject(12),R1
+MoveField _DV_A,R1.0
+Move R1,v19b
+Move v19b,R1
+VirtualCall R1.0(),R2
+Library __exit(0),Rdummy
+

@@ -1,10 +1,9 @@
-str1: " "
 _DV_B: []
 # Class_B Offset Assignment: []
 
 
 _ic_main:
-Move 900,R1
+Move 396,R1
 Move R1,v17x
 _start_while_label1:
 Move v17x,R1
@@ -25,8 +24,6 @@ Add R2,R1
 Move R1,v17x
 Move v17x,R1
 Library __printi(R1),Rdummy
-Move str1,R1
-Library __print(R1),Rdummy
 Jump _start_while_label1
 _end_while_label1:
 Library __exit(0),Rdummy

@@ -7,9 +7,11 @@ _DV_B: [_A_g,_B_f]
 
 _A_g:
 Move 4,R1
-Move R1,v17xA
+Move this,R2
+MoveField R1,R2.1
 Move 5,R1
-Move R1,v17yA
+Move this,R2
+MoveField R1,R2.2
 Return Rdummy
 _ic_main:
 Library __allocateObject(16),R1
@@ -21,11 +23,14 @@ Library __exit(0),Rdummy
 
 _B_f:
 Move 1,R1
-Move R1,v20xA
+Move this,R2
+MoveField R1,R2.1
 Move 2,R1
-Move R1,v20xB
+Move this,R2
+MoveField R1,R2.3
 Move 3,R1
-Move R1,v20yA
+Move this,R2
+MoveField R1,R2.2
 Move this,R1
 VirtualCall R1.0(),R2
 

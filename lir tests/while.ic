@@ -8,12 +8,11 @@ class B {
 
   static void main(string[] args) {
 
-	int x = 900;
+	int x = 396;
 
 	while (x < 1000){
 		x = x + 1;
 		Library.printi(x);
-		Library.print(" ");
 	}
   }
 }

@@ -1,0 +1,35 @@
+str1: "Error"
+str2: "Good"
+_DV_A: []
+# Class_A Offset Assignment: []
+
+
+_ic_main:
+Move 7,R1
+Move R1,v17a
+
+#begin_if
+Move v17a,R2
+Neg R2
+Move 7,R4
+Neg R4
+Compare R4,R2
+JumpFalse _true_cmp_label1
+_false_cmp_label1:
+Move 0,R2
+Jump _end_cmp_label1
+_true_cmp_label1:
+Move 1,R2
+_end_cmp_label1:
+Compare 0,R2
+JumpTrue _false_cond_label1
+Move str1,R1
+Library __println(R1),Rdummy
+Jump _end_cond_label1
+_false_cond_label1:
+Move str2,R1
+Library __println(R1),Rdummy
+_end_cond_label1:
+#end_if
+Library __exit(0),Rdummy
+

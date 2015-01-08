@@ -52,8 +52,7 @@ _end_cond_label2:
 Move v18x,R1
 Move 1,R2
 Add R2,R1
-Move this,R2
-MoveField R1,R2.1
+Move R1,v18x
 Move str4,R1
 Library __print(R1),Rdummy
 Move v18x,R1

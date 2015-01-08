@@ -255,16 +255,16 @@ public class LirTranslatorVisitor implements LirVisitor{
 				SymbolTable definingScope;
 				definingScope = varLocation.getScope().get_defining_scope_for_var(Name, varLocation.getLine(), null);
 				Name = "v" + definingScope.getUniqueId() + Name;
-				SymbolTable classScope;
-				//get the class where it defined
-				for(classScope = definingScope; classScope.getClass() != ClassSymbolTable.class; classScope = classScope.getFather_table());
-				cName = classScope.getId();
-				if(this.classLayouts.get(cName).getFieldByName().containsKey(varLocation.getName())){
-					field = true;
-					reg2 = new Reg("R" + regCount++);
-					mem = new Memory("this");
-					temp_Program.add(new MoveInstr(mem, reg2));
-				}				
+				if(definingScope.getClass() == ClassSymbolTable.class){
+					//it's a field
+					cName = definingScope.getId();
+					if(this.classLayouts.get(cName).getFieldByName().containsKey(varLocation.getName())){
+						field = true;
+						reg2 = new Reg("R" + regCount++);
+						mem = new Memory("this");
+						temp_Program.add(new MoveInstr(mem, reg2));
+					}	
+				}
 			}
 			if(field){
 				ClassLayout cl = this.classLayouts.get(cName);

@@ -208,14 +208,16 @@ public class LirTranslatorVisitor implements LirVisitor{
 			}
 			Operand index = (Operand) arrayLocation.getIndex().accept(this, regCount);
 			if(!this.isRegister(index.toString())){
-				if(reg == null)
-					reg = new Reg("R" + regCount++);
+				if(reg3 == null)
+					reg3 = new Reg("R" + regCount++);
 				reg2 = new Reg("R" + regCount++);
 				LIRNode move2 = new MoveInstr(index, reg2);
 				temp_Program.add(move2);
 				movearr = new MoveArrayInstr(reg, reg2, reg3, false);
 			}
 			else{
+				if(reg == null)
+					reg = new Reg("R" + regCount++);
 				movearr = new MoveArrayInstr(reg, index, reg3, false);
 			}
 			temp_Program.add(movearr);

@@ -428,7 +428,8 @@ public Object visit(While whileStatement, int regCount) {
 				 Operand reg = new Reg("R" +regCount++);
 				 temp_Program.add(new MoveInstr(op, reg));
 				 class_t = reg.toString();
-			 }		
+			 }	
+			 class_t = op.toString();
 		}
 		else{
 			SymbolTable definingScope;
@@ -703,7 +704,7 @@ public Object visit(While whileStatement, int regCount) {
 		if(oper_size.toString().startsWith("v")){
 			reg = new Reg("R"+regCount++);
 			temp_Program.add(new MoveInstr(oper_size, reg));
-			temp_Program.add(new BinOpInstr(reg, new Immediate(4), Operator.MUL));
+			temp_Program.add(new BinOpInstr(new Immediate(4), reg, Operator.MUL));
 			oper_size = reg;
 			
 		}

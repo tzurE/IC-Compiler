@@ -378,7 +378,9 @@ public Object visit(While whileStatement, int regCount) {
 
 	@Override
 	public Object visit(Continue continueStatement, int regCount) {
-
+		
+		LIRNode jump_inst = new JumpInstr(new Label(LirTranslatorVisitor.startWhileLbl + this.numOfWhiles));
+		temp_Program.add(jump_inst);
 		return null;
 	}
 

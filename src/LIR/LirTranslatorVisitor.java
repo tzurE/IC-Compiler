@@ -295,12 +295,17 @@ public class LirTranslatorVisitor implements LirVisitor{
 	public Object visit(Return returnStatement, int regCount) {
 		
 		this.isReturnExist = true;
-		Operand oper = (Operand)returnStatement.getValue().accept(this, regCount);
-		if(oper == null){
-			oper = new Memory("Rdummy");
+		if(returnStatement.getValue() != null){
+			Operand oper = (Operand)returnStatement.getValue().accept(this, regCount);
+			if(oper == null){
+				oper = new Memory("Rdummy");
+			}
+			LIRNode retInst = new ReturnInstr(oper);
+			temp_Program.add(retInst);
 		}
-		LIRNode retInst = new ReturnInstr(oper);
-		temp_Program.add(retInst);
+		else{
+			temp_Program.add(new ReturnInstr(new Reg("Rdummy")));
+		}
 		
 		return null;
 	}

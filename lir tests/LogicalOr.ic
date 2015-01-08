@@ -1,0 +1,10 @@
+class A {
+	static void main(string[] args) {
+		int a = 7;
+		int b = 9;
+		if (a != 7 || b != 9)
+			Library.println("Error");
+		else
+			Library.println("Good");
+	}
+}

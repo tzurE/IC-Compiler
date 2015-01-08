@@ -137,16 +137,8 @@ public class GlobalSymbolTable extends SymbolTable {
 	}
 	
 	public int findUniqueId(String class_name, String method_name ,SymbolTableType type){
+		return this.childTableList.get(class_name).findMethodTable(method_name, type).getUniqueId();
 		
-		ClassSymbolTable classi =  this.childTableList.get(class_name);
-		//thie class_name inherrits from another one - find it!
-		if(classi == null){
-			classi = this.findInnerChild(class_name);
-			return classi.findMethodTable(method_name, type).getUniqueId();
-		}
-		else{
-			return classi.findMethodTable(method_name, type).getUniqueId();
-		}
 		
 	}
 
@@ -184,5 +176,12 @@ public class GlobalSymbolTable extends SymbolTable {
 	@Override
 	public void setTableTypeForVariable(String fieldName, TypeTableType type) {
 		// no action needed;
+	}
+
+
+	@Override
+	public SymbolTable get_defining_scope_for_var(String id, int line, SymbolTable prevScope) {
+		// shouldn't get here
+		return null;
 	}
 }

@@ -1,0 +1,51 @@
+class A {
+    int myint() {
+	int x = 4;
+	int y = 3;
+
+	return (x*y / 2);
+    }
+
+    string mystr() {
+	string x = "sha";
+	string y = "lala";
+
+	return x + y;
+    }
+
+    void myvoid() {
+
+    }
+
+    boolean mybool() {
+	return true;
+    }
+
+    static void main(string[] args) {
+	int r;
+	string s;
+	A a = new A();
+
+	Library.print("Should print 6, 12, shalala, true -> ");
+
+	r = a.myint();
+	
+	Library.print(Library.itos(r));
+
+	Library.print(", ");
+
+	a.myvoid();
+
+	Library.print(Library.itos(a.myint()*2));
+	
+	Library.print(", ");
+
+	s = a.mystr();
+
+	Library.print(s);
+
+	Library.print(", ");
+
+	Library.printb(a.mybool());
+    }
+}

@@ -1,0 +1,28 @@
+str1: "A was called"
+str2: "B was called"
+str3: "Calling function from A, "
+_DV_A: [_A_fA]
+# Class_A Offset Assignment: [1:x]
+_DV_B: [_A_fA,_B_fB]
+# Class_B Offset Assignment: [1:x,2:y]
+
+
+_A_fA:
+Move str1,R1
+Library __print(R1),Rdummy
+Return Rdummy
+
+_B_fB:
+Move str2,R1
+Library __print(R1),Rdummy
+Return Rdummy
+_ic_main:
+Library __allocateObject(12),R1
+MoveField _DV_B,R1.0
+Move R1,v20b
+Move str3,R1
+Library __print(R1),Rdummy
+Move v20b,R1
+VirtualCall R1.0(),R2
+Library __exit(0),Rdummy
+

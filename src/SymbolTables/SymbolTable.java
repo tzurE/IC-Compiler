@@ -64,5 +64,5 @@ public abstract class SymbolTable {
 	public abstract SymbolEntry searchForVarOuterClass(String id,int line);
 	public abstract boolean print();
 	public abstract void setTableTypeForVariable(String fieldName, TypeTableType type);
-	
+	public abstract SymbolTable get_defining_scope_for_var (String id, int line, SymbolTable prevScope);
 }

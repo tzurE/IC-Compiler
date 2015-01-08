@@ -1,0 +1,25 @@
+_DV_A: [_A_a,_A_b]
+# Class_A Offset Assignment: []
+_DV_B: [_A_a,_B_b,_B_c]
+# Class_B Offset Assignment: []
+_DV_C: [_C_a,_B_b,_B_c,_C_d]
+# Class_C Offset Assignment: []
+
+
+_A_a:
+Return Rdummy
+_A_b:
+Return Rdummy
+
+_B_c:
+Return Rdummy
+_B_b:
+Return Rdummy
+
+_C_d:
+Return Rdummy
+_C_a:
+Return Rdummy
+_ic_main:
+Library __exit(0),Rdummy
+

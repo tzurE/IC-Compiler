@@ -1,0 +1,9 @@
+class B {
+
+  static void main(string[] args) {
+
+    int z = 1+1;
+    int y = z+1;
+    int[] arr = new int[y];
+  }
+}

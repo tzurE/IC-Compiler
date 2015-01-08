@@ -1,0 +1,22 @@
+class A {
+ int x;
+ 
+ void fA() {
+	Library.print("A was called");
+ }
+}
+
+class B extends A {
+ int y;
+ 
+ void fB() {
+	Library.print("B was called");
+ }
+ 
+ static void main(string[] args) {
+	B b = new B();
+
+	Library.print("Calling function from A, ");
+	b.fA();
+ }
+}

@@ -201,4 +201,11 @@ public class MethodSymbolTable extends SymbolTable{
 			Parameters.get(fieldName).setType(type);
 		}
 	}
+
+	@Override
+	public SymbolTable get_defining_scope_for_var(String id, int line, SymbolTable prevScope) {
+		if( searchTable(id, SymbolKinds.PARAMETER) != null || searchTable(id, SymbolKinds.LOCAL_VARIABLE) != null)
+			return this;
+		return this.getFather_table().get_defining_scope_for_var(id,line,this);
+	}
 }

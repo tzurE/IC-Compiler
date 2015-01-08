@@ -1,0 +1,58 @@
+str1: "In Foo_rise"
+str2: "In Foo_shine"
+str3: "In Bar_rise"
+str4: "In Bar_twinkle"
+_DV_Foo: [_Foo_rise,_Foo_shine]
+_DV_Bar: [_Bar_rise,_Foo_shine,_Bar_twinkle]
+
+
+_Foo_rise:
+Library __println(str1),Rdummy
+Library __printi(x),Rdummy
+Return 2
+_Foo_shine:
+Library __println(str2),Rdummy
+Library __printi(x),Rdummy
+Return 1
+_ic_main:
+Library __allocateObject(16),R1
+MoveField _DV_Bar,R1.0
+Move R1,f
+Move f,R1
+Move 1,R2
+VirtualCall R1.0(x=R2),Rdummy
+Move f,R1
+Move 2,R2
+VirtualCall R1.1(x=R2),Rdummy
+Library __allocateObject(12),R1
+MoveField _DV_Foo,R1.0
+Move R1,f
+Move f,R1
+Move 4,R2
+VirtualCall R1.0(x=R2),Rdummy
+Move f,R1
+Move 5,R2
+VirtualCall R1.1(x=R2),Rdummy
+Library __allocateObject(16),R1
+MoveField _DV_Bar,R1.0
+Move R1,b
+Move b,R1
+Move 3,R2
+VirtualCall R1.2(x=R2),Rdummy
+Library __exit(0),Rdummy
+
+_Bar_rise:
+Library __println(str3),Rdummy
+Library __printi(x),Rdummy
+Return 3
+_Bar_twinkle:
+Library __println(str4),Rdummy
+Library __printi(x),Rdummy
+Return 4
+
+#In Bar_rise
+#1In Foo_shine
+#2In Foo_rise
+#4In Foo_shine
+#5In Bar_twinkle
+#3

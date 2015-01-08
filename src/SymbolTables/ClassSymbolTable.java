@@ -295,7 +295,6 @@ public class ClassSymbolTable extends SymbolTable {
 	}
 	
 	public SymbolTable findMethodTable(String method_name, SymbolTableType type){
-		
 		return this.methodChildTableList.get(method_name);
 	}
 
@@ -306,6 +305,17 @@ public class ClassSymbolTable extends SymbolTable {
 	
 	public ClassSymbolTable getChildClassTable(String className){
 		return classChildTableList.get(className);
+	}
+
+	@Override
+	public SymbolTable get_defining_scope_for_var(String id, int line, SymbolTable prevScope) {
+		if( staticMethodEntries.containsKey( prevScope.getId()) ){
+			return null;
+		}
+		if (fieldEntries.containsKey(id)) {
+			return this;
+		}
+		return this.getFather_table().get_defining_scope_for_var(id,line,this);
 	}
 }
 

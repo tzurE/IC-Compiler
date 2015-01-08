@@ -1,0 +1,19 @@
+// While + if + break statement
+// "break" statement should exit "while" when x = 444
+// because it's the closest value to 396 that is divided by "111".
+// Expected to print "444", since it's the closest
+
+class B {
+
+
+  static void main(string[] args) {
+
+	int x = 900;
+
+	while (x < 1000){
+		x = x + 1;
+		Library.printi(x);
+		Library.print(" ");
+	}
+  }
+}

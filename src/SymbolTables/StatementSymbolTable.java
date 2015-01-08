@@ -136,6 +136,15 @@ public class StatementSymbolTable extends SymbolTable{
 		}
 		return null;
 	}
+	
+
+	public SymbolTable get_defining_scope_for_var (String id, int line, SymbolTable prevScope) {
+		if(LocalVariables.containsKey(id)){
+			if( LocalVariableDeclerationLine.get(id) < line)
+				return this;
+		}
+		return this.getFather_table().get_defining_scope_for_var(id,line,this);
+	}
 
 	@Override
 	public SymbolEntry searchForVarOuterClass(String id, int line) {

@@ -1,0 +1,34 @@
+// Complex inheritance calls 
+// Expected to print "0"
+
+class A {
+	
+	int y;
+
+	int func(){
+
+		return y+7;	
+	}
+}
+
+class B extends A{
+
+	int x;
+}
+
+class C extends B{
+	
+	int func(){
+		
+		B b = new B();
+		b.y = 3;
+		int res = b.func();
+		return res-10;
+	}
+
+  	static void main(string[] args) {
+	
+		C c = new C();
+		Library.printi(c.func());
+	}
+}

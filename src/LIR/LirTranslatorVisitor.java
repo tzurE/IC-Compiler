@@ -281,7 +281,7 @@ public class LirTranslatorVisitor implements LirVisitor{
 				temp_Program.add(move2);
 				return null;		
 			}			
-		}
+		} 
 		return null;
 	}
 
@@ -353,6 +353,10 @@ public Object visit(While whileStatement, int regCount) {
 
 		// Translating loop's condition
 		Operand condOper = (Operand) whileStatement.getCondition().accept(this, regCount);
+		if (!isRegister(condOper.toString())){
+			temp_Program.add(new MoveInstr(condOper, new Reg("R" + regCount)));
+			condOper = new Reg("R" + regCount);
+		}
 		
 		temp_Program.add(new CompareInstr(new Immediate(0), condOper));
 		temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.endWhileLbl + localNumOfWhiles), Cond.True));
@@ -543,8 +547,6 @@ public Object visit(While whileStatement, int regCount) {
 		// Static call is a library method
 		if(call.getClassName().equals("Library")){
 			List<Operand> strOpers = new ArrayList<Operand>();
-			ClassSymbolTable classSymbolTable = this.global.getChildTableList().get(call.getClassName());
-
 			// Collect all params of call
 			for(Expression callParam : call.getArguments()){		
 				callParamOper = (Operand) callParam.accept(this, regCount);
@@ -650,7 +652,7 @@ public Object visit(While whileStatement, int regCount) {
 		
 		// Collect all params of call
 		for(Expression callParam : call.getArguments()){
-			int method_unique =  global.findUniqueId(m.getScope().getId(), call.getName(), SymbolTableType.VIRTUAL_METHOD);
+			//int method_unique =  global.findUniqueId(m.getScope().getId(), call.getName(), SymbolTableType.VIRTUAL_METHOD);
 			//"v"+method_unique+formals.get(numFormals).getName()
 			Memory mem = new Memory(formals.get(numFormals).getName());
 			Operand value = (Operand)callParam.accept(this, regCount);

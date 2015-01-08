@@ -296,6 +296,9 @@ public class LirTranslatorVisitor implements LirVisitor{
 		
 		this.isReturnExist = true;
 		Operand oper = (Operand)returnStatement.getValue().accept(this, regCount);
+		if(oper == null){
+			oper = new Memory("Rdummy");
+		}
 		LIRNode retInst = new ReturnInstr(oper);
 		temp_Program.add(retInst);
 		
@@ -778,77 +781,94 @@ public Object visit(While whileStatement, int regCount) {
 	@Override
 	public Object visit(LogicalBinaryOp binaryOp, int regCount) {
 
-		Operand oper1 = (Operand)binaryOp.getFirstOperand().accept(this, regCount);
+		Operand oper1 = (Operand) binaryOp.getFirstOperand().accept(this,
+				regCount);
 		Operand oper2 = null;
 		LIRNode move = null;
 		int localNumOfCmp = ++this.numOfCmps;
-		
-		if (isRegister(oper1.toString())){ 
+
+		if (isRegister(oper1.toString())) {
 			regCount = Integer.parseInt(oper1.toString().substring(1)) + 1;
-			oper2 = (Operand)binaryOp.getSecondOperand().accept(this, regCount++);			
-		}
-		else{ 
+			oper2 = (Operand) binaryOp.getSecondOperand().accept(this,
+					regCount++);
+		} else {
 			move = new MoveInstr(oper1, new Reg("R" + regCount));
 			temp_Program.add(move);
 			oper1 = new Reg("R" + regCount++);
-			oper2 = (Operand)binaryOp.getSecondOperand().accept(this, regCount);
+			oper2 = (Operand) binaryOp.getSecondOperand()
+					.accept(this, regCount);
 		}
-		
-		if (!isRegister(oper2.toString())){ 			 
+
+		if (!isRegister(oper2.toString())) {
 			move = new MoveInstr(oper2, new Reg("R" + regCount));
 			temp_Program.add(move);
 			oper2 = new Reg("R" + regCount++);
 		}
-		
+
 		LIRNode cmp = null;
-		 
-		if(binaryOp.getOperator().compareTo(BinaryOps.LOR) != 0 && binaryOp.getOperator().compareTo(BinaryOps.LAND) != 0){
-			cmp = new CompareInstr(oper2, oper1);		
+
+		if (binaryOp.getOperator().compareTo(BinaryOps.LOR) != 0
+				&& binaryOp.getOperator().compareTo(BinaryOps.LAND) != 0) {
+			cmp = new CompareInstr(oper2, oper1);
 			temp_Program.add(cmp);
 		}
-		
-		if (binaryOp.getOperator().compareTo(BinaryOps.EQUAL) == 0) {	
-			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.trueCmpLbl + localNumOfCmp), Cond.True));
-		}
-		else if (binaryOp.getOperator().compareTo(BinaryOps.NEQUAL) == 0) {
-			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.trueCmpLbl + localNumOfCmp), Cond.False));
-		}
-		else if (binaryOp.getOperator().compareTo(BinaryOps.GT) == 0) {
-			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.trueCmpLbl + localNumOfCmp), Cond.G));
-		}
-		else if (binaryOp.getOperator().compareTo(BinaryOps.GTE) == 0) {
-			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.trueCmpLbl + localNumOfCmp), Cond.GE));
-		}
-		else if (binaryOp.getOperator().compareTo(BinaryOps.LT) == 0) {
-			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.trueCmpLbl + localNumOfCmp), Cond.L));
-		}
-		else if (binaryOp.getOperator().compareTo(BinaryOps.LTE) == 0) {
-			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.trueCmpLbl + localNumOfCmp), Cond.LE));
-		}
-		else if (binaryOp.getOperator().compareTo(BinaryOps.LAND) == 0) {
-			
+
+		if (binaryOp.getOperator().compareTo(BinaryOps.EQUAL) == 0) {
+			temp_Program
+					.add(new CondJumpInstr(new Label(
+							LirTranslatorVisitor.trueCmpLbl + localNumOfCmp),
+							Cond.True));
+		} else if (binaryOp.getOperator().compareTo(BinaryOps.NEQUAL) == 0) {
+			temp_Program.add(new CondJumpInstr(new Label(
+					LirTranslatorVisitor.trueCmpLbl + localNumOfCmp),
+					Cond.False));
+		} else if (binaryOp.getOperator().compareTo(BinaryOps.GT) == 0) {
+			temp_Program.add(new CondJumpInstr(new Label(
+					LirTranslatorVisitor.trueCmpLbl + localNumOfCmp), Cond.G));
+		} else if (binaryOp.getOperator().compareTo(BinaryOps.GTE) == 0) {
+			temp_Program.add(new CondJumpInstr(new Label(
+					LirTranslatorVisitor.trueCmpLbl + localNumOfCmp), Cond.GE));
+		} else if (binaryOp.getOperator().compareTo(BinaryOps.LT) == 0) {
+			temp_Program.add(new CondJumpInstr(new Label(
+					LirTranslatorVisitor.trueCmpLbl + localNumOfCmp), Cond.L));
+		} else if (binaryOp.getOperator().compareTo(BinaryOps.LTE) == 0) {
+			temp_Program.add(new CondJumpInstr(new Label(
+					LirTranslatorVisitor.trueCmpLbl + localNumOfCmp), Cond.LE));
+		} else if (binaryOp.getOperator().compareTo(BinaryOps.LAND) == 0) {
+
 			temp_Program.add(new CompareInstr(new Immediate(0), oper1));
-			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.endCmpLbl + localNumOfCmp), Cond.True));
+			temp_Program
+					.add(new CondJumpInstr(new Label(
+							LirTranslatorVisitor.endCmpLbl + localNumOfCmp),
+							Cond.True));
 			temp_Program.add(new BinOpInstr(oper2, oper1, Operator.AND));
-			temp_Program.add(new Label(LirTranslatorVisitor.endCmpLbl + localNumOfCmp + ":"));
+			temp_Program.add(new Label(LirTranslatorVisitor.endCmpLbl
+					+ localNumOfCmp + ":"));
 			return oper1;
-		}
-		else if (binaryOp.getOperator().compareTo(BinaryOps.LOR) == 0) {
-			
+		} else if (binaryOp.getOperator().compareTo(BinaryOps.LOR) == 0) {
+
 			temp_Program.add(new CompareInstr(new Immediate(1), oper1));
-			temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.endCmpLbl + localNumOfCmp), Cond.True));
+			temp_Program
+					.add(new CondJumpInstr(new Label(
+							LirTranslatorVisitor.endCmpLbl + localNumOfCmp),
+							Cond.True));
 			temp_Program.add(new BinOpInstr(oper2, oper1, Operator.OR));
-			temp_Program.add(new Label(LirTranslatorVisitor.endCmpLbl + localNumOfCmp + ":"));
+			temp_Program.add(new Label(LirTranslatorVisitor.endCmpLbl
+					+ localNumOfCmp + ":"));
 			return oper1;
 		}
-	
-		temp_Program.add(new Label(LirTranslatorVisitor.falseCmpLbl + localNumOfCmp + ":"));
+
+		temp_Program.add(new Label(LirTranslatorVisitor.falseCmpLbl
+				+ localNumOfCmp + ":"));
 		temp_Program.add(new MoveInstr(new Immediate(0), oper1));
-		temp_Program.add(new JumpInstr(new Label(LirTranslatorVisitor.endCmpLbl + localNumOfCmp)));
-		temp_Program.add(new Label(LirTranslatorVisitor.trueCmpLbl + localNumOfCmp + ":"));
+		temp_Program.add(new JumpInstr(new Label(LirTranslatorVisitor.endCmpLbl
+				+ localNumOfCmp)));
+		temp_Program.add(new Label(LirTranslatorVisitor.trueCmpLbl
+				+ localNumOfCmp + ":"));
 		temp_Program.add(new MoveInstr(new Immediate(1), oper1));
-		temp_Program.add(new Label(LirTranslatorVisitor.endCmpLbl + localNumOfCmp + ":"));
-		
+		temp_Program.add(new Label(LirTranslatorVisitor.endCmpLbl
+				+ localNumOfCmp + ":"));
+
 		return oper1;
 	}
 
@@ -871,17 +891,26 @@ public Object visit(While whileStatement, int regCount) {
 	@Override
 	public Object visit(LogicalUnaryOp unaryOp, int regCount) {
 
-		Operand oper = (Operand)unaryOp.getOperand().accept(this, regCount);
-		if(!this.isRegister(oper.toString())){
-			
-			LIRNode move = new MoveInstr(oper, new Reg("R" + ++regCount));
-			temp_Program.add(move); 
+		int localNumOfCmp = ++this.numOfCmps;
+		Operand oper = (Operand) unaryOp.getOperand().accept(this, regCount);
+		if (!this.isRegister(oper.toString())) {
+
+			LIRNode move = new MoveInstr(oper, new Reg("R" + regCount));
+			temp_Program.add(move);
 		}
-		Operand register = new Reg("R" + regCount);
-		LIRNode unOpInst = new UnaryOpInstr(register, Operator.NOT);
-		temp_Program.add(unOpInst);
 		
-		return register;
+		oper = new Reg("R" + regCount++);
+		temp_Program.add(new CompareInstr(new Immediate(0), oper));
+		temp_Program.add(new CondJumpInstr(new Label(LirTranslatorVisitor.trueCmpLbl + localNumOfCmp),Cond.True));
+		temp_Program.add(new Label(LirTranslatorVisitor.falseCmpLbl	+ localNumOfCmp + ":"));
+		temp_Program.add(new MoveInstr(new Immediate(0), oper));
+		temp_Program.add(new JumpInstr(new Label(LirTranslatorVisitor.endCmpLbl + localNumOfCmp)));
+		temp_Program.add(new Label(LirTranslatorVisitor.trueCmpLbl	+ localNumOfCmp + ":"));
+		temp_Program.add(new MoveInstr(new Immediate(1), oper));
+		temp_Program.add(new Label(LirTranslatorVisitor.endCmpLbl
+				+ localNumOfCmp + ":"));		
+
+		return oper;
 	}
 
 	@Override

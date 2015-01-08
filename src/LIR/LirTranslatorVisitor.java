@@ -568,7 +568,7 @@ public Object visit(While whileStatement, int regCount) {
 		else{
 			
 			List<ParamOpPair> paramPairs = new ArrayList<ParamOpPair>();
-			ClassSymbolTable classSymbolTable = this.global.getChildTableList().get(call.getClassName());
+			ClassSymbolTable classSymbolTable = this.global.findInnerChild(call.getClassName());
 			MethodSymbolTable methodST = (MethodSymbolTable) classSymbolTable.getMethodChildTableList().get(call.getName());
 			int numFormals = 1;
 			ParamOpPair pop = null; 

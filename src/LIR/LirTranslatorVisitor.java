@@ -430,6 +430,7 @@ public Object visit(While whileStatement, int regCount) {
 				 class_t = reg.toString();
 			 }	
 			 else{
+				 regCount++;
 				 class_t = op.toString();
 			 }
 		}
